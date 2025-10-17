@@ -1,0 +1,29 @@
+pair_coeff 4 4 dpd 102.067126235101 4.5 1 # W - W 
+pair_coeff 4 1 dpd 130.61559292165586 4.5 1 # W - C1 
+pair_coeff 4 2 dpd 121.73384773028323 4.5 1 # W - C3 
+pair_coeff 4 3 dpd 108.4112299432243 4.5 1 # W - Na 
+pair_coeff 4 5 dpd 84.93804622316809 4.5 1 # W - Q0 
+pair_coeff 4 6 dpd 94.45420178535304 4.5 1 # W - Qa 
+pair_coeff 6 6 dpd 102.067126235101 4.5 1 # Qa - Qa 
+pair_coeff 6 1 dpd 130.61559292165586 4.5 1 # Qa - C1 
+pair_coeff 6 2 dpd 126.80913069678189 4.5 1 # Qa - C3 
+pair_coeff 6 3 dpd 108.4112299432243 4.5 1 # Qa - Na 
+pair_coeff 6 5 dpd 98.89507438103935 4.5 1 # Qa - Q0 
+pair_coeff 5 5 dpd 102.067126235101 4.5 1 # Q0 - Q0 
+pair_coeff 5 1 dpd 121.09943735947091 4.5 1 # Q0 - C1 
+pair_coeff 5 2 dpd 117.29297513459693 4.5 1 # Q0 - C3 
+pair_coeff 5 3 dpd 98.89507438103935 4.5 1 # Q0 - Na 
+pair_coeff 3 3 dpd 102.067126235101 4.5 1 # Na - Na 
+pair_coeff 3 1 dpd 115.38974402215993 4.5 1 # Na - C1 
+pair_coeff 3 2 dpd 115.38974402215993 4.5 1 # Na - C3 
+pair_coeff 2 2 dpd 102.067126235101 4.5 1 # C3 - C3 
+pair_coeff 2 1 dpd 102.067126235101 4.5 1 # C3 - C1 
+pair_coeff 1 1 dpd 102.067126235101 4.5 1 # C1 - C1 
+pair_coeff * * coul/slater/cut
+dielectric 78.3
+
+bond_coeff 1 150.0 0.5
+
+angle_coeff 1 5.0 180.0
+angle_coeff 2 5.0 180.0
+

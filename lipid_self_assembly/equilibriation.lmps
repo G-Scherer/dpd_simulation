@@ -1,0 +1,53 @@
+# Units, atoms, boundary condition
+units lj
+atom_style full
+boundary p p p
+
+# Bead Interaction
+pair_style hybrid/overlay dpd 1.0 1.0 123 coul/slater/cut 1.185307217552 2.0
+bond_style harmonic
+angle_style cosine/squared
+#kspace_style pppm 1.0e-2
+
+# Load data, allow velocity communication (needed for dpd)
+read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/setup/lammps.data 
+include pair.settings
+comm_modify vel yes
+
+# Naming, Build neighbors every step if something has changed
+include group.settings
+neigh_modify delay 0 check yes
+
+# Show values every 500, warn if atom is lost (moves more than a box length)
+thermo 500
+thermo_modify lost warn flush yes
+
+# Set veloceties
+velocity all create 1.0 123 dist gaussian
+
+# -------------------------------------
+
+# Step 1: minimize system energy
+#minimize 1.0e-4 1.0e-6 10000 100000
+#reset_timestep 0 
+
+# -------------------------------------
+
+# Step 2: relax in npt (T=1, P=1)
+timestep 0.01
+fix 1 all npt temp 1.0 1.0 0.5 iso 1.0 1.0 0.5
+
+# --------------------------------------
+
+# Save trajectories and run
+dump traj all custom 10 trajectories.lammpstrj id mol type xu yu zu
+dump_modify traj sort id
+
+run 10000
+unfix 1
+undump traj
+reset_timestep 0
+
+# -------------------------------------
+write_restart equilibriation.state 
+write_data equilibriated.data
