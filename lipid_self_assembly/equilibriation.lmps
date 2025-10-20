@@ -3,6 +3,8 @@ units lj
 atom_style full
 boundary p p p
 
+# r_ref = 1nm, T_ref = 300K -> e_ref = 4.14e-21
+
 # Bead Interaction
 pair_style hybrid/overlay dpd 1.0 1.0 123 coul/slater/cut 1.185307217552 2.0
 bond_style harmonic
@@ -19,35 +21,47 @@ include group.settings
 neigh_modify delay 0 check yes
 
 # Show values every 500, warn if atom is lost (moves more than a box length)
-thermo 500
+thermo 2000
 thermo_modify lost warn flush yes
 
-# Set veloceties
+# Set veloceties and timestep
 velocity all create 1.0 123 dist gaussian
-
-# -------------------------------------
-
-# Step 1: minimize system energy
-#minimize 1.0e-4 1.0e-6 10000 100000
-#reset_timestep 0 
-
-# -------------------------------------
-
-# Step 2: relax in npt (T=1, P=1)
 timestep 0.01
-fix 1 all npt temp 1.0 1.0 0.5 iso 1.0 1.0 0.5
 
-# --------------------------------------
 
-# Save trajectories and run
-dump traj all custom 10 trajectories.lammpstrj id mol type xu yu zu
-dump_modify traj sort id
+# ====================================
+# Step 2: relax in npt (T=1 300K, P=0.024 1bar)
+# ====================================
+fix 1 all npt temp 1.0 1.0 0.5 iso 0.024 0.024 0.5
+dump traj_npt all custom 10 trajectories_npt.lammpstrj id mol type xu yu zu
+dump_modify traj_npt sort id
 
-run 10000
+# R im paper schauen
+# E ist ok
+# bond length mit martini checken
+# nochmla mit weniger molekülen
+
+run 100000
+
 unfix 1
-undump traj
+undump traj_npt
 reset_timestep 0
 
-# -------------------------------------
+# =============================================
+# Step 3: run nvt (T=1.5 450K) in equilibriated box
+# =============================================
+fix 2 all nvt temp 1.0 1.5 0.5
+dump traj_nvt all custom 10 trajectories_nvt.lammpstrj id mol type xu yu zu
+dump_modify traj_nvt sort id
+
+run 100000
+
+unfix 2
+undump traj_nvt
+reset_timestep 0
+
+# ============
+# Save state
+# ============
 write_restart equilibriation.state 
 write_data equilibriated.data

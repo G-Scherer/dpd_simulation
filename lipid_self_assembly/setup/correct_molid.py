@@ -48,15 +48,15 @@ for line in lines:
             parts = line.split()
             if len(parts) >= 7:  # Gültige Atom-Zeile
                 atom_id = int(parts[0])
-                print("ist bei >7 angekommen")
+                #print("ist bei >7 angekommen")
                 
                 # Berechne Molekül-ID
-                if atom_id <= 1536:
-                    # POPC: 128 Moleküle, je 12 Atome
+                if atom_id <= 6144:
+                    # POPC: 512 Moleküle, je 12 Atome
                     mol_id = ((atom_id - 1) // 12) + 1
                 else:
                     # Wasser: nach den 128 POPC-Molekülen
-                    mol_id = 128 + (atom_id - 1536)
+                    mol_id = 512 + (atom_id - 6144)
                 
                 # Ersetze Molekül-ID (zweites Element)
                 parts[1] = str(mol_id)

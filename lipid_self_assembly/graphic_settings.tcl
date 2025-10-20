@@ -1,5 +1,6 @@
 # Load trajectories
-mol new trajectories.lammpstrj type lammpstrj
+mol new trajectories_npt.lammpstrj type lammpstrj waitfor all
+mol addfile trajectories_nvt.lammpstrj type lammpstrj waitfor all
 
 # White Background
 color Display Background white
@@ -18,3 +19,6 @@ color Type 2 28
 color Type 3 6
 color Type 5 1
 color Type 6 18
+
+# Animation settings
+animate forward
