@@ -6,10 +6,10 @@ boundary p p p
 # r_ref = 7.11 A°, T_ref = 300K -> e_ref = 4.14e-21
 
 # Bead Interaction
-pair_style hybrid/overlay dpd 1.0 1.0 123 coul/slater/cut 1.185307217552 2.0
+pair_style hybrid/overlay dpd 1.0 1.0 123 coul/slater/long 1.185307217552 2.0
 bond_style harmonic
 angle_style cosine/squared
-#kspace_style pppm 1.0e-2
+kspace_style pppm 1.0e-4
 
 # Load data, allow velocity communication (needed for dpd)
 read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/setup/lammps.data 
