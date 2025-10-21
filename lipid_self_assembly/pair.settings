@@ -22,8 +22,10 @@ pair_coeff 1 1 dpd 102.067126235101 4.5 1 # C1 - C1
 pair_coeff * * coul/slater/cut
 dielectric 78.3
 
-bond_coeff 1 150.0 0.5
+bond_coeff 1 253.5 0.661 
+bond_coeff 2 253.5 0.520
 
-angle_coeff 1 5.0 180.0
-angle_coeff 2 5.0 180.0
+angle_coeff 1 10.0 180.0
+angle_coeff 2 10.0 120.0
+angle_coeff 3 18.0 120.0
 
