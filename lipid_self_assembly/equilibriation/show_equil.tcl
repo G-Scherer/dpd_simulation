@@ -1,14 +1,16 @@
 # Load trajectories
-mol new trajectories_npt.lammpstrj type lammpstrj waitfor all
-mol addfile trajectories_nvt.lammpstrj type lammpstrj waitfor all
+mol new trajectories_equil.lammpstrj type lammpstrj waitfor all
+
+mol delrep 0 top
 
 # White Background
 color Display Background white
-display projection Orthographic
+display projection Perspective
 axes location Off
 
+
 # Color and Shape
-mol representation Licorice 0.3 12 12
+mol representation VDW 0.1 12
 mol color Type
 mol material Opaque
 mol addrep top
