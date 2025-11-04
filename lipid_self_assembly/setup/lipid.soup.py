@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description='Create lipid soup system')
 # define arguments
 parser.add_argument('--lipids', type=int, default=100, help='Number of lipids')
 parser.add_argument('--water', type=int, default=1000, help='Number of water beads')
-parser.add_argument('--box', type=float, default=10.0, help='Box volume in reduced units')
+parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
 
 # parse arguments
 args = parser.parse_args()
@@ -16,8 +16,11 @@ args = parser.parse_args()
 # save variables
 n_lipids = args.lipids
 n_water = args.water
-box_vol = args.box
+density = args.density
+box_vol = (n_lipids*12+n_water)/density
 box_length = box_vol**(1/3)
+
+random.seed(123)
 
 print(f"Creating system:")
 print(f"  Lipids: {n_lipids}")
@@ -118,7 +121,7 @@ for mol_id,atom_id in enumerate(range(n_lipids*12+1, 12*n_lipids+n_water+1),n_li
     x_com, y_com, z_com = random.uniform(0,box_length), random.uniform(0,box_length), random.uniform(0,box_length)
     coords = [x_com, y_com, z_com]
 
-    lines.append(f"{atom_id} {mol_id} {bead_types[-1]} {charges[-1]} {coords[0]} {coords[1]} {coords[2]}")
+    lines.append(f"{atom_id} {mol_id+1} {bead_types[-1]} {charges[-1]} {coords[0]} {coords[1]} {coords[2]}")
 
 lines.append("")
 

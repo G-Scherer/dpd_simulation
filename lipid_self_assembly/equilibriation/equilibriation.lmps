@@ -6,7 +6,7 @@ boundary p p p
 # r_ref = 7.11 A°, T_ref = 300K -> e_ref = 4.14e-21 J
 
 # Bead Interaction with equ at T=2.5
-pair_style hybrid/overlay dpd 2.5 1.0 123 coul/slater/long 1.185307217552 2.0
+pair_style hybrid/overlay dpd 3.0 1.0 123 coul/slater/long 1.185307217552 2.0
 bond_style harmonic
 angle_style cosine/squared
 kspace_style pppm 1.0e-4
@@ -29,15 +29,15 @@ thermo 5000
 thermo_modify lost warn flush yes
 
 # Set veloceties and timestep
-velocity all create 2.5 123 dist gaussian
+velocity all create 3.0 123 dist gaussian
 timestep 0.01
 
 
 # =========================================================================================
-# Equilibriate in T=2.5 to prevent self assembly and same volume to guarante bead density 3
+# Equilibriate in T=3.0 to prevent self assembly and same volume to guarante bead density 3
 # =========================================================================================
-fix 1 all nvt temp 2.5 2.5 0.5
-dump traj_equil all custom 100 trajectories_equil.lammpstrj id mol type x y z
+fix 1 all nvt temp 3.0 3.0 0.5
+dump traj_equil all custom 1000 trajectories_equil.lammpstrj id mol type x y z
 dump_modify traj_equil sort id
 
 run 100000
@@ -50,3 +50,4 @@ reset_timestep 0
 # Save state
 # ============
 write_restart equilibriated.state 
+write_data equilibriated.data
