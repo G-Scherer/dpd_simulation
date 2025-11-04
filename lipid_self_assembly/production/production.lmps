@@ -1,0 +1,52 @@
+units lj
+atom_style full
+boundary p p p
+
+pair_style hybrid/overlay dpd 1.0 1.0 123 coul/slater/long 1.185307217552 2.0
+bond_style harmonic 
+angle_style cosine/squared
+kspace_style pppm 1.0e-4
+
+read_restart /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/equilibriation/equilibriated.state
+
+include pair.settings
+comm_modify vel yes
+
+neigh_modify delay 0 check yes
+
+thermo 10000
+thermo_modify lost warn flush yes
+
+timestep 0.01
+
+dump traj_prod all custom 11000 trajectories_prod.lammpstrj id mol type x y z 
+dump_modify traj_prod sort id
+
+# ==================
+# Cool down to T=1.0
+# ==================
+fix 1 all nvt temp 3.0 1.0 0.5
+
+run 100000
+
+unfix 1
+
+# ===================
+# Production at T=1.0
+# ===================
+fix 2 all nvt temp 1.0 1.0 0.5
+
+run 1000000
+
+unfix 2
+
+undump traj_prod
+
+write_data bilayer.data 
+write_restart bilayer.state
+
+
+
+
+
+

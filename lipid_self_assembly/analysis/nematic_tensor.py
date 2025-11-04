@@ -25,7 +25,7 @@ print("=== Topology loaded ===")
 print(f"Total atoms: {len(u.atoms)}")
 print(f"Total residues: {len(u.residues)}")
 
-u.load_new(traj_file, format="LAMMPSDUMP", dt=10.0)
+u.load_new(traj_file, format="LAMMPSDUMP", dt=1.0)
 
 print("\n=== Trajectory loaded ===")
 print(f"Total frames: {len(u.trajectory)}")
@@ -71,6 +71,9 @@ for i, frame in enumerate(all_frames_mol_positions):
 
     S_values.append(nematic.order)
     directors.append(nematic.director)
+
+    # if i % 10 == 0:
+    #     print(f"frame {i}: S = {nematic.order}")
 
 S_values = np.array(S_values)
 directors = np.array(directors)
