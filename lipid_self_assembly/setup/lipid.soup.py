@@ -18,14 +18,16 @@ n_lipids = args.lipids
 n_water = args.water
 density = args.density
 box_vol = (n_lipids*12+n_water)/density
-box_length = box_vol**(1/3)
+
+box_z = 12/0.711
+box_y = box_x = (box_vol/box_z)**(1/2)
 
 random.seed(123)
 
 print(f"Creating system:")
 print(f"  Lipids: {n_lipids}")
 print(f"  Water: {n_water}")
-print(f"  Box length: {box_length} reduced units")
+print(f"  Box volume: {box_vol} reduced units")
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -53,8 +55,9 @@ lines.append("0 improper types")
 
 lines.append("")
 
-for ax in ["x","y","z"]:
-    lines.append(f"{0} {box_length} {ax}lo {ax}hi")
+lines.append(f"0 {box_x} xlo xhi")
+lines.append(f"0 {box_y} ylo yhi")
+lines.append(f"0 {box_z} zlo zhi")
 
 lines.append("")
 
@@ -95,7 +98,7 @@ charges = [1.0, -1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 for mol_id in range(1,(n_lipids+1)):
 
-    x_com, y_com, z_com = random.uniform(0,box_length), random.uniform(0,box_length), random.uniform(0,box_length)
+    x_com, y_com, z_com = random.uniform(0,box_x), random.uniform(0,box_y), random.uniform(0,box_z)
     b = np.array([x_com, y_com, z_com])
 
     theta_x, theta_y, theta_z = random.uniform(0, 2*np.pi), random.uniform(0, 2*np.pi), random.uniform(0, 2*np.pi)
@@ -111,14 +114,16 @@ for mol_id in range(1,(n_lipids+1)):
         
         coords = R.dot(coords)
         coords = coords+b
-        coords = coords % box_length
+        coords[0] = coords[0] % box_x
+        coords[1] = coords[1] % box_y
+        coords[2] = coords[2] % box_z
 
         lines.append(f"{(mol_id - 1)*12+n+1} {mol_id} {bead_types[n]} {charges[n]} {coords[0]} {coords[1]} {coords[2]}") 
 
 
 for mol_id,atom_id in enumerate(range(n_lipids*12+1, 12*n_lipids+n_water+1),n_lipids):
 
-    x_com, y_com, z_com = random.uniform(0,box_length), random.uniform(0,box_length), random.uniform(0,box_length)
+    x_com, y_com, z_com = random.uniform(0,box_x), random.uniform(0,box_y), random.uniform(0,box_z)
     coords = [x_com, y_com, z_com]
 
     lines.append(f"{atom_id} {mol_id+1} {bead_types[-1]} {charges[-1]} {coords[0]} {coords[1]} {coords[2]}")

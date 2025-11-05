@@ -7,14 +7,16 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Calculate nematic order")
 
-parser.add_argument("--traj", type=str, required=True, help="filepath from lipid_self_assembly")
+parser.add_argument("--equil", type=str, required=True, help="filepath for equilibriation from lipid_self_assembly")
+parser.add_argument("--prod", type=str, required=True, help="filepath for production from lipid_self_assembly")
 parser.add_argument("--top", type=str, required=True, help="filepath from lipid_self_assembly")
 parser.add_argument("--cutoff", type=float, required=True, help="cutoff value for contact number")
 
 args = parser.parse_args()
 
 top = args.top
-traj = args.traj
+equil = args.equil
+prod = args.prod
 cutoff = args.cutoff
 
 # window size for rolling average
@@ -23,7 +25,8 @@ window_size = 10
 
 dir = "/home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/"
 top_file = os.path.join(dir, top)
-traj_file = os.path.join(dir, traj)
+equil_file = os.path.join(dir, equil)
+prod_file = os.path.join(dir, prod)
 
 u = mda.Universe(top_file, format="DATA", atom_style = "id resid type charge x y z")
 
@@ -31,11 +34,9 @@ print("=== Topology loaded ===")
 print(f"Total atoms: {len(u.atoms)}")
 print(f"Total residues: {len(u.residues)}")
 
-u.load_new(traj_file, format="LAMMPSDUMP", dt=1.0)
+u.load_new(equil_file, format="LAMMPSDUMP", dt=1.0)
 
-print("\n=== Trajectory loaded ===")
-print(f"Total frames: {len(u.trajectory)}")
-print(f"Box dimensions: {u.dimensions}")
+equil_frames = len(u.trajectory)
 
 all_frames_mol_positions = []
 
@@ -51,7 +52,25 @@ for frame in u.trajectory:
 
     all_frames_mol_positions.append(frame_mol_positions)
 
+u.load_new(prod_file, format="LAMMPSDUMP", dt=1.0)
+
+prod_frames = len(u.trajectory)
+
+for frame in u.trajectory:
+
+    frame_mol_positions = []
+
+    for mol in u.residues:
+
+        # only lipids
+        if len(mol.atoms) == 12:
+            frame_mol_positions.append(mol.atoms.positions.copy())
+
+    all_frames_mol_positions.append(frame_mol_positions)
+
 # [frame id] [molid] [atom id in mol] [axis] as selection for all_frames_mol_positions
+
+print("info shape: ", np.shape(all_frames_mol_positions))
 
 n_lipids = np.shape(all_frames_mol_positions)[1]
 
@@ -89,9 +108,15 @@ directors = np.array(directors)
 def com(mol, box):
 
     box = np.asarray(box, dtype=float)
+
+    # choose arbitrary reference bead
     ref = mol[0].copy()
     
+    # calculate distance
     delta = mol - ref
+
+    # apply nearest image convention, if delta/box > 0.5 then we subtract a box length for that bead
+    # everything is then in intervall [-box/2, box/2]
     delta = delta - box * np.round(delta/box)
     unwrapped = ref + delta 
 
@@ -130,28 +155,29 @@ contact_number = np.array(contact_number)
 S_values = np.convolve(S_values, np.ones(window_size)/window_size, mode="valid")
 contact_number = np.convolve(contact_number, np.ones(window_size)/window_size, mode="valid")
 
+middle = int(len(S_values)/2)
 
-plt.plot(S_values, color="black", linewidth=2, alpha=0.7)
+plt.plot(np.arange(middle),S_values[:middle], linewidth=2, alpha=0.7, label="equilibriation")
+plt.plot(np.arange(middle-1,2*middle),S_values[middle:], linewidth=2, alpha=0.7, label="production")
 plt.ylim((0,1))
 plt.xlabel("frames")
 plt.ylabel("Nematic order parameter")
 plt.title("Lipid Orientation")
 
-traj_basename = os.path.splitext(os.path.basename(traj))[0]
-output_filename_1 = f"nematic_order_{traj_basename}.png"
-
-plt.savefig(output_filename_1)
+plt.grid()
+plt.legend()
+plt.savefig("nematic_order.png")
 plt.show()
 
-plt.plot(contact_number, color="black", linewidth=2, alpha=0.7)
-#plt.ylim((0,1))
+plt.plot(np.arange(middle),contact_number[:middle], linewidth=2, alpha=0.7, label="equilibriation")
+plt.plot(np.arange(middle-1, 2*middle),contact_number[middle:], linewidth=2, alpha=0.7, label="production")
 plt.xlabel("frames")
 plt.ylabel("Contact number")
 plt.title("Contact number")
 
-output_filename_2 = f"contact_number_{traj_basename}.png"
-
-plt.savefig(output_filename_2)
+plt.grid()
+plt.legend()
+plt.savefig("contact_number.png")
 plt.show()
 
 
