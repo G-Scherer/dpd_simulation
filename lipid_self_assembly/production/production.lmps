@@ -19,7 +19,7 @@ thermo_modify lost warn flush yes
 
 timestep 0.01
 
-dump traj_prod all custom 11000 trajectories_prod.lammpstrj id mol type x y z 
+dump traj_prod all custom 110000 trajectories_prod.lammpstrj id mol type x y z 
 dump_modify traj_prod sort id
 
 # ==================
@@ -27,7 +27,7 @@ dump_modify traj_prod sort id
 # ==================
 fix 1 all nvt temp 3.0 1.0 0.5
 
-run 100000
+run 1000000
 
 unfix 1
 
@@ -36,7 +36,7 @@ unfix 1
 # ===================
 fix 2 all nvt temp 1.0 1.0 0.5
 
-run 1000000
+run 10000000
 
 unfix 2
 
