@@ -19,8 +19,8 @@ n_water = args.water
 density = args.density
 box_vol = (n_lipids*12+n_water)/density
 
-box_z = 12/0.711
-box_y = box_x = (box_vol/box_z)**(1/2)
+box_x = box_y = (733.33)**(1/3)*2
+box_z = (box_vol/box_x**2)
 
 random.seed(123)
 

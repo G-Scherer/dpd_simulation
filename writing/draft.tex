@@ -1,7 +1,10 @@
-\documentclass[twocolumn]{article}
+\documentclass{article}
 \usepackage{setspace}
 \usepackage[T1]{fontenc}
-\usepackage{lipsum}
+\usepackage{amsmath}
+
+\setlength{\parindent}{0pt} %Einrückung von Absätzen auf null gesetzt
+\setlength{\parskip}{10pt} %Abstand zischen Absätzen auf 10pt gesetzt
 
 \begin{document}
 \onehalfspacing
@@ -58,12 +61,85 @@ Prof. Tristan Bereau
 
 \section{Introduction}
 
-\subsection{Coarse-grained models}
-Coarse grained molecular dynamic models like the MARTINI model are a very 
+Coarse-grained (CG) molecular dynamic (MD) models are a very 
 effective to simulate large molecular systems. Unlike all atom simulation 
 which aim to simulate the trajectories of every atom, the idea is to 
-substitude groups of atoms by a bead which is given properties that match 
+substitute groups of atoms by a bead which is given properties that match 
 the corresponding atoms. 
+
+Using this CG approach has the benefits of much lower 
+computational costs which makes it viable to simulate large systems that
+would be unattainable for a all atoms simulation. The most popular method
+for CG molecular dynamics is the MARTINI model with the 
+Lennard-Jones potential as the underlying force-field. 
+
+In this paper I will use the MARTINI method as a baseline for a system but
+then apply a different force-field \textbf{dissipative particle dynamics}
+(DPD). To test this approach I will monitor the self-assembly of 
+a lipid bilayer and afterwards test the mechanical properties, more 
+specifically the bending modulus.
+
+Lipid bilayers are a very important biological structure due to
+it being the basis of almost all membranes in cells. The polar heads
+keep any polar or charged particles or molecules out thus
+making it a very effective structure and worth exploring with DPD.
+The chosen lipid 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine 
+(POPC) consist of a choline head group which is connected with the 
+oleoyl and palmitoyl tails by a phosphate and glycerol group. 
+
+The simulation will be carried using the LAMMPS software which is a very
+flexible molecular dynamics simulator.
+
+\section{Methods}
+
+\subsection{Dissipative particle dynamics}
+
+For DPD the idea is to find a force which follows the Langevin equation.
+The force on a particle $i$ by other particles $j$ is:
+
+\begin{equation}
+    m \frac{\text{d}v_i}{\text{d}t} = \sum_{j \neq i} F^C_{ij} + 
+    F^D_{ij} + F^R_{ij}.  
+\end{equation}
+
+There are three different components to the force, namely the conservative
+force $F^C$, the dissipative Force $F^D$ and the random force $F^R$. All 
+forces depend on a weight function:
+
+\begin{equation}
+    w(r_{ij}) = 1 - r_{ij}/r_c.
+\end{equation}
+
+
+
+The conservative part is a simple linear repulsion with a constant
+which depends on the particle pair $i,j$:
+
+
+
+
+\subsection{Coarse-grained methods}
+
+The most important part of the CG models is the representation of 
+different groups of atoms. In MARTINI there are five different basic bead 
+types: water (W), polar (P), non-polar (N), a-polar (C), charged (Q).
+The P and C beads are also given a number from 1 to 5 depending on the 
+polarity, reaching from P1 being the least polar and P5 being the most
+polar and C1 being the most a-polar and C5 the least a-polar.
+The W bead is identical to the P4 bead. The Q and N bead can also have 
+subtypes which quantify the likeliness of hydrogen bond forming capabilities.
+There is 0 meaning no capabilities, d meaning some donor capabilities and 
+a meaning some acceptor capabilities.  
+
+Applying this to the POPC lipid we have the Q0 choline head group, the Qa
+phosphate group, the two Na glycerol groups which connect to the two tails
+consisting of respectively 4 C1 or 3 C1 and 1 C3. 
+
+
+
+
+
+
 
 
 
