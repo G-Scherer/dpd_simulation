@@ -2,9 +2,59 @@
 \usepackage{setspace}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{float}
 
-\setlength{\parindent}{0pt} %Einrückung von Absätzen auf null gesetzt
-\setlength{\parskip}{10pt} %Abstand zischen Absätzen auf 10pt gesetzt
+\usepackage[hidelinks]{hyperref}
+\usepackage[nameinlink,noabbrev]{cleveref}
+
+\usepackage{siunitx}
+\sisetup{
+  detect-all,
+  per-mode=symbol,        % z.B. g/mol statt g mol^{-1}
+  exponent-product = \cdot,
+  separate-uncertainty,
+  % Wähle eine Locale:
+  % locale = DE,          % Komma als Dezimaltrenner
+  locale = US,            % Punkt als Dezimaltrenner (englischer Text)
+}
+
+\crefname{equation}{Eq.}{Eqs.}
+\Crefname{equation}{Equation}{Equations}
+\crefname{figure}{Fig.}{Figs.}
+\Crefname{figure}{Figure}{Figures}
+\crefname{subfigure}{Fig.}{Figs.}
+\Crefname{subfigure}{Figure}{Figures}
+\crefname{table}{Table}{Tables}
+\Crefname{table}{Table}{Tables}
+\crefname{section}{Sec.}{Secs.}
+\Crefname{section}{Section}{Sections}
+
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{10pt} 
+
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstdefinestyle{code}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{gray!10},
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  keywordstyle=\color{blue},
+  commentstyle=\color{green!50!black}\itshape,
+  stringstyle=\color{red!60!black},
+  showstringspaces=false,
+  tabsize=2,
+  breaklines=true,
+  captionpos=b
+}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\lstset{style=code}
 
 \begin{document}
 \onehalfspacing
@@ -98,27 +148,100 @@ For DPD the idea is to find a force which follows the Langevin equation.
 The force on a particle $i$ by other particles $j$ is:
 
 \begin{equation}
-    m \frac{\text{d}v_i}{\text{d}t} = \sum_{j \neq i} F^C_{ij} + 
-    F^D_{ij} + F^R_{ij}.  
+    m \frac{\text{d}\mathbf{v}_i}{\text{d}t} = \sum_{j \neq i} \mathbf{F}^C_{ij} + 
+    \mathbf{F}^D_{ij} + \mathbf{F}^R_{ij}.  
 \end{equation}
 
 There are three different components to the force, namely the conservative
-force $F^C$, the dissipative Force $F^D$ and the random force $F^R$. All 
-forces depend on a weight function:
+force $F^C$, the dissipative Force $F^D$ and the random force $F^R$. 
+
+The conservative force can be expressed using $r_c$ as a cutoff distance, 
+a particle pair specific parameter $A_{ij}$, the distance vector
+$\mathbf{r}_{ij} = \mathbf{r_i} - \mathbf{r_j}$, the distance $r_{ij}$ = $|\mathbf{r}_{ij}|$
+and the normalized vector $\hat{\mathbf{r}}_{ij} = \mathbf{r}_{ij}/r_{ij}$ as:
 
 \begin{equation}
-    w(r_{ij}) = 1 - r_{ij}/r_c.
+    \mathbf{F}^C_{ij} = \begin{cases}
+        A_{ij}\left (1 - \frac{r_{ij}}{r_c} \right )\hat{\mathbf{r}}_{ij}, & r_{ij} \leq r_c \\
+        0, & r_{ij} > r_c 
+    \end{cases}
+    . 
 \end{equation}
 
+Important to note is that the cutoff distance is usually set to $r_c = 1$ 
+making it redundant in the formula above. Furthermore a big difference is that
+DPD does not postulate a potential which results in a force but rather starts
+with said force. A useful comparison for this is the Lennard-Jones potential
+which is used in MARTINI simulations and works the other way around.
+
+\begin{equation}
+    U^{LJ} = 4 \epsilon \left [\left(\frac{\sigma}{r} \right)^{12} 
+    - \left(\frac{\sigma}{r} \right)^6 \right ]. \label{LJ_pot}
+\end{equation}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/dpd_force_potential.png} 
+    \caption{DPD force and potential}
+    \label{fig:sub1}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/lj_force_potential.png} 
+    \caption{Lennard-Jones force and potential}
+    \label{fig:sub2}
+  \end{subfigure}
+  \caption{Comparison between DPD and MARTINI force}
+  \label{comp_forces}
+\end{figure}
+
+As seen in \cref{comp_forces} there are key differences between both 
+approaches. Most notably the DPD force and the corresponding potential
+do not diverge at $r=0$ which means that overlapping particles are allowed
+making it a soft potential. Adding to this DPD is a purely repulsive 
+force whereas Lennard-Jones has a clear attractive part and a minimum.
+
+The dissipative and random force can best be described by using two weight 
+functions $w^D$ and $w^R$. Using the work of Espanol and Warren (\textbf{cite here})
+one weight functions can be arbitrarily but in turn fixes the other one. 
+The usual choice is:
+
+\begin{equation}
+    w^D(r_{ij}) = \left [w^R(r_{ij}) \right ]^2 = \begin{cases}
+        \left (1 - \frac{r_{ij}}{r_c} \right )^2, & r_{ij} \leq r_c \\
+        0, & r_{ij} > r_c
+    \end{cases}
+\end{equation}
+
+One also need two strength coefficients, namely $\sigma$ for the random force
+and $\gamma$ for the drag force. The fluctuation dissipation theorem connects these
+two parameters with the thermal Energy $k_B T$ and yields:
+
+\begin{equation}
+    \sigma^2 = 2 \gamma k_B T.
+\end{equation}
+
+Defining $\mathbf{v}_{ij} = |\mathbf{v}_i - \mathbf{v}_j|$ and $\alpha_{ij}$ as 
+a random number with zero mean and unit variance 
+results in a final expression for both forces:
+
+\begin{align}
+    \mathbf{F}^D_{ij} &= -\gamma w^D(r_{ij})(\hat{\mathbf{r}}_{ij}\cdot \mathbf{v}_{ij})
+    \hat{\mathbf{r}}_{ij} \\
+    \mathbf{F}^R_{ij} &= \sigma w^R(r_{ij}) \alpha_{ij} \Delta t^{-1/2} \hat{\mathbf{r}}_{ij}.
+\end{align}
+
+Notably a factor of $\Delta t^{-1/2}$ appears in the random force. This
+follows the argument of Groot and Warren (\textbf{cite here}) as this 
+corrects the time dependency of displacement to the known expression 
+$\left < x^2\right >\propto t$.
 
 
-The conservative part is a simple linear repulsion with a constant
-which depends on the particle pair $i,j$:
 
 
-
-
-\subsection{Coarse-grained methods}
+\subsection{Coarse-grained simulations}\label{CG_models}
 
 The most important part of the CG models is the representation of 
 different groups of atoms. In MARTINI there are five different basic bead 
@@ -133,7 +256,224 @@ a meaning some acceptor capabilities.
 
 Applying this to the POPC lipid we have the Q0 choline head group, the Qa
 phosphate group, the two Na glycerol groups which connect to the two tails
-consisting of respectively 4 C1 or 3 C1 and 1 C3. 
+consisting of respectively 4 C1 or 3 C1 and 1 C3. This can be compared
+to \cref{popc_lammps} where the Q0 choline head group is red, the 
+phosphate Qa group is blue, the two glycerol groups are pink and the tails 
+are black with the singular C3 bead being silver.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{figures/popc_cg.png}
+\caption{POPC molecule in LAMMPS}
+\label{popc_lammps}
+\end{figure}
+
+One thing to note is that there are two charged beads but the DPD force does
+not contain any distinct interaction between them so this has to be added
+when simulating this system. Crucially one can not simply take normal 
+coulomb interaction as it would destroy the soft interaction. To solve this
+I chose a charge distribution which corresponds to a exponentially smeared
+out charge. This is following the work of wang and hernandez (\textbf{cite here})
+who also introduce a factor $\beta$ which controls the strength of the
+smearing effect. Using earlier works from Gonzales-Melchor et al (\textbf{cite here})
+this factor and its inverse $\lambda$ which is used in the LAMMPS implementation 
+of the potential was calculated as:
+
+\begin{equation}
+    \beta = 0.844 \Longrightarrow \lambda = 1/\beta = 1.185.
+\end{equation}
+
+With this and a conversion constant $C$ the coulomb interaction 
+follows the following formulas:
+
+\begin{align}
+    \rho(r) = \frac{q \beta^2}{\pi r} \Longrightarrow
+    \mathbf{F}^E_{ij} = \frac{C q_i q_j}{4 \pi r_{ij}}[1 - \exp(-2\beta r_{ij})
+    (1+2\beta r_{ij}(1+\beta r_{ij}))]\hat{\mathbf{r}}_{ij}.
+\end{align}
+
+With the DPD forces and the now introduced coulomb force every unbounded interaction 
+can be calculated. The next step is to choose potentials which govern the dynamics 
+inside of a molecule. Here the POPC molecule only has two other forms of connection,
+namely the bonds between two beads and the angle between three beads. For the bond 
+potential the easiest choice is a harmonic potential
+
+\begin{equation}
+    E_{ij} = K_b(r_{ij} - r_0)^2 \label{harmonic}
+\end{equation}
+
+where $K_b$ is a spring constant which includes the usual factor $1/2$ and $r_0$ is 
+the equilibrium bond distance. For the angle between three atoms I also chose the potential
+
+\begin{equation}
+    E = K_a(\theta - \theta_0)^2
+\end{equation}
+
+with $K_a$ as an energy constant similarly to before and $\theta_0$ as the equilibrium
+angle. One could also choose a cosine potential for the angle as well but that brings a
+disadvantage at $\theta_0 = 180^\circ$. The slope around that value is extremely small 
+resulting in a vanishing force. 
+
+\subsection{DPD units}\label{dpd_units}
+
+When doing molecular dynamics simulations it is very common to work with reduced units.
+Meaning there are reference parameters which are used to make every physical quantity
+unitless. For MARTINI these are usually the parameters of the Lennard-Jones potential
+$\epsilon$ and $\sigma$ as in \cref{LJ_pot}. But since DPD has a very different 
+force and thus potential one needs different reference parameters. For the 
+length parameter I follow the work of wang and hernandez (\textbf{cite here}) who 
+choose the length scale as the length of a cube containing three CG water beads where each 
+corresponds to four water molecules $N_w = 4$. The earlier work of Groot and Warren 
+(\textbf{cite here}) used the number density $\rho = 3$ beads per unit of volume. 
+Lastly the volume of one water molecule $V_w$ can be calculated by
+using the molar mass $M=18.02 \si{\g\per\mol}$,
+the density $\rho_w = 1 \si{\g\per\cubic\centi\meter}$ and the avogadro
+ constant $N_A = 6.022 \cdot 10^{23} 
+\text{molecules}/\text{mol}$
+
+\begin{equation}
+    V_w = \frac{M}{\rho_w N_A} = 2.99 \cdot 10^{-23} \si{\cubic\centi\m} 
+    = 29.9 \si{\cubic\angstrom}.
+\end{equation}
+
+The DPD length follows directly
+
+\begin{equation}
+    r_{\text{ref}} = \sqrt[3]{\rho \cdot N_w \cdot V_w} = 7.11 \si{\angstrom}.
+\end{equation}
+
+For an energy scale the chosen value is much simpler. I simply took the temperature 
+$T_{\text{ref}}=300 \si{\K}$ and used the thermal energy as a reference resulting in 
+
+\begin{equation}
+    \epsilon_{\text{ref}} = k_{\mathrm{B}} T_{\text{ref}} = 4.14 \cdot 10^{-21} \si{\J} = 
+    25.8 \si{\milli\eV}. 
+\end{equation}
+
+\subsection{Parametrization}
+
+There are multiple parameters that need to be set in this system. The first are the 
+parameters for the bonds and angles. For this the MARTINI database is used.
+There the POPC molecule has a corresponding \path{martini_v_2.0_POPC.itp} file which
+specifies the bead types discussed in \cref{CG_models}, bead charge and also angles and bonds 
+which connect the different beads. The POPC molecule contains twelve beads with six different bead types,
+eleven bonds with two bond types and ten angles with three angle types. 
+
+The two bond types are parametrized with 
+
+\[
+r_1 = 0.47 \si{\nano\m}, \quad k_1 = 1250 \si{\kilo\J\per\mol\per\nano\m\squared} 
+\]
+\[
+r_2 = 0.37 \si{\nano\m}, \quad k_2 = 1250 \si{\kilo\J\per\mol\per\nano\m\squared}
+\]
+
+For the bond length we can simply divide by our reference length from 
+\cref{dpd_units}. The energy constant is a bit more complicated. Important 
+to note is that the MARTINI definition still has a factor $1/2$ in front of 
+the harmonic potential which is absorbed in the LAMMPS implementation, 
+see \cref{harmonic}. Due to this we calculate 
+
+\begin{equation}
+    1250 \si{\kilo\J\per\mol\per\nano\m\squared}\cdot \frac{1}{2} \cdot
+    \frac{1000\si{J}}{1 \si{\kilo\J}} \cdot
+    \frac{\si{\mol}}{6.022 \cdot 10^{23}} \cdot 
+    \frac{1}{4.14 \cdot 10^{-21}\si{J}} \cdot
+    (0.711 \si{\nano\m})^2 = 126.7
+\end{equation}
+
+This leads to our parameters in reduced units which are from 
+now on written with a hat:
+
+\[
+\boxed{
+\begin{aligned}
+\hat{r}_1 &= 0.661, \quad \hat{k}_1 = 126.7\\
+\hat{r}_2 &= 0.520, \quad \hat{k}_2 = 126.7
+\end{aligned}
+}
+\]
+
+For the angle coefficients we again start from the MARTINI data.
+
+\[
+\theta_1 = 180^\circ, \quad k^\theta_1 = 25 \si{\kilo\J\per\mol}
+\]
+\[
+\theta_2 = 120^\circ, \quad k^\theta_2 = 25 \si{\kilo\J\per\mol}
+\]
+\[
+\theta_3 = 120^\circ, \quad k^\theta_3 = 45 \si{\kilo\J\per\mol}
+\]
+
+
+We still have to use factor $1/2$ similar to the bond calculation. 
+The process is the same for every $i \in 
+\{1,2,3\}$
+
+\begin{equation}
+    \{25, 45\} \si{\kilo\J\per\mol} \cdot \frac{1}{2} \cdot \frac{1000 \si{J}}{1 \si{\kilo\J}}
+    \cdot \frac{\si{\mol}}{6.022 \cdot 10^{23}} \frac{1}{4.14 \cdot 10^{-21} \si{\J}}  = 
+    \{ 5.01, 9.02 \}
+\end{equation}
+
+With this there are the final parameters for the angle potential in the POPC molecule. 
+
+\[
+\boxed{
+\begin{aligned}
+\hat{\theta}_1 &= 180^\circ, \quad \hat{k}^\theta_1 = 5.01\\
+\hat{\theta}_2 &= 120^\circ, \quad \hat{k}^\theta_2 = 5.01\\
+\hat{\theta}_3 &= 120^\circ, \quad \hat{k}^\theta_3 = 9.02
+\end{aligned}
+}
+\]
+
+The final step are the parameters for the DPD force which determine the maximum repulsion 
+at $r_{ij} =0$. This was taken from Wang and Hernandez (\textbf{cite here}). 
+
+\begin{table}[H]
+\centering
+\caption{DPD interaction parameters $a_{ij}$ and cutoff radius $r_c$ for different bead pairs}
+\label{tab:dpd_params}
+\begin{tabular}{lccc}
+\hline
+Bead pair & $A_{ij}$ & $\gamma$ & Charge \\
+\hline
+W - W      & 102.067 & 4.5 & 0 \\
+W - C1     & 130.616 & 4.5 & 0 \\
+W - C3     & 121.734 & 4.5 & 0 \\
+W - Na     & 108.411 & 4.5 & 0 \\
+W - Q0     & 84.938  & 4.5 & 0 \\
+W - Qa     & 94.454  & 4.5 & 0 \\
+Qa - Qa    & 102.067 & 4.5 & $-1$ \\
+Qa - C1    & 130.616 & 4.5 & 0 \\
+Qa - C3    & 126.809 & 4.5 & 0 \\
+Qa - Na    & 108.411 & 4.5 & 0 \\
+Qa - Q0    & 98.895  & 4.5 & $+1$ \\
+Q0 - Q0    & 102.067 & 4.5 & $+1$ \\
+Q0 - C1    & 121.099 & 4.5 & 0 \\
+Q0 - C3    & 117.293 & 4.5 & 0 \\
+Q0 - Na    & 98.895  & 4.5 & 0 \\
+Na - Na    & 102.067 & 4.5 & 0 \\
+Na - C1    & 115.390 & 4.5 & 0 \\
+Na - C3    & 115.390 & 4.5 & 0 \\
+C3 - C3    & 102.067 & 4.5 & 0 \\
+C3 - C1    & 102.067 & 4.5 & 0 \\
+C1 - C1    & 102.067 & 4.5 & 0 \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+
+
+
+
+
+
+
 
 
 

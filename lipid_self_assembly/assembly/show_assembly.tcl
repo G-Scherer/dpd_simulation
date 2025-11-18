@@ -1,5 +1,5 @@
 # Load trajectories
-mol new trajectories_equil.lammpstrj type lammpstrj waitfor all
+mol new trajectories.lammpstrj type lammpstrj waitfor all
 
 mol delrep 0 top
 
@@ -21,6 +21,3 @@ color Type 2 28
 color Type 3 6
 color Type 5 1
 color Type 6 18
-
-# Animation settings
-animate forward

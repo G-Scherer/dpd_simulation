@@ -2,32 +2,41 @@ import argparse
 import os
 import numpy as np
 import random
+from scipy.constants import Boltzmann,Avogadro
 
 parser = argparse.ArgumentParser(description='Create lipid soup system')
 
-# define arguments
-parser.add_argument('--lipids', type=int, default=100, help='Number of lipids')
-parser.add_argument('--water', type=int, default=1000, help='Number of water beads')
+# define arguments, box default taken from past sim
+parser.add_argument('--lipids', type=int, default=128, help='Number of lipids')
 parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
+parser.add_argument("--length", type=float, default=7.5, help="box length in nm")
 
 # parse arguments
 args = parser.parse_args()
 
 # save variables
 n_lipids = args.lipids
-n_water = args.water
 density = args.density
-box_vol = (n_lipids*12+n_water)/density
+box = args.length
 
-box_x = box_y = (733.33)**(1/3)*2
-box_z = (box_vol/box_x**2)
+r_ref = 0.711 #nm
+e_ref = Boltzmann*298.15 #K
+q = 8.861242189860825 #C
 
-random.seed(123)
+box_x = box_y = box_z = box/r_ref
+
+box_vol = box_x**3
+
+n_water = int(box_vol*density - 12*n_lipids)
+
+
+random.seed(800)
 
 print(f"Creating system:")
 print(f"  Lipids: {n_lipids}")
 print(f"  Water: {n_water}")
 print(f"  Box volume: {box_vol} reduced units")
+print(f" density: {(n_lipids*12 + n_water)/box_vol}")
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -66,7 +75,7 @@ lines.append("Masses")
 lines.append("")
 
 for i in range(1,7):
-    lines.append(f"{i} 72.000000")
+    lines.append(f"{i} 1")
 
 lines.append("")
 
@@ -89,12 +98,13 @@ popc_mol = np.array([[0.561, 0.534, 2.457],
                      [0.927, 0.557, 0.559]])
 
 # divide by r_ref=0.711 nm to make unitless
-popc_mol /= 0.711
+popc_mol /= r_ref
 popc_centered = popc_mol - np.mean(popc_mol, axis = 0)
 
 # bead types[n] for n=0,...,11 in popc and n=-1 is water
 bead_types = [5, 6, 3, 3, 1, 2, 1, 1, 1, 1, 1, 1, 4]
-charges = [1.0, -1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+charges = np.array([1.0, -1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+charges *= q
 
 for mol_id in range(1,(n_lipids+1)):
 
@@ -161,6 +171,17 @@ for mol_id in range(n_lipids):
         
 lines.append("")
 
+lines.append("Bond Coeffs")
+
+lines.append("")
+
+k_b = 1250 * 1/2 * 1000 * 1/Avogadro * 1/e_ref * r_ref**2
+
+lines.append(f"1 {k_b} {0.47/r_ref}")
+lines.append(f"2 {k_b} {0.37/r_ref}")
+
+lines.append("")
+
 lines.append("Angles")
 
 lines.append("")
@@ -200,6 +221,19 @@ for mol_id in range(n_lipids):
         if angle == 8:
 
             lines.append(f"{8*mol_id+angle} 1 {12*mol_id+angle+2} {12*mol_id+angle+3} {12*mol_id+angle+4}")
+
+lines.append("")
+
+lines.append("Angle Coeffs")
+
+lines.append("")
+
+k_a1 = 25 * 1/2 * 1000 * 1/Avogadro * 1/e_ref 
+k_a2 = 45 * 1/2 * 1000 * 1/Avogadro * 1/e_ref 
+
+lines.append(f"1 {k_a1} 180")
+lines.append(f"1 {k_a1} 120")
+lines.append(f"1 {k_a2} 120")
 
 
 
