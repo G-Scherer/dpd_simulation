@@ -1,6 +1,12 @@
-\contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
-\contentsline {section}{\numberline {2}Methods}{1}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Dissipative particle dynamics}{1}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Coarse-grained simulations}{3}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}DPD units}{4}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}Parametrization}{5}{subsection.2.4}%
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Methods}{2}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Coarse-grained simulations}{2}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Dissipative particle dynamics}{2}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Electrostatic Interaction}{4}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Intramolecular Interactions}{5}{section.2.4}%
+\contentsline {section}{\numberline {2.5}DPD units}{6}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Determination of DPD bonded parameters}{6}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Determination of DPD Charge}{7}{section.2.7}%
+\contentsline {section}{\numberline {2.8}Determination of DPD force parameters}{8}{section.2.8}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
