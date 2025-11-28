@@ -189,12 +189,33 @@ oleoyl and palmitoyl tails by a phosphate and glycerol group.
 The simulations were carried out using the LAMMPS software which is a
 versatile molecular dynamics simulation package.
 
-\chapter{Methods}
+\chapter{Theory}
 
-\section{Coarse-grained simulations}\label{CG_models}
+\section{Coarse-grained simulations}
+Coarse-grained simulations aim to simulate the behavior of large systems by reducing the 
+available degrees of freedom in the system, while still conserving the main thermodynamic and
+structural properties. The main method employed is a mapping mechanism that
+simplifies groups of atoms into a single interaction vertex or bead. The amount of atoms 
+that are coarse-grained differ between different methods and the length scale of interest.
 
-Central to CG models is the representation of 
-different groups of atoms as beads. MARTINI distinguishes between five basic bead 
+This approach results in the ability to simulate much larger time scales. Typical all atom 
+approaches only utilize a timestep in the order of femtoseconds.
+This can be enhanced greatly to values in the range of nanoseconds or even microseconds. 
+Furthermore, an improvement in computational efficiency comes with decreasing the degrees of freedom. 
+
+The core challenge of a coarse grained simulation is the parametrization of the method. Two main 
+methods exist: utilizing empirical data like the outcome of experiments
+or the results of more accurate all atom simulations to parametrize the coarse-grained interactions.
+
+This work employs the mapping method of the MARTINI method, the details of which are explained in 
+\cref{martini}. 
+
+
+\section{The MARTINI model}\label{martini}
+
+The MARTINI model is one of the most widely used methods for coarse-grained simulations.
+Central to this approach is the representation of different groups of atoms, 
+MARTINI distinguishes between five basic bead 
 types: water (W), polar (P), non-polar (N), apolar (C), charged (Q).
 The P and C beads are also assigned a number from 1 to 5 depending on the 
 polarity, reaching from P1 being the least polar and P5 being the most
@@ -204,32 +225,16 @@ subtypes which quantify the hydrogen bond forming capabilities.
 There is 0 meaning no capabilities, d meaning some donor capabilities and 
 a meaning some acceptor capabilities.  
 
-In the case of the POPC lipid this results in a charged Q0 choline head group, a Qa
-phosphate group and two Na glycerol groups which connect to the two tails. These
-consist of 4 C1 or 3 C1 and 1 C3, respectively. The resulting molecule 
-is shown in \cref{popc_lammps}.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=10cm]{figures/popc_cg.png}
-\caption{Coarse-grained POPC molecule representation in LAMMPS. The Q0 choline head group is red, 
-the Qa phosphate group is blue,
-the connecting Na glycerol groups is violet and the apolar tails are made up of the
-black C1 beads and the silver C3 bead.}
-\label{popc_lammps}
-\end{figure}
-
-The topology of the molecule is defined in the \path{martini_v_2.0_POPC.itp} file 
-which can be downloaded from the MARTINI website. It serves as the baseline for the 
-parametrization in the following sections. It lists the employed potential for the 
-bonds and angles, including their equilibrium parameters in MARTINI units, as well
-as the bead types used in the representation. 
-
+While the MARTINI scheme usually utilizes the Lennard-Jones potential and the corresponding
+force for non-bonded beads, in this work another force field, explained in \cref{dpd}
+is employed while adapting the same 
+mapping mechanism of the MARTINI method. 
 
 \section{Dissipative particle dynamics} \label{dpd}
-
+The DPD force field was first presented by Groot and Warren in their work on simulating systems on 
+the mesoscopic scale (\textbf{cite here}) and is widely used in simulations of fluids.
 The equations of motion for a particle $i$ influenced by all other particles $j$
-in a DPD force field is
+in a DPD force field is governed by
 
 \begin{equation}
     m \frac{\text{d}\mathbf{v}_i}{\text{d}t} = \sum_{j \neq i} \mathbf{F}^C_{ij} + 
@@ -253,37 +258,39 @@ where $r_c$ is a cutoff distance and $A_{ij}$ is
 a particle pair specific repulsion parameter. Furthermore,
 $\mathbf{r}_{ij} = \mathbf{r}_i - \mathbf{r}_j$ defines the distance vector,
 with $r_{ij} = |\mathbf{r}_{ij}|$ being its magnitude 
-and $\hat{\mathbf{r}}_{ij} = \mathbf{r}_{ij}/r_{ij}$ the corresponding unit vector .
+and $\hat{\mathbf{r}}_{ij} = \mathbf{r}_{ij}/r_{ij}$ the corresponding unit vector.
 
 Usually the cutoff distance is set to $r_c = 1$ when working with reduced units, which will be 
 discussed in \cref{dpd_units}, 
-making it redundant in the formula above. DPD distinguishes itself from MARTINI in not
-postulating a potential which results in a force field but it employs a force field without 
-starting from a fundamental potential. To further illustrate this the Lennard-Jones potential 
-
+making it redundant in the formula above. Both force fields are presented in \cref{comp_forces} 
+to further illustrate the difference between the MARTINI method 
+in \cref{martini} with the Lennard-Jones potential parametrized by the length scale $\sigma$ and the
+energy scale $\epsilon$
 \begin{equation}
     U^{LJ} = 4 \epsilon \left [\left(\frac{\sigma}{r} \right)^{12} 
-    - \left(\frac{\sigma}{r} \right)^6 \right ]\, , \label{LJ_pot}
+    - \left(\frac{\sigma}{r} \right)^6 \right ]\,  \label{LJ_pot}
 \end{equation}
-with its parameters $\sigma$ and $\epsilon$ depending on the particles, which is
-commonly used in the MARTINI method is compared to the DPD force field in \cref{comp_forces}.
+
+and the previously defined DPD force.
 The key difference between both 
 approaches is that the DPD force and the corresponding potential
 do not diverge at $r=0$ which means that overlapping particles are allowed
 making it a soft potential. Adding to this DPD is a purely repulsive 
 force whereas Lennard-Jones has a clear attractive part and a minimum.
+Furthermore the DPD force is a short range interaction, whereas the Lennard-Jones force 
+has theoretically unlimited range but is usually truncated to accelerate simulations. 
 
 \begin{figure}[t]
   \centering
   \begin{subfigure}{0.48\textwidth}
     \centering
-    \includegraphics[width=\linewidth]{figures/dpd_force_potential.png} 
+    \includegraphics[width=\linewidth]{figures/methods/dpd_force_potential.png} 
     \caption{}
     \label{fig:sub1}
   \end{subfigure}\hfill
   \begin{subfigure}{0.48\textwidth}
     \centering
-    \includegraphics[width=\linewidth]{figures/lj_force_potential.png} 
+    \includegraphics[width=\linewidth]{figures/methods/lj_force_potential.png} 
     \caption{}
     \label{fig:sub2}
   \end{subfigure}
@@ -295,8 +302,8 @@ force whereas Lennard-Jones has a clear attractive part and a minimum.
 
 The dissipative and random force can best be described by using two weight 
 functions $w^D$ and $w^R$. Using the work of Espanol and Warren (\textbf{cite here})
-one weight functions can be arbitrarily chosen but in turn fixes the other one. 
-The usual choice is
+one weight function can be arbitrarily chosen but in turn fixes the other one. 
+The usual choice for the weighting funciton yields
 
 \begin{equation}
     w^D(r_{ij}) = \left [w^R(r_{ij}) \right ]^2 = \begin{cases}
@@ -313,7 +320,7 @@ two parameters with the thermal Energy $k_B T$ and yields
     \sigma^2 = 2 \gamma k_B T.
 \end{equation}
 
-Defining $\mathbf{v}_{ij} = |\mathbf{v}_i - \mathbf{v}_j|$ as the 
+Defining $\mathbf{v}_{ij} = \mathbf{v}_i - \mathbf{v}_j$ as the
 relative velocity between two particles
 and $\alpha_{ij}$ as 
 a random number with zero mean and unit variance 
@@ -325,7 +332,7 @@ results in a final expression for both forces
     \mathbf{F}^R_{ij} &= \sigma w^R(r_{ij}) \alpha_{ij} \Delta t^{-1/2} \hat{\mathbf{r}}_{ij}\, .
 \end{align}
 
-Notably a factor of $\Delta t^{-1/2}$ appears in the random force. This
+Notably a factor of $\Delta t^{-1/2}$ appears in the random force. This correction
 follows the argument of Groot and Warren (\textbf{cite here}) as this 
 corrects the time dependency of displacement to the known expression 
 $\left < x^2\right >\propto t$.
@@ -338,8 +345,7 @@ random force parameter $\sigma$. This step will be further discussed in \cref{pa
 
 The DPD force in \cref{dpd} does not differentiate between a charged or an uncharged bead, meaning 
 some kind of coulomb interaction has to be added to the force field, 
-or the repulsion have to be adapted correspondingly,
-to the force field. Crucially a simple 
+or the repulsion have to be adapted correspondingly. Crucially a simple 
 coulomb potential is an unfitting choice because it would destroy the soft property of the
 potential at $r=0$. To solve this 
 a exponentially smeared charge distribution resulting in a Slater potential is employed 
@@ -351,16 +357,7 @@ smearing effect. The charge distribution then reads
     \rho(r) = \frac{q\beta^2}{\pi r} \exp(-2\beta r)\, .
 \end{equation}
 
-Using earlier works from Gonzales-Melchor et al (\textbf{cite here})
-this factor and its inverse $\lambda$ which is used in the LAMMPS implementation 
-of the potential was calculated as:
-
-    
-\[
-    \beta = 0.844, \quad \lambda = 1/\beta = 1.185\, .
-\]
-
-With this and a conversion constant $C$ the coulomb interaction follows
+Utilizing a conversion constant $C$ the coulomb interaction follows
 
 \begin{align}
     \mathbf{F}^E_{ij} = \frac{C q_i q_j}{4 \pi r_{ij}}[1 - \exp(-2\beta r_{ij})
@@ -370,9 +367,38 @@ With this and a conversion constant $C$ the coulomb interaction follows
 
 \section{Intramolecular Interactions}\label{intermol}
 
-\cref{dpd} and \cref{coulomb} define the interaction between non-bonded beads. Beyond that the beads are also  
-bonded inside a molecule. Like described in \cref{CG_models} the corresponding information are found in
-the \path{martini_v_2.0_POPC.itp} file. For POPC there are only bond and angle interactions.  
+Beyond the non-bonded interacitons defined in \cref{dpd} and \cref{coulomb}, intramolecular potentials
+between different number of participating beads ensure the structural integrity of the moldecules.
+Interaction between two beads are defined as bonds and determine the equilibrium distance
+between two beads,
+whereas angle potentials control the local geometry between three consecutive beads. 
+For four body interaction 
+a dihedral interaction is utilized characterizing the torsion around a central bond, convserving 
+properties like the orientation of specific atomic groups. Lastly the improper interaction 
+maintain the chriality or planarity of molecular groups.
+
+The employed potential depends on the molecule that is represented and not every molecle utilizes every
+kind of interaction. More explicit application of this will be discussed in (\textbf{sction einfügen}).
+
+\section{Numerical Integration}
+
+
+
+\section{Periodic Boundary Condition}
+
+
+
+
+\chapter{Methods}
+
+Using earlier works from Gonzales-Melchor et al (\textbf{cite here})
+this factor and its inverse $\lambda$ which is used in the LAMMPS implementation 
+of the potential was calculated as:
+
+    
+\[
+    \beta = 0.844, \quad \lambda = 1/\beta = 1.185\, .
+\]
 
 For the bond interaction the potential is a simple harmonic potential, which is implemented 
 in LAMMPS as
@@ -395,6 +421,29 @@ is given by the MARTINI database it is interesting to ask why potential of choic
 not simply harmonic for the angles. The simple answer is that the potential in \cref{cosine/squared}
 is much more computationally efficient because the calculation of a cosine does not include the $\arccos(\theta)$
 function, which is costly and not robust.
+
+\section{Topology}
+
+In the case of the POPC lipid this results in a charged Q0 choline head group, a Qa
+phosphate group and two Na glycerol groups which connect to the two tails. These
+consist of 4 C1 or 3 C1 and 1 C3, respectively. The resulting molecule 
+is shown in \cref{popc_lammps}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=10cm]{figures/methods/popc_cg.png}
+\caption{Coarse-grained POPC molecule representation in LAMMPS. The Q0 choline head group is red, 
+the Qa phosphate group is blue,
+the connecting Na glycerol groups is violet and the apolar tails are made up of the
+black C1 beads and the silver C3 bead.}
+\label{popc_lammps}
+\end{figure}
+
+The topology of the molecule is defined in the \path{martini_v_2.0_POPC.itp} file 
+which can be downloaded from the MARTINI website. It serves as the baseline for the 
+parametrization in the following sections. It lists the employed potential for the 
+bonds and angles, including their equilibrium parameters in MARTINI units, as well
+as the bead types used in the representation. 
 
 \section{DPD units}\label{dpd_units}
 
