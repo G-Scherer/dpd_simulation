@@ -10,7 +10,8 @@ parser = argparse.ArgumentParser(description='Create lipid soup system')
 parser.add_argument('--lipids', type=int, default=128, help='Number of lipids')
 parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
 parser.add_argument("--length", type=float, default=7.5, help="box length in nm")
-
+# 128 lipids, 7.5x7.5x7.5*1.25, seed 75, wasser:lipid 22.38 -> 0.879nm² apl, 10.6066
+#----------------
 # parse arguments
 args = parser.parse_args()
 
@@ -21,16 +22,23 @@ box = args.length
 
 r_ref = 0.711 #nm
 e_ref = Boltzmann*298.15 #K
-q = 8.861242189860825 #C
+q = 8.861242189860825 
 
-box_x = box_y = box_z = box/r_ref
+box_x = box_y = box/r_ref
 
-box_vol = box_x**3
+# n_water = int(n_lipids*22.38)
+# box_vol = (12*n_lipids + n_water)/density
+
+# box_z = box_vol/(box_x*box_y)
+
+box_z = box/r_ref*1.25
+
+box_vol = box_x*box_y*box_z
 
 n_water = int(box_vol*density - 12*n_lipids)
 
 
-random.seed(800)
+random.seed(75)
 
 print(f"Creating system:")
 print(f"  Lipids: {n_lipids}")
@@ -232,10 +240,8 @@ k_a1 = 25 * 1/2 * 1000 * 1/Avogadro * 1/e_ref
 k_a2 = 45 * 1/2 * 1000 * 1/Avogadro * 1/e_ref 
 
 lines.append(f"1 {k_a1} 180")
-lines.append(f"1 {k_a1} 120")
-lines.append(f"1 {k_a2} 120")
-
-
+lines.append(f"2 {k_a1} 120")
+lines.append(f"3 {k_a2} 120")
 
 out_file = os.path.join(script_dir, "lammps.data")
 with open(out_file, "w") as f:

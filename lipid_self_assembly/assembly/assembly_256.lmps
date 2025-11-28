@@ -1,0 +1,60 @@
+units lj
+package gpu 1
+atom_style full 
+boundary p p p 
+
+bond_style harmonic
+angle_style cosine/squared
+kspace_style pppm 1.0e-3
+
+read_data /remote/pi066a/scherer/dpd_simulation/lipid_self_assembly/setup/lammps_256.data
+# read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/setup/lammps.data 
+
+variable seed equal 123
+variable T equal 1.5
+
+comm_modify vel yes
+
+neigh_modify delay 0 check yes one 10000
+
+thermo 10000
+thermo_modify lost warn flush yes
+
+velocity all create ${T} ${seed} dist gaussian
+
+pair_style dpd/coul/slater/long/gpu ${T} 1.0 ${seed} 1.185307217552 2.0
+include pair.settings
+
+dump traj all custom 2000 trajectories.lammpstrj id mol type x y z
+dump_modify traj sort id 
+
+timestep 0.01
+
+fix 1 all nve
+
+run 220000
+
+variable T_stop equal 0.8
+variable T_step equal 0.07
+
+label loop
+
+    pair_style dpd/coul/slater/long/gpu ${T} 1.0 ${seed} 1.185307217552 2.0
+    include pair.settings
+
+    run 10000
+
+    variable T equal ${T} - ${T_step}
+
+    if "${T} > ${T_stop}" then "jump SELF loop"
+
+pair_style dpd/coul/slater/long/gpu ${T} 1.0 ${seed} 1.185307217552 2.0
+include pair.settings
+
+run 280000
+
+
+write_restart bilayer.state  
+write_data bilayer.data  
+
+# seed 123
