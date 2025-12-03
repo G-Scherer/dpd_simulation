@@ -7,9 +7,10 @@ from scipy.constants import Boltzmann,Avogadro
 parser = argparse.ArgumentParser(description='Create lipid soup system')
 
 # define arguments, box default taken from past sim
-parser.add_argument('--lipids', type=int, default=256, help='Number of lipids')
+parser.add_argument('--lipids', type=int, default=128, help='Number of lipids')
 parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
-parser.add_argument("--length", type=float, default=10.6, help="box length in nm")
+parser.add_argument("--apl", type=float, default=0.85, help="apl in nm^2")
+parser.add_argument("--water_per_lipid", type=float, default=30, help="water beads per lipid")
 
 # parse arguments
 args = parser.parse_args()
@@ -17,22 +18,22 @@ args = parser.parse_args()
 # save variables
 n_lipids = args.lipids
 density = args.density
-box = args.length
+apl = args.apl
+w_per_l = args.water_per_lipid
 
 r_ref = 0.711 #nm
 e_ref = Boltzmann*298.15 #K
 q = 8.861242189860825 
 
-box_x = box_y = box/r_ref
+box_x = box_y = (n_lipids/2*apl)**(1/2)/r_ref
 
-box_z = box/r_ref*1.5
+n_water = int(n_lipids*w_per_l)
 
-box_vol = box_x*box_y*box_z
+box_vol = (12*n_lipids + n_water)/density
 
-n_water = int(box_vol*density - 12*n_lipids)
+box_z = box_vol/(box_x*box_y)
 
 
-# ...existing code...
 
 random.seed(75)
 
@@ -110,8 +111,7 @@ bead_types = [5, 6, 3, 3, 1, 2, 1, 1, 1, 1, 1, 1, 4]
 charges = np.array([1.0, -1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 charges *= q
 
-# ✅ BILAYER SETUP
-# Berechne wie viele Lipide pro Leaflet (grid)
+# calculate lipids per leaflet and thus grid size
 n_per_leaflet = n_lipids // 2
 grid_size = int(np.ceil(np.sqrt(n_per_leaflet)))
 
@@ -119,11 +119,11 @@ grid_size = int(np.ceil(np.sqrt(n_per_leaflet)))
 spacing_x = box_x / grid_size
 spacing_y = box_y / grid_size
 
-z_center = box_z * 0.5  # Mitte der Box
-leaflet_separation = 3.0  # Abstand zwischen Leaflets in reduced units (~2.1 nm)
+z_center = box_z * 0.5  
+leaflet_separation = 3.0  
 
-z_lower = z_center - leaflet_separation / 2  # Unteres Leaflet
-z_upper = z_center + leaflet_separation / 2  # Oberes L
+z_lower = z_center - leaflet_separation / 2  
+z_upper = z_center + leaflet_separation / 2  
 
 print(f"Creating bilayer structure:")
 print(f"  Grid: {grid_size} x {grid_size}")
@@ -133,26 +133,25 @@ print(f"  Upper leaflet z: {z_upper:.2f}")
 
 mol_id = 1
 
-# ✅ Unteres Leaflet (Heads zeigen nach unten, -z Richtung)
+# Place lower leaflet
 for i in range(grid_size):
     for j in range(grid_size):
         if mol_id > n_per_leaflet:
             break
         
-        # Position im Grid mit kleiner Störung
+        # position in grid with noise
         x_com = (i + 0.5) * spacing_x + random.uniform(-0.3, 0.3)
         y_com = (j + 0.5) * spacing_y + random.uniform(-0.3, 0.3)
         z_com = z_lower + random.uniform(-0.2, 0.2)
         
-        # Periodische Randbedingungen
+        # pbc
         x_com = x_com % box_x
         y_com = y_com % box_y
         
         b = np.array([x_com, y_com, z_com])
         
-        # Rotation: Heads zeigen nach unten (-z)
-        # Lipid ist ~entlang z-Achse, drehe um 180° in x
-        theta_x = np.pi + random.uniform(-0.2, 0.2)  # ~180° ± noise
+        # rotate 180° around x axis because coords are standard with heads +z
+        theta_x = np.pi + random.uniform(-0.2, 0.2)  
         theta_y = random.uniform(-0.2, 0.2)
         theta_z = random.uniform(0, 2*np.pi)
         
@@ -172,13 +171,12 @@ for i in range(grid_size):
         
         mol_id += 1
 
-# ✅ Oberes Leaflet (Heads zeigen nach oben, +z Richtung)
+# Place upper leaflet
 for i in range(grid_size):
     for j in range(grid_size):
         if mol_id > n_lipids:
             break
         
-        # Position im Grid mit kleiner Störung (leicht versetzt zum unteren Leaflet)
         x_com = (i + 0.5) * spacing_x + random.uniform(-0.3, 0.3)
         y_com = (j + 0.5) * spacing_y + random.uniform(-0.3, 0.3)
         z_com = z_upper + random.uniform(-0.2, 0.2)
@@ -188,9 +186,8 @@ for i in range(grid_size):
         
         b = np.array([x_com, y_com, z_com])
         
-        # Rotation: Heads zeigen nach oben (+z)
-        # Lipid bleibt ~entlang z-Achse
-        theta_x = random.uniform(-0.2, 0.2)  # ~0° ± noise
+        # no rotation needed
+        theta_x = random.uniform(-0.2, 0.2)  
         theta_y = random.uniform(-0.2, 0.2)
         theta_z = random.uniform(0, 2*np.pi)
         
@@ -210,14 +207,14 @@ for i in range(grid_size):
         
         mol_id += 1
 
-# ✅ WASSER: Fülle Bereiche außerhalb der Bilayer
 water_mol_id_start = n_lipids + 1
 atom_id = n_lipids * 12 + 1
 
-# Wasser oben (z > z_upper + margin)
-water_added = 0
-margin = 2.0  # Abstand zur Bilayer
 
+water_added = 0
+margin = 2.0  
+
+# place water for z>0
 while water_added < n_water // 2 and water_added < n_water:
     x_com = random.uniform(0, box_x)
     y_com = random.uniform(0, box_y)
@@ -230,7 +227,7 @@ while water_added < n_water // 2 and water_added < n_water:
     atom_id += 1
     water_added += 1
 
-# Wasser unten (z < z_lower - margin)
+# place water for z<0
 while water_added < n_water:
     x_com = random.uniform(0, box_x)
     y_com = random.uniform(0, box_y)
@@ -244,8 +241,6 @@ while water_added < n_water:
     water_added += 1
 
 lines.append("")
-
-# ...existing code (Bonds, Angles bleiben gleich)...
 
 lines.append("Bonds")
 

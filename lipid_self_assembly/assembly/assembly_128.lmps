@@ -7,7 +7,7 @@ bond_style harmonic
 angle_style cosine/squared
 kspace_style pppm 1.0e-3
 
-# read_data /remote/pi066a/scherer/dpd_simulation/lipid_self_assembly/setup/lammps_256.data
+# read_data /remote/pi066a/scherer/dpd_simulation/lipid_self_assembly/setup/lammps_128.data
 read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/setup/lammps_128.data 
 
 variable seed equal 123
@@ -52,9 +52,3 @@ pair_style dpd/coul/slater/long/gpu ${T} 1.0 ${seed} 1.185307217552 2.0
 include pair.settings
 
 run 400000
-
-
-write_restart bilayer.state  
-write_data bilayer.data  
-
-# seed 123

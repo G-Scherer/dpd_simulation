@@ -9,8 +9,8 @@ parser = argparse.ArgumentParser(description='Create lipid soup system')
 # define arguments, box default taken from past sim
 parser.add_argument('--lipids', type=int, default=128, help='Number of lipids')
 parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
-parser.add_argument("--length", type=float, default=7.5, help="box length in nm")
-# 128 lipids, 7.5x7.5x7.5*1.25, seed 75, wasser:lipid 22.38 -> 0.879nm² apl, 10.6066
+parser.add_argument("--apl", type=float, default=0.85, help="box length in nm")
+parser.add_argument("--water_per_lipid", type=float, default=24, help="water beads per lipid")
 #----------------
 # parse arguments
 args = parser.parse_args()
@@ -18,24 +18,25 @@ args = parser.parse_args()
 # save variables
 n_lipids = args.lipids
 density = args.density
-box = args.length
+apl = args.apl
+wpl = args.water_per_lipid
 
 r_ref = 0.711 #nm
 e_ref = Boltzmann*298.15 #K
 q = 8.861242189860825 
 
-box_x = box_y = box/r_ref
+box_x = box_y = (apl*n_lipids/2)**(1/2)/r_ref
 
-# n_water = int(n_lipids*22.38)
-# box_vol = (12*n_lipids + n_water)/density
+n_water = int(n_lipids*wpl)
+box_vol = (12*n_lipids + n_water)/density
 
-# box_z = box_vol/(box_x*box_y)
+box_z = box_vol/(box_x*box_y)
 
-box_z = box/r_ref*1.25
+# box_z = box/r_ref*1.25
 
-box_vol = box_x*box_y*box_z
+# box_vol = box_x*box_y*box_z
 
-n_water = int(box_vol*density - 12*n_lipids)
+# n_water = int(box_vol*density - 12*n_lipids)
 
 
 random.seed(75)

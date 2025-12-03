@@ -7,8 +7,8 @@ bond_style harmonic
 angle_style cosine/squared
 kspace_style pppm 1.0e-3
 
-read_data /remote/pi066a/scherer/dpd_simulation/lipid_self_assembly/setup/lammps_256.data
-# read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/setup/lammps.data 
+# read_data /remote/pi066a/scherer/dpd_simulation/lipid_self_assembly/setup/lammps_256.data
+read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/setup/lammps_256.data 
 
 variable seed equal 123
 variable T equal 1.5

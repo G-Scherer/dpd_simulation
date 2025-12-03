@@ -1,0 +1,210 @@
+LAMMPS (10 Sep 2025 - Development - patch_10Sep2025-372-g551c56b1f4)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread.
+  using 1 OpenMP thread(s) per MPI task
+units lj
+package gpu 1
+atom_style full
+boundary p p p
+
+bond_style harmonic
+angle_style cosine/squared
+kspace_style pppm 1.0e-3
+
+read_data /remote/pi066a/scherer/dpd_simulation/lipid_self_assembly/setup/bilayer_128.data
+Reading data file ...
+  orthogonal box = (0 0 0) to (10.549086 10.549086 13.186357)
+  1 by 2 by 2 MPI processor grid
+  reading atoms ...
+  4402 atoms
+  scanning bonds ...
+  2 = max bonds/atom
+  scanning angles ...
+  2 = max angles/atom
+  orthogonal box = (0 0 0) to (10.549086 10.549086 13.186357)
+  1 by 2 by 2 MPI processor grid
+  reading bonds ...
+  1408 bonds
+  reading angles ...
+  1024 angles
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0       
+  special bond factors coul:  0        0        0       
+     3 = max # of 1-2 neighbors
+     3 = max # of 1-3 neighbors
+     6 = max # of 1-4 neighbors
+     8 = max # of special neighbors
+  special bonds CPU = 0.000 seconds
+  read_data CPU = 0.010 seconds
+# read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/setup/lammps_128.data
+
+variable seed equal 123
+variable T equal 0.8
+
+comm_modify vel yes
+
+neigh_modify delay 0 check yes one 10000
+
+thermo 10000
+thermo_modify lost warn flush yes
+
+pair_style dpd/coul/slater/long/gpu ${T} 1.0 ${seed} 1.185307217552 2.0
+pair_style dpd/coul/slater/long/gpu 0.8 1.0 ${seed} 1.185307217552 2.0
+pair_style dpd/coul/slater/long/gpu 0.8 1.0 123 1.185307217552 2.0
+include pair.settings
+pair_coeff 4 4 102.067126235101 4.5 # W - W
+pair_coeff 4 1 130.61559292165586 4.5 # W - C1
+pair_coeff 4 2 121.73384773028323 4.5 # W - C3
+pair_coeff 4 3 108.4112299432243 4.5 # W - Na
+pair_coeff 4 5 84.93804622316809 4.5 # W - Q0
+pair_coeff 4 6 94.45420178535304 4.5 # W - Qa
+pair_coeff 6 6 102.067126235101 4.5 yes # Qa - Qa
+pair_coeff 6 1 130.61559292165586 4.5 # Qa - C1
+pair_coeff 6 2 126.80913069678189 4.5 # Qa - C3
+pair_coeff 6 3 108.4112299432243 4.5 # Qa - Na
+pair_coeff 6 5 98.89507438103935 4.5 yes # Qa - Q0
+pair_coeff 5 5 102.067126235101 4.5 yes # Q0 - Q0
+pair_coeff 5 1 121.09943735947091 4.5 # Q0 - C1
+pair_coeff 5 2 117.29297513459693 4.5 # Q0 - C3
+pair_coeff 5 3 98.89507438103935 4.5 # Q0 - Na
+pair_coeff 3 3 102.067126235101 4.5 # Na - Na
+pair_coeff 3 1 115.38974402215993 4.5 # Na - C1
+pair_coeff 3 2 115.38974402215993 4.5 # Na - C3
+pair_coeff 2 2 102.067126235101 4.5 # C3 - C3
+pair_coeff 2 1 102.067126235101 4.5 # C3 - C1
+pair_coeff 1 1 102.067126235101 4.5 # C1 - C1
+
+dielectric 78.3
+
+
+dump traj all custom 300 bilayer.lammpstrj id mol type x y z
+dump_modify traj sort id
+
+timestep 0.01
+
+fix 1 all nve
+fix 2 all press/berendsen x 83 83 1000 y 83 83 1000 z 83 83 1000 couple xy
+
+run 90000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- GPU package (short-range, long-range and three-body potentials): doi:10.1016/j.cpc.2010.12.021, doi:10.1016/j.cpc.2011.10.012, doi:10.1016/j.cpc.2013.08.002, doi:10.1016/j.commatsci.2014.10.068, doi:10.1016/j.cpc.2016.10.020, doi:10.3233/APC200086
+
+@Article{Brown11,
+ author = {W. M. Brown and P. Wang and S. J. Plimpton and A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers---Short Range Forces},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2011,
+ volume =  182,
+ pages =   {898--911},
+ doi =     {10.1016/j.cpc.2010.12.021}
+}
+
+@Article{Brown12,
+ author = {W. M. Brown and A. Kohlmeyer and S. J. Plimpton and A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers - Particle-Particle Particle-Mesh},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2012,
+ volume =  183,
+ doi =     {10.1016/j.cpc.2011.10.012},
+ pages =   {449--459}
+}
+
+@Article{Brown13,
+ author = {W. M. Brown and Y. Masako},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers---Three-Body Potentials},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2013,
+ volume =  184,
+ pages =   {2785--2793},
+ doi =     {10.1016/j.cpc.2013.08.002},
+}
+
+@Article{Trung15,
+ author = {T. D. Nguyen and S. J. Plimpton},
+ title = {Accelerating Dissipative Particle Dynamics Simulations for Soft Matter Systems},
+ journal = {Comput.\ Mater.\ Sci.},
+ year =    2015,
+ doi =     {10.1016/j.commatsci.2014.10.068},
+ volume =  100,
+ pages =   {173--180}
+}
+
+@Article{Trung17,
+ author = {T. D. Nguyen},
+ title = {{GPU}-Accelerated {T}ersoff Potentials for Massively Parallel
+    Molecular Dynamics Simulations},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2017,
+ doi =     {10.1016/j.cpc.2016.10.020},
+ volume =  212,
+ pages =   {113--122}
+}
+
+@inproceedings{Nikolskiy19,
+ author = {V. Nikolskiy and V. Stegailov},
+ title = {{GPU} Acceleration of Four-Site Water Models in {LAMMPS}},
+ booktitle = {Proceedings of the International Conference on Parallel
+    Computing (ParCo 2019), Prague, Czech Republic},
+ doi =     {10.3233/APC200086},
+ year =    2019
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb
+  G vector (1/distance) = 1.1756464
+  grid = 20 20 24
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00080190167
+  estimated relative force accuracy = 0.00080190167
+  using double precision FFTW3
+  3d grid and FFT values/proc = 6375 2400
+Generated 0 of 15 mixed pair_coeff terms from geometric mixing rule
+WARNING: Inconsistent image flags
+For more information see https://docs.lammps.org/err0027 (src/domain.cpp:1052)
+Per MPI rank memory allocation (min/avg/max) = 8.043 | 8.044 | 8.047 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press          Volume    
+         0   0              29.677778      1.3251026      31.002881      99.858475      1467.4202    
+     10000   0.81427725     10.952819      1.2280105      13.401968      81.506198      1418.5441    
+     20000   0.79931596     11.122025      1.2309927      13.55172       82.81857       1407.7145    
+     30000   0.80744117     11.127534      1.2698448      13.608265      82.328318      1404.9479    
+     40000   0.80372774     11.17045       1.2368892      13.612657      82.780091      1404.8247    
+     50000   0.80110224     11.197835      1.2362163      13.635432      82.846957      1404.1074    
+     60000   0.80814757     11.195493      1.2302853      13.637724      83.396653      1403.8003    
+     70000   0.80723179     11.17057       1.2436524      13.624795      83.190701      1404.0393    
+     80000   0.80249834     11.154421      1.2636537      13.621549      83.173327      1403.7463    
+     90000   0.79435569     11.188955      1.2243319      13.60455       83.332628      1403.9303    
+Loop time of 160.427 on 4 procs for 90000 steps with 4402 atoms
+
+Performance: 484707.417 tau/day, 561.004 timesteps/s, 2.470 Matom-step/s
+95.9% CPU use with 4 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 76.38      | 85.297     | 89.056     |  56.0 | 53.17
+Bond    | 0.64709    | 0.6807     | 0.69605    |   2.4 |  0.42
+Kspace  | 25.18      | 25.245     | 25.283     |   0.8 | 15.74
+Neigh   | 0.019572   | 0.019927   | 0.02046    |   0.2 |  0.01
+Comm    | 5.9167     | 5.9821     | 6.046      |   1.9 |  3.73
+Output  | 0.18574    | 0.19593    | 0.20592    |   1.7 |  0.12
+Modify  | 38.625     | 42.301     | 51.127     |  78.7 | 26.37
+Other   |            | 0.7047     |            |       |  0.44
+
+Nlocal:         1100.5 ave        1105 max        1096 min
+Histogram: 1 1 0 0 0 0 0 0 1 1
+Nghost:        4072.75 ave        4094 max        4045 min
+Histogram: 1 0 0 0 0 1 1 0 0 1
+Neighs:              0 ave           0 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0
+Ave special neighs/atom = 1.9191277
+Neighbor list builds = 21758
+Dangerous builds = 0
+Total wall time: 0:02:40

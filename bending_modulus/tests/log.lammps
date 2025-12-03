@@ -1,0 +1,234 @@
+LAMMPS (10 Sep 2025 - Development - patch_10Sep2025-372-g551c56b1f4)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread.
+  using 1 OpenMP thread(s) per MPI task
+units lj
+package gpu 1
+atom_style full
+boundary p p p
+
+bond_style harmonic
+angle_style cosine/squared
+kspace_style pppm 1.0e-3
+
+read_data /remote/pi066a/scherer/dpd_simulation/bending_modulus/tests/bilayer.data
+Reading data file ...
+  orthogonal box = (0 0 0) to (21.098172 21.098172 16.877637)
+  2 by 2 by 1 MPI processor grid
+  reading atoms ...
+  22538 atoms
+  scanning bonds ...
+  2 = max bonds/atom
+  scanning angles ...
+  2 = max angles/atom
+  orthogonal box = (0 0 0) to (21.098172 21.098172 16.877637)
+  2 by 2 by 1 MPI processor grid
+  reading bonds ...
+  2816 bonds
+  reading angles ...
+  2048 angles
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0       
+  special bond factors coul:  0        0        0       
+     3 = max # of 1-2 neighbors
+     3 = max # of 1-3 neighbors
+     6 = max # of 1-4 neighbors
+     8 = max # of special neighbors
+  special bonds CPU = 0.000 seconds
+  read_data CPU = 0.031 seconds
+# read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/setup/lammps_128.data
+
+variable seed equal 123
+variable T equal 1.0
+
+comm_modify vel yes
+
+neigh_modify delay 0 check yes one 10000
+
+thermo 10000
+thermo_modify lost warn flush yes
+
+pair_style dpd/coul/slater/long/gpu ${T} 1.0 ${seed} 1.185307217552 2.0
+pair_style dpd/coul/slater/long/gpu 1 1.0 ${seed} 1.185307217552 2.0
+pair_style dpd/coul/slater/long/gpu 1 1.0 123 1.185307217552 2.0
+include pair.settings
+pair_coeff 4 4 102.067126235101 4.5 # W - W
+pair_coeff 4 1 130.61559292165586 4.5 # W - C1
+pair_coeff 4 2 121.73384773028323 4.5 # W - C3
+pair_coeff 4 3 108.4112299432243 4.5 # W - Na
+pair_coeff 4 5 84.93804622316809 4.5 # W - Q0
+pair_coeff 4 6 94.45420178535304 4.5 # W - Qa
+pair_coeff 6 6 102.067126235101 4.5 yes # Qa - Qa
+pair_coeff 6 1 130.61559292165586 4.5 # Qa - C1
+pair_coeff 6 2 126.80913069678189 4.5 # Qa - C3
+pair_coeff 6 3 108.4112299432243 4.5 # Qa - Na
+pair_coeff 6 5 98.89507438103935 4.5 yes # Qa - Q0
+pair_coeff 5 5 102.067126235101 4.5 yes # Q0 - Q0
+pair_coeff 5 1 121.09943735947091 4.5 # Q0 - C1
+pair_coeff 5 2 117.29297513459693 4.5 # Q0 - C3
+pair_coeff 5 3 98.89507438103935 4.5 # Q0 - Na
+pair_coeff 3 3 102.067126235101 4.5 # Na - Na
+pair_coeff 3 1 115.38974402215993 4.5 # Na - C1
+pair_coeff 3 2 115.38974402215993 4.5 # Na - C3
+pair_coeff 2 2 102.067126235101 4.5 # C3 - C3
+pair_coeff 2 1 102.067126235101 4.5 # C3 - C1
+pair_coeff 1 1 102.067126235101 4.5 # C1 - C1
+
+dielectric 78.3
+
+
+dump traj all custom 1000 trajectories.lammpstrj id mol type x y z
+dump_modify traj sort id
+
+timestep 0.01
+
+fix 1 all nve
+
+run 100000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- GPU package (short-range, long-range and three-body potentials): doi:10.1016/j.cpc.2010.12.021, doi:10.1016/j.cpc.2011.10.012, doi:10.1016/j.cpc.2013.08.002, doi:10.1016/j.commatsci.2014.10.068, doi:10.1016/j.cpc.2016.10.020, doi:10.3233/APC200086
+
+@Article{Brown11,
+ author = {W. M. Brown and P. Wang and S. J. Plimpton and A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers---Short Range Forces},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2011,
+ volume =  182,
+ pages =   {898--911},
+ doi =     {10.1016/j.cpc.2010.12.021}
+}
+
+@Article{Brown12,
+ author = {W. M. Brown and A. Kohlmeyer and S. J. Plimpton and A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers - Particle-Particle Particle-Mesh},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2012,
+ volume =  183,
+ doi =     {10.1016/j.cpc.2011.10.012},
+ pages =   {449--459}
+}
+
+@Article{Brown13,
+ author = {W. M. Brown and Y. Masako},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers---Three-Body Potentials},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2013,
+ volume =  184,
+ pages =   {2785--2793},
+ doi =     {10.1016/j.cpc.2013.08.002},
+}
+
+@Article{Trung15,
+ author = {T. D. Nguyen and S. J. Plimpton},
+ title = {Accelerating Dissipative Particle Dynamics Simulations for Soft Matter Systems},
+ journal = {Comput.\ Mater.\ Sci.},
+ year =    2015,
+ doi =     {10.1016/j.commatsci.2014.10.068},
+ volume =  100,
+ pages =   {173--180}
+}
+
+@Article{Trung17,
+ author = {T. D. Nguyen},
+ title = {{GPU}-Accelerated {T}ersoff Potentials for Massively Parallel
+    Molecular Dynamics Simulations},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2017,
+ doi =     {10.1016/j.cpc.2016.10.020},
+ volume =  212,
+ pages =   {113--122}
+}
+
+@inproceedings{Nikolskiy19,
+ author = {V. Nikolskiy and V. Stegailov},
+ title = {{GPU} Acceleration of Four-Site Water Models in {LAMMPS}},
+ booktitle = {Proceedings of the International Conference on Parallel
+    Computing (ParCo 2019), Prague, Czech Republic},
+ doi =     {10.3233/APC200086},
+ year =    2019
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb
+  G vector (1/distance) = 1.0455738
+  grid = 30 30 24
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00099550235
+  estimated relative force accuracy = 0.00099550235
+  using double precision FFTW3
+  3d grid and FFT values/proc = 11600 5400
+Generated 0 of 15 mixed pair_coeff terms from geometric mixing rule
+Per MPI rank memory allocation (min/avg/max) = 9.327 | 9.332 | 9.338 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   0              40.023604      0.51762372     40.541227      123.21095    
+     10000   1.0005882      13.761941      0.52354887     15.786305      85.320901    
+     20000   1.0017689      13.756128      0.52882217     15.787537      85.173084    
+     30000   1.0081503      13.764556      0.51898173     15.795696      85.117547    
+     40000   0.98880595     13.76103       0.51324384     15.757417      85.01179     
+     50000   0.99873811     13.762041      0.50820532     15.768287      85.107908    
+     60000   1.0019736      13.753765      0.52497378     15.781633      85.169451    
+     70000   0.99640965     13.755         0.52388521     15.773433      84.693232    
+     80000   1.0001463      13.767274      0.49952961     15.766956      85.184649    
+     90000   0.99617125     13.750109      0.51351682     15.757816      85.020672    
+    100000   1.0012005      13.74658       0.52985224     15.778166      85.021535    
+Loop time of 251.293 on 4 procs for 100000 steps with 22538 atoms
+
+Performance: 343822.167 tau/day, 397.942 timesteps/s, 8.969 Matom-step/s
+95.4% CPU use with 4 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 85.536     | 93.324     | 102.78     |  63.7 | 37.14
+Bond    | 0.42089    | 1.3357     | 2.281      |  72.3 |  0.53
+Kspace  | 109.16     | 109.51     | 109.79     |   2.4 | 43.58
+Neigh   | 0.12799    | 0.13175    | 0.13557    |   0.9 |  0.05
+Comm    | 14.398     | 15.097     | 15.827     |  17.1 |  6.01
+Output  | 0.37787    | 0.39332    | 0.41862    |   2.5 |  0.16
+Modify  | 1.881      | 1.9353     | 1.99       |   3.9 |  0.77
+Other   |            | 29.57      |            |       | 11.77
+
+Nlocal:         5634.5 ave        5798 max        5467 min
+Histogram: 1 1 0 0 0 0 0 0 0 2
+Nghost:        9028.75 ave        9083 max        8971 min
+Histogram: 1 1 0 0 0 0 0 0 0 2
+Neighs:              0 ave           0 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 0
+Ave neighs/atom = 0
+Ave special neighs/atom = 0.74966723
+Neighbor list builds = 27134
+Dangerous builds = 67
+
+write_restart bilayer.state
+System init for write_restart ...
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb
+  G vector (1/distance) = 1.0455738
+  grid = 30 30 24
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00099550235
+  estimated relative force accuracy = 0.00099550235
+  using double precision FFTW3
+  3d grid and FFT values/proc = 11600 5400
+Generated 0 of 15 mixed pair_coeff terms from geometric mixing rule
+write_data bilayer.data  
+System init for write_data ...
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb
+  G vector (1/distance) = 1.0455738
+  grid = 30 30 24
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00099550235
+  estimated relative force accuracy = 0.00099550235
+  using double precision FFTW3
+  3d grid and FFT values/proc = 11600 5400
+Generated 0 of 15 mixed pair_coeff terms from geometric mixing rule
+WARNING: Not all mixed pair coeffs generated from mixing. Use write_data with 'pair ij' option to store all pair coeffs. (src/write_data.cpp:364)
+Total wall time: 0:04:11
