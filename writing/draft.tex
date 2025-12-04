@@ -382,7 +382,23 @@ kind of interaction. More explicit application of this will be discussed in (\te
 
 \section{Numerical Integration}
 
+The forces in \cref{dpd}, \cref{coulomb} and \cref{intermol} yield a ordinary differential equation for 
+every bead in the system which need to be solved in molecular dynamics simulations. Therefore 
+numerical integrators are employed which rely on the discritization of time parttioning it into 
+timesteps of the size $\Delta t$. The standard method is the velocity verlet integrator which
+calculates the desired quantaties of a bead at the new timestep $t+ \Delta t$ using the former timestep 
+$t$. It can be expressed as 
 
+\begin{alignat}{2}
+    &1.\ \text{Calculate half step velocity} \quad &&\mathbf{v}(t + \Delta t/2) = \mathbf{v}(t) + 
+    \mathbf{a}(t) \Delta t/2\\
+    &2.\ \text{Update positions} \quad&&\mathbf{x}(t + \Delta t) = \mathbf{x}(t) + 
+    \mathbf{v}(t + \Delta t/2)\Delta t\\
+    &3.\ \text{Calculate acceleration} \quad&&\mathbf{a}(t + \Delta t) = 
+    \mathbf{F}(\mathbf{x}(t + \Delta t), \mathbf{v}(t + \Delta t/2))\\
+    &4.\ \text{Update velocity} \quad&&\mathbf{v}(t + \Delta t) = 
+    \mathbf{v}(t + \Delta t/2) + \mathbf{a}(t + \Delta t)/2\, .
+\end{alignat}
 
 \section{Periodic Boundary Condition}
 

@@ -7,10 +7,11 @@ from scipy.constants import Boltzmann,Avogadro
 parser = argparse.ArgumentParser(description='Create lipid soup system')
 
 # define arguments, box default taken from past sim
-parser.add_argument('--lipids', type=int, default=128, help='Number of lipids')
+parser.add_argument('--lipids', type=int, default=256, help='Number of lipids')
 parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
 parser.add_argument("--apl", type=float, default=0.85, help="box length in nm")
-parser.add_argument("--water_per_lipid", type=float, default=24, help="water beads per lipid")
+parser.add_argument("--water_per_lipid", type=float, default=28, help="water beads per lipid")
+# 128: wpl:24, apl:0.85, 256:
 #----------------
 # parse arguments
 args = parser.parse_args()

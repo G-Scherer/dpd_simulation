@@ -11,7 +11,7 @@ kspace_style pppm 1.0e-3
 read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/lipid_self_assembly/setup/lammps_256.data 
 
 variable seed equal 123
-variable T equal 1.5
+variable T equal 2.0
 
 comm_modify vel yes
 
@@ -25,7 +25,7 @@ velocity all create ${T} ${seed} dist gaussian
 pair_style dpd/coul/slater/long/gpu ${T} 1.0 ${seed} 1.185307217552 2.0
 include pair.settings
 
-dump traj all custom 2000 trajectories.lammpstrj id mol type x y z
+dump traj all custom 3000 trajectories.lammpstrj id mol type x y z
 dump_modify traj sort id 
 
 timestep 0.01
@@ -35,7 +35,7 @@ fix 1 all nve
 run 220000
 
 variable T_stop equal 0.8
-variable T_step equal 0.07
+variable T_step equal 0.12
 
 label loop
 
@@ -51,10 +51,10 @@ label loop
 pair_style dpd/coul/slater/long/gpu ${T} 1.0 ${seed} 1.185307217552 2.0
 include pair.settings
 
-run 280000
+fix 2 all deform 1 x final 0 14.917862165963433 y final 0 13.182494109956313 z final 0 14.917862165963433 
 
+run 100000
 
-write_restart bilayer.state  
-write_data bilayer.data  
+unfix 2
 
-# seed 123
+run 480000

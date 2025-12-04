@@ -1,5 +1,5 @@
 # Load trajectories
-mol new trajectories_128.lammpstrj type lammpstrj waitfor all
+mol new trajectories_256.lammpstrj type lammpstrj waitfor all
 
 mol delrep 0 top
 
