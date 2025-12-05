@@ -11,7 +11,7 @@ parser.add_argument('--lipids', type=int, default=256, help='Number of lipids')
 parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
 parser.add_argument("--apl", type=float, default=0.85, help="box length in nm")
 parser.add_argument("--water_per_lipid", type=float, default=28, help="water beads per lipid")
-# 128: wpl:24, apl:0.85, 256:
+# 128: wpl:24, apl:0.85, 256: wpl: 22.38, apl: 0.88
 #----------------
 # parse arguments
 args = parser.parse_args()
@@ -32,12 +32,6 @@ n_water = int(n_lipids*wpl)
 box_vol = (12*n_lipids + n_water)/density
 
 box_z = box_vol/(box_x*box_y)
-
-# box_z = box/r_ref*1.25
-
-# box_vol = box_x*box_y*box_z
-
-# n_water = int(box_vol*density - 12*n_lipids)
 
 
 random.seed(75)
