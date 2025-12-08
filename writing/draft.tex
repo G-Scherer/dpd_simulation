@@ -284,13 +284,13 @@ has theoretically unlimited range but is usually truncated to accelerate simulat
   \centering
   \begin{subfigure}{0.48\textwidth}
     \centering
-    \includegraphics[width=\linewidth]{figures/methods/dpd_force_potential.png} 
+    \includegraphics[width=\linewidth]{figures/theory/dpd_force_potential.png} 
     \caption{}
     \label{fig:sub1}
   \end{subfigure}\hfill
   \begin{subfigure}{0.48\textwidth}
     \centering
-    \includegraphics[width=\linewidth]{figures/methods/lj_force_potential.png} 
+    \includegraphics[width=\linewidth]{figures/theory/lj_force_potential.png} 
     \caption{}
     \label{fig:sub2}
   \end{subfigure}
@@ -317,7 +317,7 @@ and $\gamma$ for the drag force. The fluctuation dissipation theorem connects th
 two parameters with the thermal Energy $k_B T$ and yields
 
 \begin{equation}
-    \sigma^2 = 2 \gamma k_B T.
+    \sigma^2 = 2 \gamma k_B T. \label{connection_fluc_dis}
 \end{equation}
 
 Defining $\mathbf{v}_{ij} = \mathbf{v}_i - \mathbf{v}_j$ as the
@@ -331,6 +331,13 @@ results in a final expression for both forces
     \hat{\mathbf{r}}_{ij} \\
     \mathbf{F}^R_{ij} &= \sigma w^R(r_{ij}) \alpha_{ij} \Delta t^{-1/2} \hat{\mathbf{r}}_{ij}\, .
 \end{align}
+
+As mentioned both forces are deeply connected through the fluctuation dissipation theorem with 
+\cref{connection_fluc_dis} meaning that the amount of energy added through the random force
+$\mathbf{F}^R$ 
+is balanced by the dissipative force $\mathbf{F}^D$. Consequently, both forces act as internal 
+thermostat of the system allowing sampling of the canonical ensemble and eliminates the need for any
+external thermostats during simulation.
 
 Notably a factor of $\Delta t^{-1/2}$ appears in the random force. This correction
 follows the argument of Groot and Warren (\textbf{cite here}) as this 
@@ -354,14 +361,14 @@ who also introduce a factor $\beta$ which controls the strength of the
 smearing effect. The charge distribution then reads
 
 \begin{equation}
-    \rho(r) = \frac{q\beta^2}{\pi r} \exp(-2\beta r)\, .
+    \rho(r) = \frac{q\beta^2}{\pi r} \exp(-2\beta r)\, . \label{charge_density}
 \end{equation}
 
 Utilizing a conversion constant $C$ the coulomb interaction follows
 
 \begin{align}
     \mathbf{F}^E_{ij} = \frac{C q_i q_j}{4 \pi r_{ij}}[1 - \exp(-2\beta r_{ij})
-    (1+2\beta r_{ij}(1+\beta r_{ij}))]\hat{\mathbf{r}}_{ij}\, .
+    (1+2\beta r_{ij}(1+\beta r_{ij}))]\hat{\mathbf{r}}_{ij}\, . \label{coulomb_force}
 \end{align}
 
 
@@ -378,54 +385,117 @@ properties like the orientation of specific atomic groups. Lastly the improper i
 maintain the chriality or planarity of molecular groups.
 
 The employed potential depends on the molecule that is represented and not every molecle utilizes every
-kind of interaction. More explicit application of this will be discussed in (\textbf{sction einfügen}).
+kind of interaction. More explicit application of this will be discussed in \cref{topology}.
 
 \section{Numerical Integration}
 
-The forces in \cref{dpd}, \cref{coulomb} and \cref{intermol} yield a ordinary differential equation for 
-every bead in the system which need to be solved in molecular dynamics simulations. Therefore 
-numerical integrators are employed which rely on the discritization of time parttioning it into 
-timesteps of the size $\Delta t$. The standard method is the velocity verlet integrator which
-calculates the desired quantaties of a bead at the new timestep $t+ \Delta t$ using the former timestep 
+The forces defined in \cref{dpd}, \cref{coulomb} and \cref{intermol} yield a system of
+ordinary differential equations for 
+the system that must be solved in molecular dynamics simulations. Therefore 
+numerical integrators are employed which rely on the discretization of time, partitoning it into 
+timesteps of the size $\Delta t$. The standard method for LAMMPS is the velocity verlet integrator which
+calculates the desired quantities of a bead at the new timestep $t+ \Delta t$ using the former timestep 
 $t$. It can be expressed as 
 
 \begin{alignat}{2}
-    &1.\ \text{Calculate half step velocity} \quad &&\mathbf{v}(t + \Delta t/2) = \mathbf{v}(t) + 
+    &1.\ \text{Predict half step velocity} \quad &&\mathbf{v}(t + \Delta t/2) = \mathbf{v}(t) + 
     \mathbf{a}(t) \Delta t/2\\
     &2.\ \text{Update positions} \quad&&\mathbf{x}(t + \Delta t) = \mathbf{x}(t) + 
     \mathbf{v}(t + \Delta t/2)\Delta t\\
-    &3.\ \text{Calculate acceleration} \quad&&\mathbf{a}(t + \Delta t) = 
-    \mathbf{F}(\mathbf{x}(t + \Delta t), \mathbf{v}(t + \Delta t/2))\\
-    &4.\ \text{Update velocity} \quad&&\mathbf{v}(t + \Delta t) = 
-    \mathbf{v}(t + \Delta t/2) + \mathbf{a}(t + \Delta t)/2\, .
+    &3.\ \text{Calculate new acceleration} \quad&&\mathbf{a}(t + \Delta t) = 
+    \mathbf{F}(\mathbf{x}(t + \Delta t), \mathbf{v}(t + \Delta t/2))/m\\
+    &4.\ \text{Correct final velocity} \quad&&\mathbf{v}(t + \Delta t) = 
+    \mathbf{v}(t + \Delta t/2) + \mathbf{a}(t + \Delta t)\Delta t/2\, .
 \end{alignat}
 
-
+This version of verlet differentiates itself from other methods by utilizing the velocity of the beads 
+at an intermediate timestep $t+\Delta t/2$ which is central for the DPD force as the dissipative force 
+depends on the velocity. The global error, meaning the error which is accumulated by many steps of
+this algorithm is $\mathcal{O}(\Delta t^2)$ making it a seccond order integrator. In addition to this 
+it is a symplectic and conserves energy for large timesteps well as it shows a oscillating behavior 
+around the starting energy. 
 
 \section{Periodic Boundary Condition}
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=14cm]{figures/theory/pbc.png}
+    \caption{Visualization of the periodic boundary condition in LAMMPS. The left shows a single 
+    simulation cell in which the interactions are calculated. On the right is the resulting 
+    system after employing the periodic boundary condition with interactions beyond the single cell boundaries.}
+\end{figure}
+
+Computer simulation face the challenge of only being able to simulate finite systems with. This 
+limitation leads to edage effect when particels reach the edge of the system. To solve this there are 
+numerous possibilites but the usual meachnism is to enforce a periodic boundary condition. Employing a 
+periodic boundary means that a particle reaching the edge reenters the box from the other side. Furthermore 
+a particle at the edge also interacts with the particles on the other side of the box. This leads to 
+a system which closely resembles an arbitrarily large and continious system. 
+
+\section{Nematic order parameter}\label{nematic}
+
+The order of a system is of high importance when simulating self-assembly processes as 
+it can serve as a way to quantify the state of the system. The nematic order parameter measures 
+how much particles align. The parameter stems from the spanless
+order tensor $\mathbf{Q}$ which can be defined as 
+
+\begin{align}
+    \mathbf{Q} = \mathbf{M} - \frac{1}{3}\mathbf{I}\, ,
+\end{align}
+
+where $\mathbf{M}$ describes the particle orientation. The definition utilizes the orientation vecotor $\mathbf{m}^{(i)}$
+of the particle $i$ and reads
+
+\begin{align}
+    \mathbf{M}_{\alpha \beta} = \sum_{i=1}^N \mathbf{m}_\alpha^{(i)}\mathbf{m}_\beta^{(i)}\, .
+\end{align}
+
+The eigenvalues of $\mathbf{Q}$ are $\frac{2}{3}S$, $-\frac{1}{3}S$ and $-\frac{2}{3}S$, where $S$ is 
+the desired order parameter. The corresponding eigenvector of the largest eigenvector is called the 
+director and measures the principal alignment of the system. 
 
 
 
 \chapter{Methods}
 
-Using earlier works from Gonzales-Melchor et al (\textbf{cite here})
-this factor and its inverse $\lambda$ which is used in the LAMMPS implementation 
-of the potential was calculated as:
+\section{Topology}\label{topology}
 
-    
-\[
-    \beta = 0.844, \quad \lambda = 1/\beta = 1.185\, .
-\]
+The topology of the molecule is defined in the \path{martini_v_2.0_POPC.itp} file 
+which can be downloaded from the MARTINI website. It serves as the baseline for the 
+parametrization in the following sections. It lists the employed potential for the 
+bonds and angles, including their equilibrium parameters in MARTINI units, as well
+as the bead types used in the representation.
 
-For the bond interaction the potential is a simple harmonic potential, which is implemented 
+\cref{martini} introduced the basic bead types in the MARTINI method. In this work the system consists 
+of POPC lipids and water moleculed acting as a solvent. Each water bead is a P4 bead and 
+contains four classical water molecles. 
+
+The POPC lipids consist of a choline head group (Q0), a phosphate group (Qa) and two 
+glycerol groups (Na) connecting the polar part to two tails. These are made up of a oleoyl (three C1 and one C3)
+and a palmitoyl group (four C1) and are highly apolar. The resulting molecule 
+is shown in \cref{popc_lammps}.  
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=10cm]{figures/theory/popc_cg.png}
+\caption{Coarse-grained POPC molecule representation in LAMMPS. The Q0 choline head group is red, 
+the Qa phosphate group is blue,
+the connecting Na glycerol groups is violet and the apolar tails are made up of the
+black C1 beads and the silver C3 bead.}
+\label{popc_lammps}
+\end{figure}
+
+\cref{intermol} defined the interaction between beads inside a molecule. POPC only utilizes two 
+of the four interaction types, namely bond and angle. For the bond interaction the potential is a 
+simple harmonic potential, which is implemented 
 in LAMMPS as
 
 \begin{equation}
     E_{ij} = K^b(r_{ij} - r^0_{ij})^2. \label{harmonic}\, ,
 \end{equation}
 
-where $K_b$ is a spring constant in the unit of force that contains the usual factor of $1/2$ and $r^0_{ij}$ is the equilibrium
+where $K_b$ is a spring constant in the unit of force that contains the usual 
+factor of $1/2$ and $r^0_{ij}$ is the equilibrium
 bond distance of the bead pair. This works similarly for the angle using the potential
 
 \begin{equation}
@@ -440,35 +510,13 @@ not simply harmonic for the angles. The simple answer is that the potential in \
 is much more computationally efficient because the calculation of a cosine does not include the $\arccos(\theta)$
 function, which is costly and not robust.
 
-\section{Topology}
-
-In the case of the POPC lipid this results in a charged Q0 choline head group, a Qa
-phosphate group and two Na glycerol groups which connect to the two tails. These
-consist of 4 C1 or 3 C1 and 1 C3, respectively. The resulting molecule 
-is shown in \cref{popc_lammps}.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=10cm]{figures/methods/popc_cg.png}
-\caption{Coarse-grained POPC molecule representation in LAMMPS. The Q0 choline head group is red, 
-the Qa phosphate group is blue,
-the connecting Na glycerol groups is violet and the apolar tails are made up of the
-black C1 beads and the silver C3 bead.}
-\label{popc_lammps}
-\end{figure}
-
-The topology of the molecule is defined in the \path{martini_v_2.0_POPC.itp} file 
-which can be downloaded from the MARTINI website. It serves as the baseline for the 
-parametrization in the following sections. It lists the employed potential for the 
-bonds and angles, including their equilibrium parameters in MARTINI units, as well
-as the bead types used in the representation. 
 
 \section{DPD units}\label{dpd_units}
 
-Molecular dynamics simulations often employ reduced units.
-Meaning there are reference parameters which are used to make every physical quantity
+Molecular dynamics simulations often employ reduced units,
+meaning there are reference parameters which are used to make every physical quantity
 dimensionless. For MARTINI these are usually the parameters of the Lennard-Jones potential
-$\epsilon$ and $\sigma$ as in \cref{LJ_pot}. But since DPD has a very different 
+$\epsilon$ and $\sigma$ as in \cref{LJ_pot}. But since DPD has a different 
 force and thus potential one needs different reference parameters. For the 
 length parameter, the work of Wang and Hernandez (\textbf{cite here}) is followed who 
 choose the length scale as the length of a cube containing three CG water beads. The number three 
@@ -493,7 +541,8 @@ The DPD length follows directly
     r_{\text{ref}} = \sqrt[3]{\rho \cdot N_w \cdot V_w} = 7.11 \si{\angstrom}\, ,
 \end{equation}
 
-which from now on can be used to convert every length into DPD units dividing it.
+which from now on can be used to convert every length into DPD units by division with the 
+reference length.
 
 For an energy scale the chosen value is much simpler. The reference temperature was defined as
 $T_{\text{ref}}=298.15 \si{\K}$ and used the thermal energy as a reference resulting in 
@@ -509,16 +558,16 @@ units. Furthermore, the combination of scales allows conversion of every physica
 
 \section{Determination of DPD bonded parameters}\label{params}
 
-As \cref{CG_models} suggests the equilibrium parameters are found in the \path{martini_v_2.0_POPC.itp}
-file
+As \cref{topology} suggests the equilibrium parameters are found in the \path{martini_v_2.0_POPC.itp}
+file. For the bond interaction this reads
 
-\begin{align*}
-    r^0_1 &= 0.47 \si{\nano\m}\, , & k^b_1 &= 1250 \si{\kilo\J\per\mol\per\nano\m\squared} \\
-    r^0_2 &= 0.37 \si{\nano\m}\, , & k^b_2 &= 1250 \si{\kilo\J\per\mol\per\nano\m\squared}\, .
-\end{align*}
+\begin{alignat*}{2}
+    r^0_1 &= 0.47 \si{\nano\m},\quad  && k^b_1 = 1250 \si{\kilo\J\per\mol\per\nano\m\squared} \\
+    r^0_2 &= 0.37 \si{\nano\m},\quad && k^b_2 = 1250 \si{\kilo\J\per\mol\per\nano\m\squared}\, .
+\end{alignat*}
 
 While the bond length can simply be divided by the reference length from 
-\cref{dpd_units}, the spring constant has to be handled with more care. As described in \cref{intermol} 
+\cref{dpd_units}, the spring constant has to be handled with more care. As described in \cref{topology} 
 the MARTINI definition still has a factor $1/2$ in front of 
 the harmonic potential which is absorbed in the LAMMPS implementation, 
 see \cref{harmonic}. This yields
@@ -530,18 +579,18 @@ see \cref{harmonic}. This yields
 resulting in the following dimensionless values
 
 
-\begin{align*}
-\hat{r}^0_1 &= 0.661\, , & \hat{K}^b_1 &= 127.5\\
-\hat{r}^0_2 &= 0.520\, , & \hat{K}^b_2 &= 127.5\, .
-\end{align*}
+\begin{alignat*}{2}
+\hat{r}^0_1 &= 0.661,\quad && \hat{K}^b_1 = 127.5\\
+\hat{r}^0_2 &= 0.520.\quad && \hat{K}^b_2 = 127.5\, .
+\end{alignat*}
 
 This calculation for the angle parameters only differs in the units of the equilibrium parameters
 
-\begin{align*}
-\theta^0_1 &= 180^\circ\, , & k^a_1 &= 25 \si{\kilo\J\per\mol}\\
-\theta^0_2 &= 120^\circ\, , & k^a_2 &= 25 \si{\kilo\J\per\mol}\\
-\theta^0_3 &= 120^\circ\, , & k^a_3 &= 45 \si{\kilo\J\per\mol}\, .
-\end{align*}
+\begin{alignat*}{2}
+\theta^0_1 &= 180^\circ,\quad && k^a_1 = 25 \si{\kilo\J\per\mol}\\
+\theta^0_2 &= 120^\circ,\quad && k^a_2 = 25 \si{\kilo\J\per\mol}\\
+\theta^0_3 &= 120^\circ,\quad && k^a_3 = 45 \si{\kilo\J\per\mol}\, .
+\end{alignat*}
 
 Similarly to before the factor of $1/2$ has to be included
 
@@ -552,16 +601,28 @@ Similarly to before the factor of $1/2$ has to be included
 Substituting the values yields the angle parameters
 
 
-\begin{align*}
-\hat{\theta}^0_1 &= 180^\circ\, , & \hat{k}^a_1 &= 5.04\\
-\hat{\theta}^0_2 &= 120^\circ\, , & \hat{k}^a_2 &= 5.04\\
-\hat{\theta}^0_3 &= 120^\circ\, , & \hat{k}^a_3 &= 9.08\, .
-\end{align*}
+\begin{alignat*}{2}
+\hat{\theta}^0_1 &= 180^\circ, \quad && \hat{k}^a_1 = 5.04\\
+\hat{\theta}^0_2 &= 120^\circ, \quad && \hat{k}^a_2 = 5.04\\
+\hat{\theta}^0_3 &= 120^\circ, \quad && \hat{k}^a_3 = 9.08\, .
+\end{alignat*}
 
 \section{Determination of DPD Charge}
 
-Introducing a length and energy sclaes also has an effect on the charge quantization. To adjust 
-the charge the energy of a point charge in reals units with the corresponding energy in DPD units 
+\cref{coulomb} introduced a coulombic interaction for the beads using a slater potential, 
+see \cref{charge_density} and \cref{coulomb_force}. There a strength parameter was introduced and
+ssing earlier works from Gonzales-Melchor et al (\textbf{cite here})
+this factor and its inverse $\lambda$ which is used in the LAMMPS implementation 
+of the potential was calculated as
+
+    
+\begin{align*}
+    \beta = 0.844, \quad \lambda = 1/\beta = 1.185\, .
+\end{align*}
+    
+The introduction of a length and energy scale also has an effect on the charge quantization. To adjust 
+the charge, the energy of a point charge in reals units is compared
+with the corresponding energy in DPD units 
 yielding 
 
 \begin{align}
@@ -576,15 +637,15 @@ to a DPD charge of $\hat{q} = 8.86$.
 \section{Determination of DPD force parameters}
 
 The repulsion parameters $A_{ij}$ for the DPD force are the core of the force field and 
-determine the maximum repulsion
-at $r_{ij} =0$. In addition to that the drag parameter $\gamma$ has to be determined.
+determine the maximum repulsion of the conservative force in \cref{dpd}.
+In addition to that the drag parameter $\gamma$ has to be determined.
 The latter follows from the early work of Groot and Warren (\textbf{cite here}) who
 found at $\hat{T} =1$ the optimal value for the random force parameter was $\hat{\sigma} = 3$.
 Employing the connection given by the fluctuation dissipation theorem yields a values of
  
-\[
-\hat{\gamma} = 4.5\, ,
-\]
+\begin{align*}
+    \hat{\gamma} = 4.5\, ,
+\end{align*}
 
 where $k_{\text{B}}T$ was set to unity. The $\gamma$ value is a fix parameter in the DPD 
 force field utilized by the LAMMPS package. Changing the desired temperature of the DPD force 
@@ -674,7 +735,7 @@ is the desired fitting parameter
 \lambda = 0.28\, .
 \]
 
-Wang and Hernandez (\textbf{cite here}) found a formula which uses a baseline interaction matrix
+Wang and Hernandez (\textbf{cite here}) employed a formula which uses a baseline interaction matrix
 $\epsilon_{AB}$ to calculate the size dependant Flory-Hugigns parameter.
 
 \begin{equation}
@@ -687,6 +748,24 @@ using $z$ as the effective number of nearest neighbors.
 The employed database 
 is the MARTINI model. The calculated values can be substituted into \cref{final_form_dpd} and 
 result in the values shown in \cref{dpd_params}.
+
+\section{Area per lipid}
+
+Before starting the self-assembly simulation there are many system configurations that need to be 
+investigated, starting with the area per lipid. For this a starting configuration is employed where 
+every lipid is placed on a grid adjusted to the box size and rotated to start the simulation with a 
+bilayer configuration. The relative positions of the beads in the POPC molecule are extracted from 
+the \path{POPC-em.gro} and are then divided by the length scale from \cref{dpd_units}. The water beads 
+are placed randomly outside of the lipid phase and the water per lipid ratio is chosen as 22:1. This
+value was adopted from sucessful experiments. As mentioned earlier the work Groot and Warren (\textbf{cite here})
+dictate a number density of $\rho=3$. The area per lipid $A_{\text{lipid}}$ fixes the box dimension of the xy plane 
+according to
+
+\begin{align}
+    L_x = L_y = \sqrt{A_{\text{lipid}}\cdot N_{\text{lipid}}/2}
+\end{align}
+
+
 
 
 

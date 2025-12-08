@@ -1,0 +1,1 @@
+lammps pbc bild: https://lammpstube.com/2019/10/30/periodic-boundary-conditions/
