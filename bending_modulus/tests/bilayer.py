@@ -7,7 +7,7 @@ from scipy.constants import Boltzmann,Avogadro
 parser = argparse.ArgumentParser(description='Create lipid soup system')
 
 # define arguments, box default taken from past sim
-parser.add_argument('--lipids', type=int, default=256, help='Number of lipids')
+parser.add_argument('--lipids', type=int, default=4000, help='Number of lipids')
 parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
 parser.add_argument("--apl", type=float, default=0.879, help="apl in nm^2")
 
@@ -23,7 +23,7 @@ r_ref = 0.711 #nm
 e_ref = Boltzmann*298.15 #K
 q = 8.861242189860825 
 
-box_x = box_y = (n_lipids*apl)**(1/2)/r_ref
+box_x = box_y = (n_lipids/2*apl)**(1/2)/r_ref
 
 box_z = 12/r_ref
 

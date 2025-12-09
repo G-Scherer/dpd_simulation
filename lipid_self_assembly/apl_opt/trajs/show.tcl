@@ -1,5 +1,5 @@
 # Load trajectories
-mol new trajectories_128_high_T.lammpstrj type lammpstrj waitfor all
+mol new bilayer_12.lammpstrj type lammpstrj waitfor all
 
 mol delrep 0 top
 

@@ -470,20 +470,75 @@ as the bead types used in the representation.
 of POPC lipids and water moleculed acting as a solvent. Each water bead is a P4 bead and 
 contains four classical water molecles. 
 
-The POPC lipids consist of a choline head group (Q0), a phosphate group (Qa) and two 
-glycerol groups (Na) connecting the polar part to two tails. These are made up of a oleoyl (three C1 and one C3)
-and a palmitoyl group (four C1) and are highly apolar. The resulting molecule 
-is shown in \cref{popc_lammps}.  
+The POPC lipids consist of a choline head group (Q0, 1), a phosphate group (Qa, 2) and two 
+glycerol groups (Na, 3/4) connecting the polar part to two tails. These are made up of a oleoyl (C1, 5/6/8; C3, 7)
+and a palmitoyl group (C1, 9/10/11/12) and are highly apolar. Each bead is assigned an ID ranging from
+one to twelve to precicely reference one bead. The resulting molecule consiting of 
+the five unique bead types and twelve total beads
+is shown in \cref{popc_lammps}. The relative position of the beads is based on MARTINI and extraced from the 
+\path{POPC-em.gro} file which contains the positions of each bead in one molecule. The beads are connected by eleven bonds and eight angles, with 
+two unique bond types and three angle types. The explicit bonds and angles are described in \cref{tab:bond_angle_connections} and 
+the corresponding equilibrium parameters for each type are investigated in \cref{params}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=10cm]{figures/theory/popc_cg.png}
+\includegraphics[width=10cm]{figures/theory/popc_cg_id.png}
 \caption{Coarse-grained POPC molecule representation in LAMMPS. The Q0 choline head group is red, 
 the Qa phosphate group is blue,
 the connecting Na glycerol groups is violet and the apolar tails are made up of the
-black C1 beads and the silver C3 bead.}
+black C1 beads and the silver C3 bead. The assigned ID is shwon abvove each bead.}
 \label{popc_lammps}
 \end{figure}
+
+\begin{table}[t]
+    \centering
+    
+    \begin{minipage}{0.48\textwidth}
+        \caption*{(a)}
+        \centering
+        \begin{tabular}{|cc|c|}
+            \hline
+            Bead 1 & Bead 2 & Bond type \\
+            \hline
+            (Q0, 1) & (Q0, 2) & 1\\
+            (Q0, 2) & (Na, 3) & 1\\
+            (Na, 3) & (Na, 4) & 2\\
+            (Na, 3) & (C1, 5) & 1\\
+            (C1, 5) & (C3, 6) & 1\\
+            (C1, 6) & (C1, 7) & 1\\
+            (C1, 7) & (C1, 8) & 1\\
+            (Na, 4) & (C1, 9) & 1\\
+            (C1, 9) & (C1, 10) & 1\\
+            (C1, 10) & (C1, 11) & 1\\
+            (C1, 11) & (C1, 12) & 1\\
+            \hline
+        \end{tabular}
+    \end{minipage}%
+    \hfill 
+    \begin{minipage}{0.48\textwidth}
+        \caption*{(b)}
+        \centering
+        \begin{tabular}{|ccc|c|}
+            \hline
+            Bead 1 & Bead 2 & Bead 3 & Angle type \\
+            \hline
+            (Q0, 2) & (Na, 3) & (Na, 4) & 2\\
+            (Q0, 2) & (Na, 3) & (C1, 5) & 1\\
+            (Na, 3) & (C1, 5) & (C3, 6) & 1\\
+            (C1, 5) & (C3, 6) & (C1, 7) & 1\\
+            (C3, 6) & (C1, 7) & (C1, 8) & 2\\
+            (Na, 4) & (C1, 9) & (C1, 10) & 1\\
+            (C1, 9) & (C1, 10) & (C1, 11) & 1\\
+            (C1, 10) & (C1, 11) & (C1, 12) & 1\\
+            \hline
+        \end{tabular}
+    \end{minipage}
+    \caption{(a) Information about which bead pairs are connected by bonds and the bond type governging the
+    interaction. Each bead is referenced by the MARTINI bead type and an ID to differenciate between 
+    different beads of the same type. (b) Inforamtion about which beads are triplets are connected by 
+    angles and the angle types.}
+    \label{tab:bond_angle_connections}
+\end{table}
 
 \cref{intermol} defined the interaction between beads inside a molecule. POPC only utilizes two 
 of the four interaction types, namely bond and angle. For the bond interaction the potential is a 
@@ -563,9 +618,10 @@ file. For the bond interaction this reads
 
 \begin{alignat*}{2}
     r^0_1 &= 0.47 \si{\nano\m},\quad  && k^b_1 = 1250 \si{\kilo\J\per\mol\per\nano\m\squared} \\
-    r^0_2 &= 0.37 \si{\nano\m},\quad && k^b_2 = 1250 \si{\kilo\J\per\mol\per\nano\m\squared}\, .
+    r^0_2 &= 0.37 \si{\nano\m},\quad && k^b_2 = 1250 \si{\kilo\J\per\mol\per\nano\m\squared}\, ,
 \end{alignat*}
 
+meaning there are two different types of bonds in the molecule.
 While the bond length can simply be divided by the reference length from 
 \cref{dpd_units}, the spring constant has to be handled with more care. As described in \cref{topology} 
 the MARTINI definition still has a factor $1/2$ in front of 
@@ -584,7 +640,8 @@ resulting in the following dimensionless values
 \hat{r}^0_2 &= 0.520.\quad && \hat{K}^b_2 = 127.5\, .
 \end{alignat*}
 
-This calculation for the angle parameters only differs in the units of the equilibrium parameters
+The calculation for the angle parameters only differs in the units of the equilibrium parameters and 
+the existence of an additional angle type resulting in three unique angles.
 
 \begin{alignat*}{2}
 \theta^0_1 &= 180^\circ,\quad && k^a_1 = 25 \si{\kilo\J\per\mol}\\
@@ -749,21 +806,132 @@ The employed database
 is the MARTINI model. The calculated values can be substituted into \cref{final_form_dpd} and 
 result in the values shown in \cref{dpd_params}.
 
-\section{Area per lipid}
+\section{System configuration}
 
-Before starting the self-assembly simulation there are many system configurations that need to be 
-investigated, starting with the area per lipid. For this a starting configuration is employed where 
-every lipid is placed on a grid adjusted to the box size and rotated to start the simulation with a 
-bilayer configuration. The relative positions of the beads in the POPC molecule are extracted from 
-the \path{POPC-em.gro} and are then divided by the length scale from \cref{dpd_units}. The water beads 
-are placed randomly outside of the lipid phase and the water per lipid ratio is chosen as 22:1. This
-value was adopted from sucessful experiments. As mentioned earlier the work Groot and Warren (\textbf{cite here})
-dictate a number density of $\rho=3$. The area per lipid $A_{\text{lipid}}$ fixes the box dimension of the xy plane 
-according to
+The self-assembly process is highly dependant on different parameters. In this work three parameters 
+determine the system configuration, namely the area per lipid, the water to lipid ratio and the 
+number density of the beads. The latter was already mentioned when calcualtion the length scale in 
+\cref{dpd_units} and follows Groot and Warren (\textbf{cite here}) with a value of $\rho = 3$. 
+For the other two values the optimal method would be to test and quantify many combinations of values for the 
+area per lipid and the water to lipid ratio resultung in a grid where the maximum is the best choice 
+for both parameters. This procedure is tedious and requires many simulations that would be 
+redundant afterwards. To prevent this an initial but not completely arbitrary value
+for the water to lipid ratio is chosen. Using the fixed number density and 
+the inital water to lipid ration, numerous simulations are run of a pre-assembled bilayer
+with a varying area per lipid.
+
+To start the simulation LAMMPS requires a file to setup the system containing the topology of the 
+system, specifically a header with the number of beads, number of bond, angle, dihedral and improper types (\cref{intermol}),
+box dimensions and bead masses. Additionally, a section defining the position of every bead, which beads 
+are connected by which type of intramolecular interaction and the equilibrium parameters (\cref{params}).
+This file is generated using a python script which has the number of lipids $N_l$, the area per lipid $A_l$, 
+the water to lipid ratio $R_{w/l}$ and the number density $\rho$ as input. 
+
+The information for the header can be extracted from the \path{martini_v_2.0_POPC.itp} file and
+were mentioned in \cref{topology} and \cref{params}. They can be expressed in dependance on the input 
+parameters and are shown in \cref{tab:header}.
+
+\begin{table}[t]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+         & Total in system & Unique types \\
+         \hline
+        Beads & $(12 + R_{w/l})\cdot N_l$ & $6$ \\
+        Bonds & $11 \cdot N_l$ & $2$ \\
+        Angles & $8 \cdot N_l$ & $3$ \\
+        Dihedrals & $0$ & $0$ \\
+        Impropers & $0$ & $0$ \\
+        \hline
+    \end{tabular}
+    \caption{Header information for the LAMMPS input file. $N_l$ is the number of lipids and $R_{w/l}$ the
+    water to lipid ratio in the system. The information are extracted from the MARTINI topology file.
+    Crucially, even though the POPC molecule only consists of five bead types the water molecule is the sixth
+    type but does not contribute any additional bonds, anlges, dihedrals or impropers.}
+    \label{tab:header}
+\end{table}
+
+The box dimenstions can be calulated as 
 
 \begin{align}
-    L_x = L_y = \sqrt{A_{\text{lipid}}\cdot N_{\text{lipid}}/2}
+    V &= \frac{12 N_l + N_w}{\rho}\\
+    L_x = L_y &= \sqrt{N_l/2 \cdot A_l} \\
+    L_z &= \frac{V}{L_x L_y}\, ,
 \end{align}
+
+and the masses of each bead is set to unity. 
+
+As mentioned, for this part the initial position is a pre-assembled bilayer which is achieved by 
+placing the lipids on two grids in the middle of the simulation box and rotating one leaflet by 180° to 
+get the apolar tails facing inwards. This will be implemented differently when investigating the 
+self-assembly. 
+
+The last section containing the bonds and angles and their equilibrium parameters were discussed in 
+\cref{topology} and \cref{params} and can be generated accordingly.
+
+With this setup 15 simulations were carried out with 128 POPC lipids, an inital water to lipid ratio of $R_{w/l} = 22$ 
+with varying area per lipids ranging from $A_l = 0.5 \si{\nano\m\squared}$ to $A_l = 1.2 \si{\nano\m\squared}$
+at a temperature of $\hat{T} = 0.8$. The significance of the temperature will be investigated in the 
+following sections. Each simulation run was $3 \cdot 10^5$ steps with a timestep $\Delta \hat{t} = 0.01$ 
+following Wang and Hernandez (\textbf{cite here}). To quantify the quality of the bilayer the 
+nematic order parameter introduced in \cref{nematic} was utilized and calculted for the last $2 \cdot 10^5$
+steps to discard effects from the grid start. The results are shwon in 
+a box plot in \cref{fig:apl_opt}. 
+
+The highest median order parameter was achieved around the value 
+of $A_l = 0.85 \si{\nano\m\squared}$. Following simulation of 128 lipids were carried out at that value but 
+for 256 lipids better results were achieved with a slightly higher value of $A_l = 0.88 \si{\nano\m\squared}$.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=14cm]{figures/methods/apl_opt.png}
+    \caption{Nematic order parameter of pre-assembled bilayers with 128 lipids at $\hat{T} = 0.8$
+    and a water to lipid ratio of $R_{w/l} = 22$ at different are per lipids. The chosen values for 
+    following simulations is marked with dashed lines.}
+    \label{fig:apl_opt}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    
+    % --- Unterabbildung A (32% Breite) ---
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/methods/apl_05.png}
+        \caption{Bilayer state after equilibration at (a) $A_l = 0.5\si{\nano\m\squared}$}
+        \label{fig:dpd_a}
+    \end{subfigure}
+    % Abstand zwischen A und B
+    \hfill 
+    % --- Unterabbildung B (32% Breite) ---
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/methods/apl_085.png}
+        \caption{Bilayer state after equilibration at (a) $A_l = 0.85\si{\nano\m\squared}$}
+        \label{fig:lj_b}
+    \end{subfigure}
+    % Abstand zwischen B und C
+    \hfill 
+    % --- Unterabbildung C (32% Breite) ---
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/methods/apl_12.png}
+        \caption{Bilayer state after equilibration at (a) $A_l = 1.2\si{\nano\m\squared}$}
+        \label{fig:dpd_c}
+    \end{subfigure}
+    \caption{Bilayer state at different area per lipids after equilibration. The head beads are shown
+    in red and orange, whereas the tails are cyan.}
+    \label{fig:dreifach_vergleich}
+    
+\end{figure}
+
+
+
+
+
+
+
+
 
 
 
