@@ -9,6 +9,9 @@
     bibliography=totoc % Literaturverzeichnis ins Inhaltsverzeichnis
 ]{scrreprt}
 
+\usepackage{xcolor}
+\definecolor{darkblue}{RGB}{22,126,193}
+
 % --- 2. SPRACHE & ENCODING ---
 \usepackage[utf8]{inputenc} % Nur nötig bei älteren LaTeX Versionen, schadet aber nicht
 \usepackage[T1]{fontenc}    % Wichtig für korrekte Umlaute/Sonderzeichen im Output
@@ -36,15 +39,20 @@
 
 % Definition für NORMALE Seiten (scrheadings):
 \ohead{\pagemark}   % Seitenzahl oben außen
-\ihead{\headmark}   % Kapitelbezeichnung oben innen
-
+\ihead{\headmark}   % Kapitelbezeichnung oben innen 
 % Definition für KAPITEL-STARTSEITEN (plain):
 % Der Befehl in den eckigen Klammern [] gilt nur für den "Plain"-Stil (Kapitelanfang)
 \cfoot[\pagemark]{} % Seitenzahl unten mittig bei neuen Kapiteln
 
+
+
 \automark[section]{chapter} 
-\setkomafont{pageheadfoot}{\normalfont\sffamily}
-\setkomafont{pagination}{\normalfont\sffamily}
+% \setkomafont{pageheadfoot}{\normalfont\sffamily}
+% \setkomafont{pagination}{\normalfont\sffamily}
+
+\setkomafont{pageheadfoot}{\normalfont\sffamily\color{darkblue}}
+\setkomafont{pagination}{\normalfont\sffamily\color{darkblue}}
+\setkomafont{headsepline}{\color{darkblue}}
 
 % --- RÄNDER (Dein Wunsch: 2.5cm) ---
 % Wir nutzen geometry, um die Ränder festzusetzen
@@ -83,9 +91,14 @@
 \newcommand{\code}[1]{\texttt{#1}}
 
 % --- 8. REFERENZEN & LINKS (Muss am Ende stehen) ---
-\usepackage[hidelinks]{hyperref} % Klickbare Links, aber keine roten Kästen
+%\usepackage[hidelinks]{hyperref} % Klickbare Links, aber keine roten Kästen
 
-% Cleveref: Automatische Namen (Fig. 1, Eq. 2)
+\usepackage[
+    colorlinks=true,
+    linkcolor=darkblue,
+    citecolor=darkblue,
+    urlcolor=darkblue
+    ]{hyperref}
 % "noabbrev" entfernt, da du unten Abkürzungen definiert hast.
 \usepackage[nameinlink]{cleveref} 
 
@@ -107,6 +120,32 @@
 % Captions verschönern (Fett und etwas kleiner)
 \setkomafont{captionlabel}{\bfseries}
 \setkomafont{caption}{\small}
+
+\usepackage{caption}
+\captionsetup{
+  belowskip=2pt,
+  font=small,
+  labelfont=bf
+}
+
+% Linie NUR unter der Caption
+\DeclareCaptionFormat{bluerule}{%
+  #1#2#3\par
+  \vspace{2pt}%
+  {\color{darkblue}\rule{\linewidth}{0.4pt}}%
+}
+
+% Hauptfiguren: Mit blauer Linie
+\captionsetup[figure]{format=bluerule}
+\captionsetup[table]{format=bluerule}
+
+% Subfigures: OHNE blaue Linie, nur Label (a), (b)
+\captionsetup[subfigure]{format=default}
+\captionsetup[subtable]{format=default}
+
+\setlength{\textfloatsep}{10pt}      % Abstand Float-Text (oben/unten)
+\setlength{\floatsep}{10pt}          % Abstand zwischen zwei Floats
+\setlength{\intextsep}{10pt}         % Abstand bei [h] Floats
 
 \begin{document}
 \onehalfspacing
@@ -289,13 +328,12 @@ has theoretically unlimited range but is usually truncated to accelerate simulat
   \begin{subfigure}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{figures/theory/dpd_force_potential.png} 
-    \caption{}
-    \label{fig:sub1}
+    \subcaption{}
   \end{subfigure}\hfill
   \begin{subfigure}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{figures/theory/lj_force_potential.png} 
-    \caption{}
+    \subcaption{}
     \label{fig:sub2}
   \end{subfigure}
   \caption{(a) The DPD force and its corresponding potential. (b) The Lennard-Jones 
@@ -524,7 +562,6 @@ black C1 beads and the silver C3 bead. The assigned ID is shwon abvove each bead
     \centering
     
     \begin{minipage}{0.48\textwidth}
-        \caption*{(a)}
         \centering
         \begin{tabular}{|cc|c|}
             \hline
@@ -543,10 +580,10 @@ black C1 beads and the silver C3 bead. The assigned ID is shwon abvove each bead
             (C1, 11) & (C1, 12) & 1\\
             \hline
         \end{tabular}
+        \subcaption{}
     \end{minipage}%
     \hfill 
     \begin{minipage}{0.48\textwidth}
-        \caption*{(b)}
         \centering
         \begin{tabular}{|ccc|c|}
             \hline
@@ -562,6 +599,7 @@ black C1 beads and the silver C3 bead. The assigned ID is shwon abvove each bead
             (C1, 10) & (C1, 11) & (C1, 12) & 1\\
             \hline
         \end{tabular}
+        \subcaption{}
     \end{minipage}
     \caption{(a) Information about which bead pairs are connected by bonds and the bond type governging the
     interaction. Each bead is referenced by the MARTINI bead type and an ID to differenciate between 
@@ -904,9 +942,56 @@ steps to discard effects from the grid starting position.
 The next step is to investigate the water to lipid ratio and ensure that the initial guess 
 was justified. The procedure is the same as before, but instead of varying the area per lipid, 
 the water to lipid ratio is varied with the area per lipid set to the best value of the previous 
-simulations. 
+simulations. With the optimal pairing the self-assembly process can be started.
 
-With the optimal pairing the self-assembly process can be started.
+\section{Self-assembly of 128 lipids} \label{sec:128_assembly}
+
+To simulate self-assembly the lipid and water molecules are placed randomly inside the simulation 
+box. To achieve this the atom section is adjusted to display a lipid soup instead of the bilayer 
+in the former section. Each lipid and water molecule is assigned a random center of of mass. 
+To achieve random allignment of the lipids a rotation around every axis is added to each individual
+lipid. After these displacements the periodic boundary condition is applied to keep every bead inside 
+the designated box volume. 
+
+Equilibrating the system is achieved by running it a an elevated temperature of $\hat{T} = 2$
+where no self-assembly takes place. To prevent an extreme change in tempreature
+at the beginning of the simulation, every atom is assigned a random velocity 
+governed by the temperature and a gaussian distribution. To induce bilayer formation the temperature is gradually lowered to $\hat{T} = 1$ by changing 
+the temperature argument of the DPD force. Doing so does not allow to control the speed of 
+the temperature change as the DPD thermostat adjusts the random force strength parameter $\hat{sigma}$
+instantly. To emulate a ramping of the temperature a loop is employed which changes the 
+DPD temperature every few steps. 
+After reaching the desired tempreature value of $\hat{T} = 1$, a longer production run
+is carried out to stabilize the structure.
+To investigate the effect of lower temperatures the procedure is repeated but with a production
+temperature of $\hat{T} = 0.8$.
+
+To quantify the bilayer structure the nemaitc order parameter and the contact number from \cref{nematic}
+are utilized to measure both the allignment and the packing density of the bilayer. Furthermore, a
+comparison to the MARTINI model is added, by calculating the same metrics for a pre-assembled and 
+equilibrated MARTINI bilayer at $T = 300\si{K}$. As a test of the DPD limit 
+a pre-assembled bilayer at both temperatures is also compared. 
+
+\section{Self-assembly of 256 lipids}
+
+To test the effect of the amount of lipids, a system containing double the amount of lipids at 256
+is utilized. The setup is similar to \cref{sec:128_assembly} but since the area per lipid and 
+the water to lipid ratio were optimized for 128 lipids the paramers for 256 lipids are finetuned 
+for this system. 
+
+The simulation procedure starts at $\hat{T} = 2$ for the same reasons as before with an 
+identical velocity initialisation. This time better results were achieved with a longer 
+equilibration run to prevent unwanted clumping of the lipid tails. Then the cooling 
+process runs until the system reaches $\hat{T} = 1$.
+For the chosen are per lipid and water to lipid ratio the resulting $z$-axis was shorter than 
+the $x$ and $y$-axis. This results in a bilayer formation in a non-quadratic plane where the 
+area per lipid smaller than the optimized value. To achive the a quadratic bilayer the box is 
+gradually deformed to reshape the area while retining the same box volume.   
+After the deformation process the production
+pahse begins. The time of simulation is increased for this system due to the increased size.
+
+The investigation of the bilayer quality is idential to \cref{sec:128_assembly} with the same 
+MARTINI bilayer but DPD bilayers at the same system size. 
 
 
 
