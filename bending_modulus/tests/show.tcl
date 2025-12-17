@@ -1,5 +1,5 @@
 # Load trajectories
-mol new bilayer.lammpstrj type lammpstrj waitfor all
+mol new bilayer_acf.lammpstrj type lammpstrj waitfor all
 
 mol delrep 0 top
 
