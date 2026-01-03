@@ -147,8 +147,19 @@
 \setlength{\floatsep}{10pt}          % Abstand zwischen zwei Floats
 \setlength{\intextsep}{10pt}         % Abstand bei [h] Floats
 
+\usepackage{etoolbox}
+
+% Patch für equation und align
+\BeforeBeginEnvironment{equation}{\begin{singlespace}}
+\AfterEndEnvironment{equation}{\end{singlespace}}
+\BeforeBeginEnvironment{align}{\begin{singlespace}}
+\AfterEndEnvironment{align}{\end{singlespace}}
+\BeforeBeginEnvironment{alignat}{\begin{singlespace}}
+\AfterEndEnvironment{alignat}{\end{singlespace}}
+
 \begin{document}
 \onehalfspacing
+
 
 \begin{titlepage}
 \pagestyle{plain}
@@ -234,7 +245,7 @@ versatile molecular dynamics simulation package.
 
 \chapter{Theory}
 
-\section{Coarse-grained simulations}
+\section{Coarse-Grained Simulations}
 Coarse-grained simulations aim to simulate the behavior of large systems by reducing the 
 available degrees of freedom in the system, while still conserving the main thermodynamic and
 structural properties. The main method employed is a mapping mechanism that
@@ -254,7 +265,7 @@ This work employs the mapping method of the MARTINI method, the details of which
 \cref{martini}. 
 
 
-\section{The MARTINI model}\label{martini}
+\section{The MARTINI Model}\label{martini}
 
 The MARTINI model is one of the most widely used methods for coarse-grained simulations.
 Central to this approach is the representation of different groups of atoms, 
@@ -273,7 +284,7 @@ force for non-bonded beads, in this work another force field, explained in \cref
 is employed while adapting the same 
 mapping mechanism of the MARTINI method. 
 
-\section{Dissipative particle dynamics} \label{dpd}
+\section{Dissipative Particle Dynamics} \label{dpd}
 The DPD force field was first presented by Groot and Warren in their work on simulating systems on 
 the mesoscopic scale (\textbf{cite here}) and is widely used in simulations of fluids.
 The equations of motion for a particle $i$ influenced by all other particles $j$
@@ -508,12 +519,80 @@ be quantified to ensure that the lipids form a connected structure. To quantify 
 contact number is defined as the average number of neighboring lipids. A lipid is 
 classified as a neighbor if the distance is smaller than a specified cutoff distance $r_c$. 
 
+\section{Membrane Fluctuations}
+
+In continoiums theory the energy of an almost flat membrane can be expressed as 
+
+\begin{align}
+    E = \frac{1}{2} \int \mathrm d\mathbf x \left[ 
+        \kappa (\Delta h(\mathbf x))^2 + \Sigma (\nabla h(\mathbf x))^2 \right]\, , \label{eq:mem_energy}
+\end{align}
+
+where $h(\mathbf x)$ is the two dimensional height function of the membrane. To further investigate
+the membrane 
+the height function can be expressed 
+as the inverse of the fourier transform 
+
+\begin{align}
+    h(\mathbf x) = \frac{1}{(2\pi)} \int \mathrm d\mathbf k 
+    \tilde{h}(\mathbf k) \exp(i\mathbf k \cdot \mathbf x)\, , 
+\end{align}
+
+whith the wave vector $\mathbf k$. It is instructive to introduce 
+the dirac delta distribution represented in fourier space 
+
+\begin{align}
+    (2\pi)^2 \delta(\mathbf k) = \int \mathrm d \mathbf x \exp(i\mathbf k \cdot \mathbf x)\, .
+\end{align}
+
+Crucially, the height function is purely real, meaning $h(\mathbf x) = h(\mathbf x)^*$ leading to 
+the relation in fourier space $h(\mathbf k)^* = h(-\mathbf k)$. Inserting the results into 
+\cref{eq:mem_energy} yields 
+
+\begin{align}
+    E = \frac{1}{2} \int \mathrm d \mathbf k 
+    |\tilde{h}(\mathbf k)|^2 \left[\kappa k^4 + \Sigma k^2 \right]\, .
+\end{align}
+
+The equipartition theorem connects the average of each mode squared $\langle |\tilde{h}
+(\mathbf k)|^2\rangle$ with the thermal energy of $k_{\mathrm B} T/2 $ leading to the 
+expression 
+
+\begin{align}
+    \langle |\tilde{h}(\mathbf k)|^2\rangle = \frac{k_{\mathrm B}T}{\kappa k^4 + \Sigma k^2}\, .
+\end{align}
+
+Instead of the continuous fourier transform a discrete fourier transform
+
+\begin{align}
+    h(\mathbf{x}) = \frac{1}{(2\pi)}\sum_\mathbf{k} \tilde{h}_\mathbf{k} \exp(i \mathbf k \cdot \mathbf x) 
+\end{align}
+
+is typically employed whith the discrete wave vectors $\mathbf k = 2\pi/L\cdot (n_x,n_y)$.
+Repeating the calculation for a membrane of the area $A = L^2$ leads to the integral 
+
+\begin{align}
+    \int_A \mathrm d\mathbf x \exp(i\mathbf x \cdot(\mathbf k + \mathbf {k'})) = 
+    L^2 \delta_{\mathbf k , -\mathbf{k'} }\, ,  
+\end{align}
+
+which differs from the continuous calculation only in a factor $L^2$ and substituting the 
+dirac delta function for a Kronecker delta. Dimensionality analysis further confirms this result 
+as the dimension of $[\delta(\mathbf k + \mathbf{k'})] = [L^2 \delta_{\mathbf k , -\mathbf{k'} }] = m^2$
+match. This leads to a slighty different result for a discrete fourier tansformation
+
+\begin{align}
+    \langle |\tilde{h}_\mathbf{k}|^2\rangle = \frac{k_{\mathrm B}T}{L^2(\kappa k^4 + \Sigma k^2)}\, .
+\end{align}
+
+
+
 
 
 
 \chapter{Methods}
 
-\section{Topology}\label{topology}
+\section{System Topology}\label{topology}
 
 The topology of the molecule is defined in the \path{martini_v_2.0_POPC.itp} file 
 obtained from the MARTINI website. It serves as the baseline for the 
@@ -621,7 +700,7 @@ black C1 beads and the silver C3 bead. The assigned ID is shwon abvove each bead
 \end{table}
 
 
-\section{DPD units}\label{dpd_units}
+\section{DPD Units}\label{dpd_units}
 
 Molecular dynamics simulations frequently employ reduced units,
 which utilizes reference parameters to render every physical quantity
@@ -668,7 +747,7 @@ be converted into DPD units by division. Furthermore, the combination of both sc
 utilized to make every physical quantity dimensionless. 
 
 
-\section{Determination of DPD bonded parameters}\label{sec:dpd_bond_params}
+\section{Determination of DPD Bonded Parameters}\label{sec:dpd_bond_params}
 
 As detailed in \cref{topology} the equilibrium parameters are sourced from the \path{martini_v_2.0_POPC.itp}
 file. They are given in SI units by the MARTINI database, specifically the unit for distances is 
@@ -754,7 +833,7 @@ Defining this charge means that a charge of one elemental charge in SI units cor
 to a dimensionless DPD charge of $\hat{q} = 8.86$. The additional factors of $4\pi\epsilon_0$ are also absorbed 
 in the charge definition as is standard in LAMMPS.
 
-\section{Determination of DPD force parameters}
+\section{Determination of DPD Force Parameters}
 
 The repulsion parameters $A_{ij}$ for the DPD force are the core of the force field,
 determining the maximum repulsion of the conservative force defined in \cref{dpd}.
@@ -873,7 +952,7 @@ is the MARTINI model. The calculated values can be substituted into \cref{final_
 The final values in \cref{tab:dpd_params} are used in this work for every 
 simulation.
 
-\section{System setup}\label{sec:sys_setup}
+\section{System Setup}\label{sec:sys_setup}
 
 Initiating a simulation in LAMMPS requires an input files containing a header that specifies
 the number of beads, number of bond/angle/dihedral/improper types (\cref{intermol}),
@@ -934,7 +1013,7 @@ and can be utilized directly.
 The remaining atom section sets the starting position of each bead 
 and is dependant on the target configuration and will be described in the following sections.
 
-\section{Input parameter optimization}
+\section{Input Parameter Optimization}\label{sec:input_opt}
 
 Before the self-assembly process can be investigated, the remaining input paramters must 
 be optimized. The optimal approach to determine the parameters would be to test every 
@@ -957,12 +1036,12 @@ the leaflets to act as the solvent in the system.
 
 With this setup 15 simulations were carried out with 128 POPC lipids, an inital water to lipid ratio of $R_{w/l} = 22$ 
 with varying area per lipids ranging from $A_l = 0.5 \si{\nano\m\squared}$ to $A_l = 1.2 \si{\nano\m\squared}$
-at a temperature of $\hat{T} = 0.8$. The significance of the temperature choice will be investigated in the 
-subsequent sections. Each simulation run was $3 \cdot 10^5$ steps with a timestep $\Delta \hat{t} = 0.01$ 
+at a temperature of $\hat{T} = 1.0$ and $\hat{T} = 0.8$. The significance of the temperature choice will be investigated in the 
+subsequent sections. Each simulation run was $3000 \tau$ DPD timesteps with a timestep $\Delta \hat{t} = 0.01$ 
 following Wang and Hernandez (\textbf{cite here}). To quantify the quality of the bilayer the 
-nematic order parameter introduced in \cref{nematic} was utilized and calculted for the last $2 \cdot 10^5$
-steps to discard effects from the grid starting position. To calculte the 
-order parameter the head-to-tail vector was utilized as orientation after normalization. 
+nematic order parameter introduced in \cref{nematic} was utilized and calculted for the last $2000 \tau$
+DPD timesteps to discard effects from the grid starting position. To calculte the 
+order parameter the normalized head-to-tail vector was utilized as orientation. 
 
 The next step involves investigating the water to lipid ratio and ensure that the initial guess 
 was justified. The procedure is the same as before, but instead of varying the area per lipid, 
@@ -1024,6 +1103,158 @@ phase begins. The time of simulation is increased for this system due to the inc
 
 The investigation of the bilayer quality is identical to \cref{sec:128_assembly} with the same 
 MARTINI bilayer but DPD bilayers at the same system size. 
+
+\chapter{Results}
+
+\section{Determined input parameters}
+
+Bilayer stability for different area per lipids at $\hat{T} = 1.0$ and 
+$\hat{T} = 0.8$ is analysed by measurement of the nematic order parameter and is shown  
+in \cref{fig:apl_T_1} and \cref{fig:apl_T_08}. 
+Both curves show a similar shape with lower order at high and low areas per lipid 
+and a maximum at intermediate values.
+To further illustrate this, snapshots of the bilayers with area per lipid in all 
+three regions are shown in \cref{fig:apl_mol_05}, \cref{fig:apl_mol_09} and \cref{fig:apl_mol_12}. 
+It is apparent that a lower area per lipid leads to a high repulsion between the lipids 
+destroying the bilayer structure. This is evident by the fact that there is no clean 
+phase seperation between the heads and the tails. For an elevated area per lipid there 
+is too much space which leads to the formation of hole defects in the bilayer. The 
+bilayer at an area per lipid of $0.9\si{\nano\m\squared}$ shows a clean phase seperation 
+between heads and tails and reaches a good alignment for a fluid lipid bilayer.
+
+The curve at $\hat{T} = 0.8$ reaches much
+higher values around the maximum, which can be attributed to the lower thermal excitation.  
+The maximum of both curves does not overlap perfectly but is close to $0.85 \si{\nano\m\squared}$
+in both cases. This value is also utilized for the self-assembly of the 128 lipid system,
+whereas the larger 256 system used an elevated value of $0.87\si{\nano\m\squared}$. 
+
+Comparing the chosen ares per lipid to the typical area per lipid of
+a POPC MARTINI bilayer of $0.65 \si{\nano\m\squared}$
+shows significant differences. To explain this difference an investigation of the potentials 
+of both methods is needed. The area per lipid is greatly influenced by the effective size of 
+the beads, which is the distance 
+between two beads at which the force is no longer repulsive. For MARTINI and the 
+Lennard-Jones potential this is the minimum which depends on the bead types used. 
+For the POPC and water system only consisting of regular beads the 
+$\sigma$ parameter which governs the effective size reads $\sigma = 0.47\si{\nano\m}$. 
+The minimum of the Lennard-Jones potential can be calculated as $1.12 \sigma \approx 0.53\si{\nano\m}$.
+As the DPD potential does not have a minimum the force needs to be investigated and 
+shows that the effective size of the beads is simply the cutoff at $0.711\si{\nano\m}$.
+This deviation in the underlinying forces and potential leads to the
+difference in area per lipid for a stable bilayer and is a key difference 
+between MARTINI and DPD.
+
+As described in \cref{sec:input_opt} the water to lipid ratio also has to be analyzed as it was
+set to 22 for the previous simulation runs. The reslts are for the bilayer stability 
+are shown in \cref{fig:wpl_T_1} and \cref{fig:wpl_T_08}. Again the curves display 
+a very similar shape with a rise of the order when elevating the water to lipid ratio 
+and becoming more flat at high ratios. This especially holds when taking the largly overlapping
+error bars.  
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/results/apl_opt_T_1.png} 
+    \subcaption{}
+    \label{fig:apl_T_1}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/results/apl_opt_T_08.png} 
+    \subcaption{}
+    \label{fig:apl_T_08}
+  \end{subfigure}
+  \medskip % Optionaler vertikaler Abstand
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/results/apl_opt_05.png} 
+    \subcaption{}
+    \label{fig:apl_mol_05}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/results/apl_opt_09.png} 
+    \subcaption{}
+    \label{fig:apl_mol_09}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/results/apl_opt_12.png} 
+    \subcaption{}
+    \label{fig:apl_mol_12}
+  \end{subfigure}
+  \caption{ Nematic order parameter vs area per lipid for a pre-assembled bilayer
+  at \textbf{(a)} $\hat{T} = 1.0$ and \textbf{(b)} $\hat{T} = 0.8$. The dashed lines indicate the chosen 
+  area per lipid for the self-assembly simulations. Equilibrated pre-assembled bilayer 
+  at $\hat{T} = 1.0$ with an area per lipid of \textbf{(c)} $0.5\si{\nano\m\squared}$, 
+  \textbf{(d)} $0.9\si{\nano\m\squared}$ and \textbf{(e)} $1.2\si{\nano\m\squared}$.}
+  \label{fig:apl_ana}
+\end{figure}
+
+The additional snapshots 
+in \cref{fig:wpl_mol_8}, \cref{fig:wpl_mol_22} and \cref{fig:wpl_mol_28} also show that for 
+low a water to lipid ratio the bilayer collapses, whereas both the bilayers at a ratio of 22 and 28
+hold the structure. Crucially, when fixing the area per lipid, a change in the water to lipid 
+ratio only scales the remaining $z$-axis to maintain the desired density of $\rho = 3$. 
+This also explaines the occoring unstabilities at low ratios. The water phase outside the 
+bilayer is responsible for shielding the neighboring bilayer from the periodic boundary condition.
+For low ratios the water phase is too, leading to interaction between the bilayer leaflets. 
+This also explains the flattening of the curve at higher ratios, because if the water phase is 
+big enough, further increasing it does not improve stability. To reduce useless simulation of
+solvent interaction a low value for the water to lipid ratio which still garantees sufficient 
+shielding is optimal. For the self-assembly of 128 lipids this leads to a ratio of 24 and for
+256 lipids a ratio of 22. 
+
+To conclude this section
+it is cruicial to note that a high nematic order parameter does 
+not necessitate a perfectly stable or defect-free bilayer. This means that 
+the nematic order parameter is not a perfect parameters to judge the structure of 
+a bilayer but is a valid way to get a fast estimate of the bilayer stability. 
+Additionally, every simulation run was only performed once and due to the statistical nature of
+the DPD force different seed would result in slightly different results. Hence, slight 
+differences between measured values should be interpreted with this in mind.
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/results/wpl_opt_T_1.png} 
+    \subcaption{}
+    \label{fig:wpl_T_1}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/results/wpl_opt_T_08.png} 
+    \subcaption{}
+    \label{fig:wpl_T_08}
+  \end{subfigure}
+  \medskip % Optionaler vertikaler Abstand
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/results/w_per_l_8.png} 
+    \subcaption{}
+    \label{fig:wpl_mol_8}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/results/w_per_l_22.png} 
+    \subcaption{}
+    \label{fig:wpl_mol_22}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/results/w_per_l_28.png} 
+    \subcaption{}
+    \label{fig:wpl_mol_28}
+  \end{subfigure}
+  \caption{ Nematic order parameter vs area per lipid for a pre-assembled bilayer
+  at \textbf{(a)} $\hat{T} = 1.0$ and \textbf{(b)} $\hat{T} = 0.8$. The dashed lines indicate the chosen 
+  area per lipid for the self-assembly simulations. Equilibrated pre-assembled bilayer 
+  at $\hat{T} = 1.0$ with an area per lipid of \textbf{(c)} $0.5\si{\nano\m\squared}$, 
+  \textbf{(d)} $0.9\si{\nano\m\squared}$ and \textbf{(e)} $1.2\si{\nano\m\squared}$.}
+  \label{fig:apl_ana}
+\end{figure}
 
 
 

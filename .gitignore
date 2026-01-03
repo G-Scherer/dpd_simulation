@@ -8,6 +8,10 @@ __pycache__/
 
 # trajectories
 *.lammpstrj
+*.lammpstrj.gz
+
+large-POPC-bilayer/
+popc-bilayer/
 
 # Distribution / packaging
 .Python
