@@ -609,7 +609,7 @@ glycerol groups (Na, 3/4) connecting the polar part to two tails. These are made
 and a palmitoyl group (C1, 9/10/11/12) and are highly apolar. Each bead is assigned an ID ranging from
 one to twelve to precicely reference one bead. The resulting molecule consiting of 
 the five unique bead types and twelve total beads
-is shown in \cref{popc_lammps}. The relative position of the beads is based on MARTINI and extraced from the 
+is shown in \cref{fig:popc_lammps}. The relative position of the beads is based on MARTINI and extraced from the 
 \path{POPC-em.gro} file which contains the positions of each bead in one molecule. The beads are connected by eleven bonds and eight angles, with 
 two unique bond types and three angle types. The specific bonds and angles are described in \cref{tab:bond_angle_connections}.
 There are no dihedral or improper interactions in the POPC molecule.
@@ -646,7 +646,7 @@ A detailed calculation of the equilibrium parameters is done in \cref{sec:dpd_bo
 the Qa phosphate group is blue,
 the connecting Na glycerol groups is violet and the apolar tails are made up of the
 black C1 beads and the silver C3 bead. The assigned ID is shwon abvove each bead.}
-\label{popc_lammps}
+\label{fig:popc_lammps}
 \end{figure}
 
 \begin{table}[t]
@@ -745,6 +745,17 @@ $T_{\text{ref}}=298.15 \si{\K}$ and using the thermal energy as the reference un
 Similarly to the length scale this energy scale allows conversion of every energy value to 
 be converted into DPD units by division. Furthermore, the combination of both scales can be 
 utilized to make every physical quantity dimensionless. 
+
+Since this work aims to investigate dynamic processes, namely the self-assembly it is cruicial
+to introduce a timescale. Usually this entails a simple composition of the 
+previously introduce scales but for DPD this has to be handled with more care. 
+Following the work of Wang and Hernandez \textbf{cite here} the timescale is calculated by 
+matching the diffusion constant of DPD water to the experimental value. This leads to 
+a timescale of 
+
+\begin{align}
+    \tau = 91.4\si{\pico\s}\, .
+\end{align}
 
 
 \section{Determination of DPD Bonded Parameters}\label{sec:dpd_bond_params}
@@ -1013,7 +1024,7 @@ and can be utilized directly.
 The remaining atom section sets the starting position of each bead 
 and is dependant on the target configuration and will be described in the following sections.
 
-\section{Input Parameter Optimization}\label{sec:input_opt}
+\section{Optimization of Input Parameters}\label{sec:input_opt}
 
 Before the self-assembly process can be investigated, the remaining input paramters must 
 be optimized. The optimal approach to determine the parameters would be to test every 
@@ -1048,7 +1059,7 @@ was justified. The procedure is the same as before, but instead of varying the a
 the water to lipid ratio is varied with the area per lipid set to the best value of the previous 
 simulations. With the optimal pairing the self-assembly process can be started.
 
-\section{Self-assembly of 128 lipids} \label{sec:128_assembly}
+\section{Spontanious Self-Assembly Protocol} \label{sec:128_assembly}
 
 To simulate self-assembly the lipid and water molecules are dispersed randomly throughout the simulation 
 box. To achieve this the atom section is adjusted to display a disordered configuration (lipid soup)
@@ -1081,8 +1092,14 @@ comparison to the MARTINI model is added, by calculating the same metrics for a 
 equilibrated MARTINI bilayer at $T = 300\si{K}$. To test whether the bilayer reached the 
 target structure  
 a pre-assembled DPD bilayer at both temperatures is also compared. 
+Additionally, to investigate the bead distribution a density profile along the
+bilayer axis is analyzed. The beads are split into three groups: head group (ID 1,2,3,4)
+, first tail group (ID 5,6,9,10)  
+and the terminal tail group (ID 7,8,11,12). The IDs can be compared to \cref{fig:popc_lammps}
+for visualization.
 
-\section{Self-assembly of 256 lipids}
+
+\section{Implementation of Larger Systems}
 
 To test the effect of the amount of lipids, a system containing double the amount of lipids at 256
 is utilized. The setup is similar to \cref{sec:128_assembly} but since the area per lipid and 
@@ -1184,11 +1201,14 @@ error bars.
     \subcaption{}
     \label{fig:apl_mol_12}
   \end{subfigure}
-  \caption{ Nematic order parameter vs area per lipid for a pre-assembled bilayer
+  \caption{ Nematic order parameter vs area per lipid for a pre-assembled bilayer with
+  a constant water to lipid ratio of $22$
   at \textbf{(a)} $\hat{T} = 1.0$ and \textbf{(b)} $\hat{T} = 0.8$. The dashed lines indicate the chosen 
   area per lipid for the self-assembly simulations. Equilibrated pre-assembled bilayer 
   at $\hat{T} = 1.0$ with an area per lipid of \textbf{(c)} $0.5\si{\nano\m\squared}$, 
-  \textbf{(d)} $0.9\si{\nano\m\squared}$ and \textbf{(e)} $1.2\si{\nano\m\squared}$.}
+  \textbf{(d)} $0.9\si{\nano\m\squared}$ and \textbf{(e)} $1.2\si{\nano\m\squared}$. 
+  \textbf{Red spheres} indicate polar head groups, while \textbf{cyan spheres} indicate the 
+  apolar tails. Water beads are ommited for clarity.}
   \label{fig:apl_ana}
 \end{figure}
 
@@ -1248,13 +1268,160 @@ differences between measured values should be interpreted with this in mind.
     \subcaption{}
     \label{fig:wpl_mol_28}
   \end{subfigure}
-  \caption{ Nematic order parameter vs area per lipid for a pre-assembled bilayer
+  \caption{ Nematic order parameter vs water to lipid ratio for a pre-assembled bilayer with a 
+  constant area per lipid of $0.85\si{\nano\m\squared}$ 
   at \textbf{(a)} $\hat{T} = 1.0$ and \textbf{(b)} $\hat{T} = 0.8$. The dashed lines indicate the chosen 
-  area per lipid for the self-assembly simulations. Equilibrated pre-assembled bilayer 
-  at $\hat{T} = 1.0$ with an area per lipid of \textbf{(c)} $0.5\si{\nano\m\squared}$, 
-  \textbf{(d)} $0.9\si{\nano\m\squared}$ and \textbf{(e)} $1.2\si{\nano\m\squared}$.}
-  \label{fig:apl_ana}
+  water to lipid ratios for the self-assembly simulations. Equilibrated pre-assembled bilayer 
+  at $\hat{T} = 1.0$ with a water to lipid ratio of \textbf{(c)} $8$, 
+  \textbf{(d)} $22$ and \textbf{(e)} $28$. Color coding follows \cref{fig:apl_ana}.}
+  \label{fig:wpl_ana}
 \end{figure}
+
+\section{Observation of Bilayer Formation}
+
+The procedure in \cref{sec:128_assembly} lead to a bilayer formation process shown in \cref{fig:bilayer_form_128_T_1}.
+The system starts with a random distribution of POPC lipids and water which equilibrates at a 
+temperature $\hat{T} = 2.0$. There is no sign of assembly of general structure. During 
+the cooling phase the lipids start to build a connected structure but there is 
+no clean phase seperation between the heads and the tails. When reaching the target temperature
+of $\hat{T} = 1.0$ this changes and the bilayer formation is completed with clear seperation 
+between the polar heads and the aploar tails.
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/lipid_soup_128.png} 
+        \subcaption{}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/transition_128.png} 
+        \subcaption{}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/finished_bilayer_128.png} 
+        \subcaption{}
+  \end{subfigure}
+  \caption{The evolution of the randomly distributed lipid water system over time with \textbf{(a)}
+  equlibrated system at $\hat{T} = 2.0$, \textbf{(b)} at intermediate temperature during the 
+  cooling phase and \textbf{(c)} at the target temperature of $\hat{T} = 1.0$. The system was 
+  shifted to display the bilayer in the middle of the simulation box. Color coding follows \cref{fig:apl_ana}.}
+  \label{fig:bilayer_form_128_T_1}
+\end{figure}
+
+\begin{figure}[!t]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/nematic.png} 
+        \subcaption{}
+        \label{fig:128_T_1_nem}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/contact.png} 
+        \subcaption{}
+        \label{fig:128_T_1_con}
+    \end{subfigure}
+    \medskip
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/dpd_comp_128.png} 
+        \subcaption{}
+        \label{fig:128_dpd_comp_high_T}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/martini_comp.png} 
+        \subcaption{}
+        \label{fig:martini_comp}
+    \end{subfigure}
+    \caption{\textbf{(a)} Nematic order parameter vs simulation time. \textbf{(b)} Contact 
+    number vs simulation time. Both curves are split in the three stages of the 
+    self-assembly process. As baseline there is the mean value of both metrics for pre-assembled
+    MARTINI and DPD bilayers. Snapshots of the compared \textbf{(c)} DPD and \textbf{(d)} 
+    MARTINI bilayers.}
+    \label{fig:bilayer_128_nem_con}
+\end{figure}
+
+For a quantitative comparison there is a pre-assembled DPD and MARTINI bilayer.
+Especially the DPD bilayer serves as a baseline if the self-assembly reached the same 
+strcuture as the pre-assembled equilibrated bilayer. The chosen metric for 
+the analysis of self-assembly are the neamtic order parameter and the contact number, 
+measuring alignment and packing density. The results along snapshots of the 
+compared bilayers are shown in \cref{fig:bilayer_128_nem_con}.
+The evolution of the nematic order parameter in \cref{fig:128_T_1_nem} matches the observations from 
+\cref{fig:bilayer_form_128_T_1}, where the equlibration phase shows no sign of 
+assembly and the order is very low in the system. With the cooling phase the order gradually 
+rises and plateaus in the production phases. There are fluctuations in the production phase 
+but these can mainly be attributed to thermal fluctuations. 
+
+The contact number in \cref{fig:128_T_1_con}
+is very similar, apart from the fact that the contact number rises at the bginning meaning that 
+even though there is no alignment in the system the lipids start to from clumps even at elevated 
+temperatures. The cooling down process results in a rising contact number and the production 
+phase again results in a plateau, where fluctuations are again caused by thermal fluctuations.
+
+When compairing both values it is apparent that the self-assembly was successful as both 
+the nematic order parameter and the contact number reach the same values the pre-assembled 
+DPD bilayer. But the MARTINI bilayer shows significant deviations especially when 
+examining the order in the system. The MARTINI bilayer reaches a mean values of about 0.8 whereas
+the DPD bilayer has maximum values of only 0.6. This means that the possible alignment in MARTINI 
+is much higher than that in a DPD based model. Additionally the contact number also 
+reaches smaller values as the MARTINI bilayer, indicating that the packing density 
+also lacks in comparison. 
+
+For a more structure based analysis the density profile can be utilized. The results are 
+shown in \cref{fig:bilayer_128_density_T_1}.
+
+
+It is apparent that the densities of both bilayers do not match, with the DPD bilayer
+reaching bead densities of 3.5, whereas the MARTINI bilayer has values of 10. This occurs 
+due to the different densities. The DPD simulation was set up to maintain a bead density of 
+3 which is reflected in the resulting density profile. The MARTINI bilayer started with an 
+elevated density which was made possible in part due to the accessible higher area per lipid 
+of MARTINI bilayers. Looking at both density profiles there are very significant differences in 
+the structure of the bilayers. The MARTINI bilayer clearly seperates each bead group. The 
+peaks do not overlap there are regions of the bilayer where a specific group is not 
+located. This is perfectly illustrated by the fact that the curve for the heads is 
+constantly zero in the terminal tail regime. The same behavior can not be 
+observed for the DPD bilayer. There, especially the head and first tail groups overlap greatly.
+Furthermore, there are still some heads in the terminal tail regime. It is important to note 
+that this does not instantly mean that the heads penetrate the apolar phase, though this can 
+be observed in DPD simulations, another reason can be that the assembled bilayer is not perfectly 
+planar. Additionally, the bilayer thickness is greatly reduced in DPD.
+
+Both differences can also be observed in the snapshots \cref{fig:128_dpd_comp_high_T} 
+and \cref{fig:martini_comp}. Especially the bigger thickness of the MARTINI bilayer is 
+striking in these pictures. The reasons for the differences lies in the softness of the DPD 
+force which allows overlapping beads. This means that it is easier for heads to penetrate 
+the apolar phase or yields the opportunity for tails to overlap causing a thinner bilayer. 
+The MARTINI Lennard-Jones potential also employs a minimum which makes the structure much more 
+stable and planar.
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/density_profile.png} 
+        \subcaption{}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/martini_profile.png} 
+        \subcaption{}
+    \end{subfigure}
+    \caption{Density pofiles of \textbf{(a)} the self-assembled DPD bilayer and 
+    \textbf{(b)} the pre-assembled MARTINI bilayer. The beads are split into three groups 
+    with IDs \textbf{heads}: 1,2,3,4; \textbf{first tails}: 5,6,9,10; 
+    \textbf{terminal tails}: 7,8,11,12 definded in \cref{fig:popc_lammps}. The 
+    dashed line in both plots indicate the profile of the complete bilayer.}
+    \label{fig:bilayer_128_density_T_1}
+\end{figure}
+
 
 
 
