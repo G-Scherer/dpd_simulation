@@ -9,6 +9,7 @@ __pycache__/
 # trajectories
 *.lammpstrj
 *.lammpstrj.gz
+log.lammps
 
 large-POPC-bilayer/
 popc-bilayer/

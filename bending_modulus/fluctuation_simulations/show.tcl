@@ -1,13 +1,13 @@
 # Load trajectories
-mol new trajectories_128_high_T.lammpstrj type lammpstrj waitfor all
+mol new trajectories_256_high_T.lammpstrj type lammpstrj waitfor all
 
 mol delrep 0 top
 
 # White Background
 color Display Background white
-display projection Perspective
+display projection Orthographic
 axes location Off
-
+pbc box
 
 # Color and Shape
 mol representation VDW 0.1 30

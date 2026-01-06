@@ -29,6 +29,8 @@
 \usepackage{subcaption}     % Für Unter-Abbildungen (Bild a, Bild b)
 \usepackage{float}          % Für erzwungene Positionierung [H] (sparsam nutzen!)
 
+\renewcommand{\topfraction}{0.85}      % 85% statt 70%
+\renewcommand{\floatpagefraction}{0.6} 
 % Optional: Wenn du wirklich feste 2.5cm Ränder brauchst (sonst auslassen für besseren Look):
 % \usepackage[a4paper,margin=2.5cm]{geometry}
 
@@ -157,6 +159,34 @@
 \BeforeBeginEnvironment{alignat}{\begin{singlespace}}
 \AfterEndEnvironment{alignat}{\end{singlespace}}
 
+% Paket laden (BibLaTeX ist der moderne Standard)
+\usepackage[
+    backend=biber,     % Das Programm, das die Quellen sortiert
+    style=numeric,     % Stil: [1], [2]... (oder 'authoryear' für Miller 2024)
+    sorting=none       % Quellen werden in der Reihenfolge ihres Erscheinens nummeriert
+]{biblatex}
+
+\addbibresource{sources.bib}
+
+\DeclareFieldFormat{labelnumberwidth}{\textcolor{darkblue}{[#1]}}
+
+% Den Zitier-Stil so umdefinieren, dass die Klammern Teil des Links sind
+\DeclareFieldFormat{citehyperref}{%
+  \bibhyperref{\textcolor{darkblue}{[#1]}}}
+
+\DeclareFieldFormat{fieldhyperref}{%
+  \bibhyperref{\textcolor{darkblue}{#1}}}
+
+% Die normale Zitier-Anweisung anpassen (für numeric Styles)
+\makeatletter
+\DeclareCiteCommand{\cite}
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \printtext[citehyperref]{\usebibmacro{cite}}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+\makeatother
+
 \begin{document}
 \onehalfspacing
 
@@ -250,7 +280,7 @@ Coarse-grained simulations aim to simulate the behavior of large systems by redu
 available degrees of freedom in the system, while still conserving the main thermodynamic and
 structural properties. The main method employed is a mapping mechanism that
 simplifies groups of atoms into a single interaction vertex or bead. The amount of atoms 
-that are coarse-grained differ between different methods and the length scale of interest.
+that are coarse-grained differ between different methods and the length scale of interest \cite{CGwater_review}.
 
 This approach results in the ability to simulate much larger time scales. Typical all atom 
 approaches only utilize a timestep in the order of femtoseconds.
@@ -1099,7 +1129,7 @@ and the terminal tail group (ID 7,8,11,12). The IDs can be compared to \cref{fig
 for visualization.
 
 
-\section{Implementation of Larger Systems}
+\section{Implementation of Larger Systems}\label{sec:larger_systems}
 
 To test the effect of the amount of lipids, a system containing double the amount of lipids at 256
 is utilized. The setup is similar to \cref{sec:128_assembly} but since the area per lipid and 
@@ -1168,7 +1198,7 @@ a very similar shape with a rise of the order when elevating the water to lipid 
 and becoming more flat at high ratios. This especially holds when taking the largly overlapping
 error bars.  
 
-\begin{figure}[t]
+\begin{figure}[!t]
   \centering
   \begin{subfigure}{0.48\textwidth}
     \centering
@@ -1235,7 +1265,7 @@ Additionally, every simulation run was only performed once and due to the statis
 the DPD force different seed would result in slightly different results. Hence, slight 
 differences between measured values should be interpreted with this in mind.
 
-\begin{figure}[t]
+\begin{figure}[!t]
   \centering
   \begin{subfigure}{0.48\textwidth}
     \centering
@@ -1277,7 +1307,7 @@ differences between measured values should be interpreted with this in mind.
   \label{fig:wpl_ana}
 \end{figure}
 
-\section{Observation of Bilayer Formation}
+\section{Observation of Bilayer Formation}\label{sec:self_ass_128}
 
 The procedure in \cref{sec:128_assembly} lead to a bilayer formation process shown in \cref{fig:bilayer_form_128_T_1}.
 The system starts with a random distribution of POPC lipids and water which equilibrates at a 
@@ -1287,7 +1317,7 @@ no clean phase seperation between the heads and the tails. When reaching the tar
 of $\hat{T} = 1.0$ this changes and the bilayer formation is completed with clear seperation 
 between the polar heads and the aploar tails.
 
-\begin{figure}[t]
+\begin{figure}[!t]
     \centering
     \begin{subfigure}{0.32\textwidth}
         \centering
@@ -1303,6 +1333,7 @@ between the polar heads and the aploar tails.
         \centering
         \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/finished_bilayer_128.png} 
         \subcaption{}
+        \label{fig:128_high_T_selfbilayer}
   \end{subfigure}
   \caption{The evolution of the randomly distributed lipid water system over time with \textbf{(a)}
   equlibrated system at $\hat{T} = 2.0$, \textbf{(b)} at intermediate temperature during the 
@@ -1378,31 +1409,24 @@ For a more structure based analysis the density profile can be utilized. The res
 shown in \cref{fig:bilayer_128_density_T_1}.
 
 
-It is apparent that the densities of both bilayers do not match, with the DPD bilayer
-reaching bead densities of 3.5, whereas the MARTINI bilayer has values of 10. This occurs 
-due to the different densities. The DPD simulation was set up to maintain a bead density of 
-3 which is reflected in the resulting density profile. The MARTINI bilayer started with an 
-elevated density which was made possible in part due to the accessible higher area per lipid 
-of MARTINI bilayers. Looking at both density profiles there are very significant differences in 
+Looking at both density profiles there are very significant differences in 
 the structure of the bilayers. The MARTINI bilayer clearly seperates each bead group. The 
 peaks do not overlap there are regions of the bilayer where a specific group is not 
 located. This is perfectly illustrated by the fact that the curve for the heads is 
 constantly zero in the terminal tail regime. The same behavior can not be 
 observed for the DPD bilayer. There, especially the head and first tail groups overlap greatly.
-Furthermore, there are still some heads in the terminal tail regime. It is important to note 
-that this does not instantly mean that the heads penetrate the apolar phase, though this can 
-be observed in DPD simulations, another reason can be that the assembled bilayer is not perfectly 
-planar. Additionally, the bilayer thickness is greatly reduced in DPD.
+Furthermore, there are still some heads in the terminal tail regime. 
+The combined plot \cref{fig:128_high_T_combined_den} illustrates this well and 
+shows that every peak in DPD in wider and penetrates in the other regimes. 
+Especially the head beads still contribute to the density when there should be an 
+apolar phase. One explanation for this is that DPD simply allows the polar heads to pass
+through beads to get inside the bilayer which can also sometimes be seen in some  
+snapshots like \cref{fig:128_high_T_selfbilayer}. Additionally this can be 
+exhilarated by a membrane that is not perfectly planar like the martini bilayer in \cref{fig:martini_comp}.
+Another big differnece which can be read from \cref{fig:128_high_T_combined_den} and confirmed by 
+the comparison of the snapshots is the reduced thickness of the DPD bilayer. 
 
-Both differences can also be observed in the snapshots \cref{fig:128_dpd_comp_high_T} 
-and \cref{fig:martini_comp}. Especially the bigger thickness of the MARTINI bilayer is 
-striking in these pictures. The reasons for the differences lies in the softness of the DPD 
-force which allows overlapping beads. This means that it is easier for heads to penetrate 
-the apolar phase or yields the opportunity for tails to overlap causing a thinner bilayer. 
-The MARTINI Lennard-Jones potential also employs a minimum which makes the structure much more 
-stable and planar.
-
-\begin{figure}[t]
+\begin{figure}[!t]
     \centering
     \begin{subfigure}{0.48\textwidth}
         \centering
@@ -1414,14 +1438,173 @@ stable and planar.
         \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/martini_profile.png} 
         \subcaption{}
     \end{subfigure}
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/combined_profile.png}
+        \subcaption{}
+        \label{fig:128_high_T_combined_den}
+    \end{subfigure}
+    \medskip
     \caption{Density pofiles of \textbf{(a)} the self-assembled DPD bilayer and 
     \textbf{(b)} the pre-assembled MARTINI bilayer. The beads are split into three groups 
-    with IDs \textbf{heads}: 1,2,3,4; \textbf{first tails}: 5,6,9,10; 
-    \textbf{terminal tails}: 7,8,11,12 definded in \cref{fig:popc_lammps}. The 
-    dashed line in both plots indicate the profile of the complete bilayer.}
+    with IDs \textbf{red heads}: 1,2,3,4; \textbf{blue first tails}: 5,6,9,10 and 
+    \textbf{cyan terminal tails}: 7,8,11,12 definded in \cref{fig:popc_lammps}. The 
+    black line in both plots indicate the profile of the complete bilayer. In 
+    \textbf{(c)} both profiles are combined into one plot for better comparison. 
+    The dashed lines are the MARTINI profile while the solid line are DPD.}
     \label{fig:bilayer_128_density_T_1}
 \end{figure}
 
+Both differences can also be observed in the snapshots \cref{fig:128_dpd_comp_high_T} 
+and \cref{fig:martini_comp}. Especially the bigger thickness of the MARTINI bilayer is 
+striking in these pictures. The reasons for the differences lies in the softness of the DPD 
+force which allows overlapping beads. This means that it is easier for heads to penetrate 
+the apolar phase or yields the opportunity for tails to overlap causing a thinner bilayer. 
+To quantify the thickness the full width half maximum of the density profile of the full bilayer 
+is utilized. The result for DPD is $2.9\si{\nano\m}$ and for MARTINI $4.1\si{\nano\m}$ which
+is significant. 
+
+
+\begin{figure}[!t]
+  \centering
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/128/lipid_soup_128.png} 
+    \subcaption{}
+    \label{fig:128_low_T_lipidsoup}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/128/transition_128.png} 
+    \subcaption{}
+    \label{fig:128_low_T_trans}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/128/finished_bilayer_128.png} 
+    \subcaption{}
+    \label{fig:128_low_T_bilayer}
+  \end{subfigure}
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/128/nematic_128.png} 
+    \subcaption{}
+    \label{fig:128_low_T_nem}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/128/contact_128.png} 
+    \subcaption{}
+    \label{fig:128_low_T_con}
+  \end{subfigure}
+  \medskip % Optionaler vertikaler Abstand
+  \caption{Snapshots that visualize 
+  the evolution are \textbf{(a)} lipid soup at $\hat{T} = 2$, \textbf{(b)} transition 
+  at intermediate temperature and \textbf{(c)} the finished bilayer at $\hat{T} = 0.8$. The 
+  color coding is the same as in \cref{fig:apl_ana}
+  \textbf{(d)} Nematic order parameter vs simulation time. \textbf{(e)} Contact 
+  number vs simulaiton time. Both curves correspond to the bilayer produced at $\hat{T} = 0.8$ and 
+  are split into the three assembly steps. The same comparisons as in \cref{fig:bilayer_128_nem_con}
+  but with additional comparison to the lower temperature counterpart.}
+  \label{fig:128_low_T_all_info}
+\end{figure}
+
+
+Next is testing the bilayer formation at lower temperatures. The procedure is similar but 
+with a target temperature of $\hat{T} = 0.8$. The snapshots alongside the quantitative
+measurements are shown in \cref{fig:128_low_T_all_info}. The snapshots show a very similar 
+evolution to \cref{fig:bilayer_form_128_T_1} due to the identical production script. 
+There is a differnece however in the finished bilayer as it looks much more ordered and planar. 
+This can be confirmed by the nematic order parameter in \cref{fig:128_low_T_nem} which 
+reaches much higher values of 0.7 and greatly outperforms the bilayer at $\hat{T} = 1$ which
+is also marked in the plot. This is expected as lower temperatures mean that 
+there is less random movement making the assembled membrane much more stable. This 
+is also evident by the fact that the measured values are much less noisy. The contact number also 
+rises and even matches with the MARTINI bilayer. To further probe the structure, the 
+density profiles are again utilized and shown in \cref{fig:bilayer_128_density_T_08}. 
+Like for the higher temperature counterpart the profile shows worse phase sepereation 
+than the MARTINI bilayer but does improve. The head curve is very close to zero inside 
+the apolar phase, meaning that the lower temperature makes for a flatter bilayer and 
+allows fewer heads to penetrate the membrane. The bilayer thickness is 
+still reduced compared to MARTINI ($4.1\si{\nano\m}$) with a value of $2.7\si{\nano\m}$ 
+which is in agreeance with the higher temperature bilayer.
+
+\begin{figure}[!t]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/128/density_profile_128.png} 
+        \subcaption{}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/128/martini_den.png} 
+        \subcaption{}
+    \end{subfigure}
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/128/den_comp.png}
+        \subcaption{}
+    \end{subfigure}
+    \medskip
+    \caption{Density pofiles of \textbf{(a)} the self-assembled DPD bilayer at $\hat{T} = 0.8$ and 
+    \textbf{(b)} the pre-assembled MARTINI bilayer at $\hat{T} = 1.0$. 
+    The bead assignments and general display settings
+    follow \cref{fig:bilayer_128_density_T_1}.}
+    \label{fig:bilayer_128_density_T_08}
+\end{figure}
+
+
+\begin{figure}[!t]
+  \centering
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/lipid_soup_256.png} 
+    \subcaption{}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/transition_256.png} 
+    \subcaption{}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/finished_bilayer_256.png} 
+    \subcaption{}
+  \end{subfigure}
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/nematic.png} 
+    \subcaption{}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/contact.png} 
+    \subcaption{}
+  \end{subfigure}
+  \medskip % Optionaler vertikaler Abstand
+  \caption{\textbf{(a) - (c)} Snapshots of bilayer evolution, \textbf{(d)} nematic order parmater vs 
+  simulation time and \textbf{(e)} contact number vs simulation time for a bilayer 
+  at $\hat{T} = 1.0$ containing 256 lipids. Display setting similar to \cref{fig:128_low_T_all_info}.}
+  \label{fig:256_high_T_all_info}
+\end{figure}
+
+\section{Bilayer formation of larger systems}
+
+Before showing the results for the larger sytsem of 256 lipids it is important to emphasize 
+that the self-assembly process becomes much more difficult for larger systems. This 
+means that cylindrical structures, vesicles or even grid like formations begin to 
+form in favor of flat bilayers. This was also the motivation behind the finetuning of the area
+per lipid and the water to lipid ratio. Additionally, as \cref{sec:larger_systems} 
+mentioned this led to a protocol which rescaled box dimensions to allow for bilayer formation. 
+
+The analysis steps are the same as in \cref{sec:self_ass_128} and are shown in \cref{fig:256_high_T_all_info}.
+The formation process look very similar to the smaller bilayers with no strcutres as $\hat{T} = 2.0$,
+clumping during the cooling process and then stabilization at the target temperatreu of $\hat{T} = 1.0$.
+The order parameter reaches the same values as the smaller counterpart but in the contact number 
+at the beginning of the production phase, there is a strong dip. This can 
+attributed to the box rescaling that was discussed above where for a small time each lipid had 
+more space which means the distance between them will increase lowering the contact number. 
 
 
 
@@ -1459,4 +1642,10 @@ stable and planar.
 
 
 
+
+
+
+
+\cite{Wang2024}
+\printbibliography[title = {References}]
 \end{document}
