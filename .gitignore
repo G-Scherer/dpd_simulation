@@ -10,6 +10,9 @@ __pycache__/
 *.lammpstrj
 *.lammpstrj.gz
 log.lammps
+*.gro 
+*.xtc 
+*.tpr
 
 large-POPC-bilayer/
 popc-bilayer/

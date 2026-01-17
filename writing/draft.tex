@@ -276,28 +276,30 @@ versatile molecular dynamics simulation package.
 \chapter{Theory}
 
 \section{Coarse-Grained Simulations}
-Coarse-grained simulations aim to simulate the behavior of large systems by reducing the 
+Coarse-grained simulations \cite{CGwater_review} aim to simulate the behavior of large systems by reducing the 
 available degrees of freedom in the system, while still conserving the main thermodynamic and
 structural properties. The main method employed is a mapping mechanism that
 simplifies groups of atoms into a single interaction vertex or bead. The amount of atoms 
-that are coarse-grained differ between different methods and the length scale of interest \cite{CGwater_review}.
+that are coarse-grained differ between different methods and the length scale of interest.
 
-This approach results in the ability to simulate much larger time scales. Typical all atom 
-approaches only utilize a timestep in the order of femtoseconds.
+This approach results in the ability to simulate much larger time scales \cite{CGwater_review}. Typical all atom 
+approaches only utilize a timestep in the order of femtoseconds \cite{Atomic_timescales}.
 This can be enhanced greatly to values in the range of nanoseconds or even microseconds. 
 Furthermore, an improvement in computational efficiency comes with decreasing the degrees of freedom. 
 
 The core challenge of a coarse grained simulation is the parametrization of the method. Two main 
 methods exist: utilizing empirical data like the outcome of experiments
 or the results of more accurate all atom simulations to parametrize the coarse-grained interactions.
+Not every thermodynamic property can be replicated in coarse-grained system, thus 
+the method is chosen to reproduce the desired properties \cite{CGwater_review}.
 
-This work employs the mapping method of the MARTINI method, the details of which are explained in 
+This work employs the mapping method of the MARTINI method \cite{Martini}, the details of which are explained in 
 \cref{martini}. 
 
 
 \section{The MARTINI Model}\label{martini}
 
-The MARTINI model is one of the most widely used methods for coarse-grained simulations.
+The MARTINI model \cite{Martini} is one of the most widely used methods for coarse-grained simulations.
 Central to this approach is the representation of different groups of atoms, 
 MARTINI distinguishes between five basic bead 
 types: water (W), polar (P), non-polar (N), apolar (C), charged (Q).
@@ -316,7 +318,7 @@ mapping mechanism of the MARTINI method.
 
 \section{Dissipative Particle Dynamics} \label{dpd}
 The DPD force field was first presented by Groot and Warren in their work on simulating systems on 
-the mesoscopic scale (\textbf{cite here}) and is widely used in simulations of fluids.
+the mesoscopic scale \cite{DPD_groot_warren} and is widely used in simulations of fluids.
 The equations of motion for a particle $i$ influenced by all other particles $j$
 in a DPD force field is governed by
 
@@ -384,7 +386,7 @@ has theoretically unlimited range but is usually truncated to accelerate simulat
 \end{figure}
 
 The dissipative and random force can best be described by using two weight 
-functions $w^D$ and $w^R$. Using the work of Espanol and Warren (\textbf{cite here})
+functions $w^D$ and $w^R$. Using the work of Espanol and Warren \cite{Espanol_warren}
 one weight function can be arbitrarily chosen but in turn fixes the other one. 
 The usual choice for the weighting funciton yields
 
@@ -423,13 +425,13 @@ thermostat of the system allowing sampling of the canonical ensemble and elimina
 external thermostats during simulation.
 
 Notably a factor of $\Delta t^{-1/2}$ appears in the random force. This correction
-follows the argument of Groot and Warren (\textbf{cite here}) as this 
+follows the argument of Groot and Warren \cite{DPD_groot_warren} as this 
 corrects the time dependency of displacement to the known expression 
 $\left < x^2\right >\propto t$.
 
-To summarize to fully describe DPD interaction, the only parameters to determine are the 
+To fully describe DPD interaction, the only parameters to determine are the 
 repulsion parameters $A_{ij}$ and the drag coefficient $\gamma$ which in turn fixes the 
-random force parameter $\sigma$. This step will be further discussed in \cref{params}.
+random force parameter $\sigma$. This step will be further discussed in \cref{sec:dpd_parameters}.
 
 \section{Electrostatic Interaction}\label{coulomb}
 
@@ -439,7 +441,7 @@ or the repulsion have to be adapted correspondingly. Crucially a simple
 coulomb potential is an unfitting choice because it would destroy the soft property of the
 potential at $r=0$. To solve this 
 a exponentially smeared charge distribution resulting in a Slater potential is employed 
-. This is following the work of Wang and Hernandez (\textbf{cite here})
+. This is following the work of Wang and Hernandez \cite{Wang2024}
 who also introduce a factor $\beta$ which controls the strength of the
 smearing effect. The charge distribution then reads
 
@@ -458,7 +460,7 @@ Utilizing a conversion constant $C$ the coulomb interaction follows
 \section{Intramolecular Interactions}\label{intermol}
 
 Beyond the non-bonded interacitons defined in \cref{dpd} and \cref{coulomb}, intramolecular potentials
-between different number of participating beads ensure the structural integrity of the moldecules.
+between different number of participating beads ensure the structural integrity of the moldecules \cite{Martini}.
 Interaction between two beads are defined as bonds and determine the equilibrium distance
 between two beads,
 whereas angle potentials control the local geometry between three consecutive beads. 
@@ -476,9 +478,9 @@ The forces defined in \cref{dpd}, \cref{coulomb} and \cref{intermol} yield a sys
 ordinary differential equations for 
 the system that must be solved in molecular dynamics simulations. Therefore 
 numerical integrators are employed which rely on the discretization of time, partitoning it into 
-timesteps of the size $\Delta t$. The standard method for LAMMPS is the velocity verlet integrator which
+timesteps of the size $\Delta t$. The standard method for LAMMPS is the velocity verlet integrator \cite{Allen2017_verlet} which
 calculates the desired quantities of a bead at the new timestep $t+ \Delta t$ using the former timestep 
-$t$. It can be expressed as 
+$t$. The procedure repeated every timestep is
 
 \begin{alignat}{2}
     &1.\ \text{Predict half step velocity} \quad &&\mathbf{v}(t + \Delta t/2) = \mathbf{v}(t) + 
@@ -493,10 +495,9 @@ $t$. It can be expressed as
 
 This version of verlet differentiates itself from other methods by utilizing the velocity of the beads 
 at an intermediate timestep $t+\Delta t/2$ which is central for the DPD force as the dissipative force 
-depends on the velocity. The global error, meaning the error which is accumulated by many steps of
-this algorithm is $\mathcal{O}(\Delta t^2)$ making it a seccond order integrator. In addition to this 
-it is a symplectic and conserves energy for large timesteps well as it shows a oscillating behavior 
-around the starting energy. 
+depends on the velocity. This scheme \cite{Allen2017_verlet} is numerically stable 
+and conserves energy even for large timesteps. 
+
 
 \section{Periodic Boundary Condition}
 
@@ -512,7 +513,7 @@ around the starting energy.
 Computer simulation face the challenge of only being able to simulate finite systems. This 
 limitation leads to unphysical surface effects when particles reach the boundary of the system. 
 Numerous possibilites exist to mitigate this
-but the standard meachnism is to enforce a periodic boundary condition (PBC). Employing a 
+but the standard meachnism is to enforce a periodic boundary condition (PBC) \cite{LammpsBoundary}. Employing a 
 PBC means that a particle leaving the simulation box re-enters simultaneously enters
 the box from the opposing boundary. Furthermore 
 a particle near a boundary also interacts with the particles on the other side of the box, utilizing the nearest
@@ -524,7 +525,8 @@ visualized in \cref{fig:pbc}.
 \section{Assembly parameters}\label{nematic}
 
 The degree of order in a system is of high importance when simulating self-assembly processes as 
-it quantifies the macroscopic state of the system. The nematic order parameter measures 
+it quantifies the macroscopic state of the system. The nematic order parameter 
+\cite{Ramasubramani2020_freud}, \cite{FreudNematicDoc} measures 
 how much particles align. The parameter is derived from the traceless second-order
 tensor $\mathbf{Q}$, defined as 
 
@@ -551,7 +553,7 @@ classified as a neighbor if the distance is smaller than a specified cutoff dist
 
 \section{Membrane Fluctuations}
 
-In continoiums theory the energy of an almost flat membrane can be expressed as 
+In continoiums theory the energy of an almost flat membrane \cite{Cooke_bending_mod} can be expressed as 
 
 \begin{align}
     E = \frac{1}{2} \int \mathrm d\mathbf x \left[ 
@@ -559,7 +561,7 @@ In continoiums theory the energy of an almost flat membrane can be expressed as
 \end{align}
 
 where $h(\mathbf x)$ is the two dimensional height function of the membrane. To further investigate
-the membrane 
+the membrane \cite{Schwarz2024}
 the height function can be expressed 
 as the inverse of the fourier transform 
 
@@ -855,9 +857,9 @@ this factor $\beta$ and its inverse $\lambda$, utilized in the LAMMPS implementa
 of the potential were determined to be
 
     
-\begin{align*}
-    \beta = 0.844, \quad \lambda = 1/\beta = 1.185\, .
-\end{align*}
+\begin{align}
+    \beta = 0.844 = 1/\lambda = 1/1.185\, .
+\end{align}
     
 The introduction of a length and energy scale also has an effect on the charge scaling. To adjust 
 the charge, the potential energy of two point charges in SI units is equated
@@ -865,7 +867,7 @@ with the corresponding energy in DPD units
 yielding 
 
 \begin{align}
-    &E \stackrel{!}{=} \hat{E} e_{\text{ref}} \implies \frac{q^2}{4\pi \epsilon_0 r}  = 
+    &\frac{q^2}{4\pi \epsilon_0 r}  = 
     \frac{\hat{q}^2}{\hat{r}} e_{\text{ref}}\\
     &\hat{q} = \frac{q}{\sqrt{4\pi \epsilon_0 r_{\text{ref}}e_{\text{ref}}}} = 8.86\, .
 \end{align}
@@ -874,7 +876,7 @@ Defining this charge means that a charge of one elemental charge in SI units cor
 to a dimensionless DPD charge of $\hat{q} = 8.86$. The additional factors of $4\pi\epsilon_0$ are also absorbed 
 in the charge definition as is standard in LAMMPS.
 
-\section{Determination of DPD Force Parameters}
+\section{Determination of DPD Force Parameters}\label{sec:dpd_parameters}
 
 The repulsion parameters $A_{ij}$ for the DPD force are the core of the force field,
 determining the maximum repulsion of the conservative force defined in \cref{dpd}.
@@ -884,9 +886,9 @@ found at $\hat{T} =1$ the optimal value for the random force parameter was $\hat
 Employing the connection between both parameters given by the fluctuation dissipation thoerem and 
 setting $k_{text{b}}T$ to unity yields
  
-\begin{align*}
-    \hat{\sigma}^2 = 2\hat{\gamma} \implies \hat{\gamma} = 4.5\, .
-\end{align*}
+\begin{align}
+    \hat{\gamma} = 4.5\, .
+\end{align}
 
 The drag parameter $\hat{\gamma}$ is a fix parameter in the DPD 
 force field implementation in the LAMMPS package. Changing the target temperature of the DPD force 
@@ -899,9 +901,9 @@ The baseline is the repulsion parameter between two water beads W-W, called $A_{
 This is done by matching the inverse compressibility $\kappa^{-1}$ from experimental data 
 to the corresponding value of $A_{ww}$. The discovered value is 
 
-\begin{align*}
+\begin{align}
     A_{ww} = 102.067\, .
-\end{align*}
+\end{align}
 
 In MARTINI model the effective Lennard-Jones radius
 $\sigma_{ww}$ parameter of W-W interaction is used for every other same bead, meaning 
@@ -975,9 +977,9 @@ calculated using the measured equilibrium volume fraction $\phi$
 and plotted against the parameter $\Delta A_{AB}$. The slope of the resulting linear fit 
 yields the fitting parameter 
 
-\begin{align*}
+\begin{align}
     \lambda_\chi = 0.28\, .
-\end{align*}
+\end{align}
 
 Wang and Hernandez (\textbf{cite here}) employed a formula which uses a baseline interaction matrix
 $\epsilon_{AB}$ to calculate the size dependant Flory-Hugigns parameter.
@@ -1561,16 +1563,19 @@ which is in agreeance with the higher temperature bilayer.
     \centering
     \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/lipid_soup_256.png} 
     \subcaption{}
+    \label{fig:256_mol_lipidsoup}
   \end{subfigure}\hfill
   \begin{subfigure}{0.32\textwidth}
     \centering
     \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/transition_256.png} 
     \subcaption{}
+    \label{fig:256_mol_transition}
   \end{subfigure}\hfill
   \begin{subfigure}{0.32\textwidth}
     \centering
     \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/finished_bilayer_256.png} 
     \subcaption{}
+    \label{fig:256_mol_bilayer}
   \end{subfigure}
   \begin{subfigure}{0.48\textwidth}
     \centering
@@ -1605,7 +1610,44 @@ The order parameter reaches the same values as the smaller counterpart but in th
 at the beginning of the production phase, there is a strong dip. This can 
 attributed to the box rescaling that was discussed above where for a small time each lipid had 
 more space which means the distance between them will increase lowering the contact number. 
+There is still a significant discrepancy to the MARTINI system. The quality of the bilayer
+can be observed in \cref{fig:256_mol_lipidsoup}, \cref{fig:256_mol_transition} and 
+\cref{fig:256_mol_bilayer} matches the evolution of the samller systems with a 
+lipid soup clumping together while cooling down the system and resulting in a bilayer.
 
+\begin{figure}[!t]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/density_profile.png} 
+        \subcaption{}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/128/martini_den.png} 
+        \subcaption{}
+    \end{subfigure}
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/comp_den.png}
+        \subcaption{}
+    \end{subfigure}
+    \medskip
+    \caption{Density pofiles of \textbf{(a)} the self-assembled DPD bilayer at $\hat{T} = 0.8$ and 
+    \textbf{(b)} the pre-assembled MARTINI bilayer at $\hat{T} = 1.0$. 
+    The bead assignments and general display settings
+    follow \cref{fig:bilayer_128_density_T_1}.}
+    \label{fig:bilayer_256_den_profiles}
+\end{figure}
+
+Further insight is granted by analyzing the density profiles in \cref{fig:bilayer_256_den_profiles}.
+The profile shows the typical structure of the lipid bilayer but with even more 
+washed or phases. Especially the first tail group still has a very high density in the 
+terminal tail phase. There are again heads penetrating the apolar barrier and 
+the bilayer is not perfectly planar. With a bilayer thickness of about $2.9\si{\nano\m}$
+and thus comparable to the smaller bilayer. In total the evolution process and the 
+quantitative metrics are very similar to the 128 lipid system. This indicates that the 
+finite size effect is small and larger systems only complicate the self-assembly process.
 
 
 
