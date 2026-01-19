@@ -159,25 +159,22 @@
 \BeforeBeginEnvironment{alignat}{\begin{singlespace}}
 \AfterEndEnvironment{alignat}{\end{singlespace}}
 
-% Paket laden (BibLaTeX ist der moderne Standard)
 \usepackage[
-    backend=biber,     % Das Programm, das die Quellen sortiert
-    style=numeric,     % Stil: [1], [2]... (oder 'authoryear' für Miller 2024)
-    sorting=none       % Quellen werden in der Reihenfolge ihres Erscheinens nummeriert
+    backend=biber,
+    style=numeric, % 'comp' fasst [1, 2, 3] zu [1-3] zusammen
+    sorting=none
 ]{biblatex}
 
 \addbibresource{sources.bib}
 
+% 1. Farbe im Literaturverzeichnis (ganz hinten)
 \DeclareFieldFormat{labelnumberwidth}{\textcolor{darkblue}{[#1]}}
 
-% Den Zitier-Stil so umdefinieren, dass die Klammern Teil des Links sind
+% 2. Format für das Zitat im Text definieren
 \DeclareFieldFormat{citehyperref}{%
   \bibhyperref{\textcolor{darkblue}{[#1]}}}
 
-\DeclareFieldFormat{fieldhyperref}{%
-  \bibhyperref{\textcolor{darkblue}{#1}}}
-
-% Die normale Zitier-Anweisung anpassen (für numeric Styles)
+% 3. Den eigentlichen \cite-Befehl anweisen, dieses Format zu nutzen
 \makeatletter
 \DeclareCiteCommand{\cite}
   {\usebibmacro{prenote}}
@@ -186,6 +183,8 @@
   {\multicitedelim}
   {\usebibmacro{postnote}}
 \makeatother
+
+\usepackage[autostyle=true]{csquotes}
 
 \begin{document}
 \onehalfspacing
@@ -553,14 +552,33 @@ classified as a neighbor if the distance is smaller than a specified cutoff dist
 
 \section{Membrane Fluctuations}
 
-In continoiums theory the energy of an almost flat membrane \cite{Cooke_bending_mod} can be expressed as 
+The general energy of a membrane \cite{Markus_tethers} is defined as an integral over the 
+membrane area with two moduli $\kappa$, the bending modulus and $\bar{\kappa}$,
+the saddle splay modulus 
+
+\begin{align}
+    E = \int \mathrm d A \left[ \frac{1}{2}\kappa 
+    (K - C_0)^2 + \bar{\kappa}K_G \right]\, , \label{eq:helfrich_energy}
+\end{align}
+
+with the curvature $K$, gaussian curvature $K_G$ and the intrinsic curvature $C_0$.
+Utilizing a height function $h(x,y)$ (Monge parametrization) the curvature \cite{Markus_tethers}
+of an almost flat membrane is 
+
+\begin{align}
+    K = \nabla \cdot \left( \frac{\nabla h}{\sqrt{1 + (\nabla h)^2}}\right)
+    \approx \Delta h \, .
+\end{align}
+
+This results in an energy expression \cite{Cooke_bending_mod}, where the 
+lateral tension $\Sigma$ is added 
 
 \begin{align}
     E = \frac{1}{2} \int \mathrm d\mathbf x \left[ 
-        \kappa (\Delta h(\mathbf x))^2 + \Sigma (\nabla h(\mathbf x))^2 \right]\, , \label{eq:mem_energy}
+        \kappa (\Delta h(\mathbf x))^2 + \Sigma (\nabla h(\mathbf x))^2 \right]\, . \label{eq:mem_energy}
 \end{align}
 
-where $h(\mathbf x)$ is the two dimensional height function of the membrane. To further investigate
+To further investigate
 the membrane \cite{Schwarz2024}
 the height function can be expressed 
 as the inverse of the fourier transform 
@@ -617,6 +635,32 @@ match. This leads to a slighty different result for a discrete fourier tansforma
     \langle |\tilde{h}_\mathbf{k}|^2\rangle = \frac{k_{\mathrm B}T}{L^2(\kappa k^4 + \Sigma k^2)}\, .
 \end{align}
 
+\section{Stretching tethers}
+
+The energy expression in \cref{eq:helfrich_energy} can be applied to a 
+cylindrical membrane \cite{Markus_tethers} with the curvature $K = 1/R$ where $R$ is the cylinder 
+radius. The contribution from the saddle splay modulus and the gaussian curvature 
+only contributes a constant and will be ommited. After integration 
+this yields the curvature energy of a cylinder alinged in the $z$ direction with
+length $L_z$
+
+\begin{align}
+    E = \frac{\kappa}{2} \left(\frac{1}{R} \right)^2 2\pi RL_z 
+    = \frac{\pi \kappa L_z}{R}\, .
+\end{align}
+
+This expression means that in order to maintain the cylindrical shape a 
+force along the $z$ direction is necessary, which encodes the 
+bending modulus $\kappa$ and can be calculated as the 
+derivative of the energy with respect to $L_z$ with the fixed area condition
+$A = 2\pi R L_z$
+
+\begin{align}
+    F_z = \frac{\partial E}{\partial L_z} = \frac{2 \pi \kappa}{R}\, .
+\end{align}
+
+
+
 
 
 
@@ -627,7 +671,7 @@ match. This leads to a slighty different result for a discrete fourier tansforma
 \section{System Topology}\label{topology}
 
 The topology of the molecule is defined in the \path{martini_v_2.0_POPC.itp} file 
-obtained from the MARTINI website. It serves as the baseline for the 
+obtained from the MARTINI website \cite{Martini,MartiniLipidome}. It serves as the baseline for the 
 parametrization in the following sections. It lists the employed potential for the 
 bonds and angles, including their equilibrium parameters in MARTINI units, as well
 as the bead types used in the representation.
@@ -639,16 +683,16 @@ contains four classical water molecules.
 The POPC lipids consist of a choline head group (Q0, 1), a phosphate group (Qa, 2) and two 
 glycerol groups (Na, 3/4) connecting the polar part to two tails. These are made up of a oleoyl (C1, 5/6/8; C3, 7)
 and a palmitoyl group (C1, 9/10/11/12) and are highly apolar. Each bead is assigned an ID ranging from
-one to twelve to precicely reference one bead. The resulting molecule consiting of 
+one to twelve to precicely reference specific bead. The resulting molecule consiting of 
 the five unique bead types and twelve total beads
 is shown in \cref{fig:popc_lammps}. The relative position of the beads is based on MARTINI and extraced from the 
-\path{POPC-em.gro} file which contains the positions of each bead in one molecule. The beads are connected by eleven bonds and eight angles, with 
+\path{POPC-em.gro} file \cite{Martini,MartiniLipidome} which contains the positions of each bead in one molecule. The beads are connected by eleven bonds and eight angles, with 
 two unique bond types and three angle types. The specific bonds and angles are described in \cref{tab:bond_angle_connections}.
 There are no dihedral or improper interactions in the POPC molecule.
 
 \cref{intermol} defined the interaction between beads inside a molecule. For the bond interaction the potential is a 
 simple harmonic potential, which is implemented 
-in LAMMPS as
+in LAMMPS \cite{LammpsBond} as
 
 \begin{equation}
     E_{ij} = \hat{K}^b(r_{ij} - r^0_{ij})^2. \label{harmonic}\, ,
@@ -656,7 +700,7 @@ in LAMMPS as
 
 where $K_b$ encodes the bond stiffness, containing the usual 
 factor of $1/2$ and $r^0_{ij}$ is the equilibrium
-bond distance of the bead pair. This works similarly for the angle using the potential
+bond distance of the bead pair. This works similarly for the angle \cite{LammpsAngle} using the potential
 
 \begin{equation}
     E_{ijk} = \hat{K}^a[\cos(\theta_{ijk} - \cos(\theta^0_{ijk}))]^2\, , \label{cosine/squared}
@@ -739,12 +783,12 @@ which utilizes reference parameters to render every physical quantity
 dimensionless. For MARTINI these are usually the parameters of the Lennard-Jones potential
 $\epsilon$ and $\sigma$ as in \cref{LJ_pot}. However, since DPD has a different 
 force and thus potential one needs different reference parameters. For the 
-length parameter, the work of Wang and Hernandez (\textbf{cite here}) is followed. They
+length parameter, the work of Wang and Hernandez \cite{Wang2024} is followed. They
 defined the length scale based on the volume required to contain three CG water beads. This 
 choice is not arbitrary as it 
 follows the early
 work of Groot and Warren 
-(\textbf{cite here}) who established the number density $\rho=3$ DPD beads per unit of volume $V = r_{\text{ref}}^3$. 
+\cite{DPD_groot_warren} who established the number density $\rho=3$ DPD beads per unit of volume $V = r_{\text{ref}}^3$. 
 In MARTINI every water bead contains $N_w = 4$ molecules and
 the volume of one water molecule $V_w$ can be calculated by
 using the molar mass $M=18.02 \si{\g\per\mol}$,
@@ -781,7 +825,7 @@ utilized to make every physical quantity dimensionless.
 Since this work aims to investigate dynamic processes, namely the self-assembly it is cruicial
 to introduce a timescale. Usually this entails a simple composition of the 
 previously introduce scales but for DPD this has to be handled with more care. 
-Following the work of Wang and Hernandez \textbf{cite here} the timescale is calculated by 
+Following the work of Wang and Hernandez \cite{Wang2024} the timescale is calculated by 
 matching the diffusion constant of DPD water to the experimental value. This leads to 
 a timescale of 
 
@@ -793,7 +837,7 @@ a timescale of
 \section{Determination of DPD Bonded Parameters}\label{sec:dpd_bond_params}
 
 As detailed in \cref{topology} the equilibrium parameters are sourced from the \path{martini_v_2.0_POPC.itp}
-file. They are given in SI units by the MARTINI database, specifically the unit for distances is 
+file. They are given in SI units by the MARTINI \cite{Martini,MartiniLipidome} database, specifically the unit for distances is 
 $[r] = \si{\nano\m}$ and for the bond stiffness $[k^b] = \si{\kilo\J\per\mol\per\nano\m\squared}$.
 Similarly the angle stiffness is given in $[k^a] = \si{\kilo\J\per\mol}$ as the angles 
 themselves are already dimensionless. 
@@ -852,18 +896,20 @@ are summarized in \cref{tab:bond_angle_params}. The shown values are used in the
 
 As introduced in \cref{coulomb} the coulombic interaction for the beads is modeled using a slater potential, 
 as detailed in \cref{charge_density} and \cref{coulomb_force}. It employs a strength parameter and
-based on earlier works from Gonzales-Melchor et al (\textbf{cite here})
-this factor $\beta$ and its inverse $\lambda$, utilized in the LAMMPS implementation 
-of the potential were determined to be
+based on earlier works from Gonzales-Melchor et al \cite{Gonzales-Melchor_beta} who 
+calculated the value for a coarse-graining degree of $N = 3$ as $\beta_3 = 0.929$.
+Wang and Hernandez \cite{Wang2024} converted this factor $\beta$ 
+to the applied coarse-graining of $N = 4$ by assuming linearity. 
+The LAMMPS implementation \cite{LammpsSlater} utilizes the inverse value $\lambda = 1/\beta$ and the results are  
 
     
 \begin{align}
     \beta = 0.844 = 1/\lambda = 1/1.185\, .
 \end{align}
     
-The introduction of a length and energy scale also has an effect on the charge scaling. To adjust 
+The introduction of a length and energy scale also has an effect on the charge scaling . To adjust 
 the charge, the potential energy of two point charges in SI units is equated
-with the corresponding energy in DPD units 
+with the corresponding energy in DPD units \cite{Wang2024,Allen2017_verlet} 
 yielding 
 
 \begin{align}
@@ -881,7 +927,7 @@ in the charge definition as is standard in LAMMPS.
 The repulsion parameters $A_{ij}$ for the DPD force are the core of the force field,
 determining the maximum repulsion of the conservative force defined in \cref{dpd}.
 In addition to that the drag parameter $\gamma$ has to be determined.
-The latter was derived from the early work of Groot and Warren (\textbf{cite here}) who
+The latter was derived from the early work of Groot and Warren \cite{DPD_groot_warren} who
 found at $\hat{T} =1$ the optimal value for the random force parameter was $\hat{\sigma} = 3$.
 Employing the connection between both parameters given by the fluctuation dissipation thoerem and 
 setting $k_{text{b}}T$ to unity yields
@@ -891,10 +937,10 @@ setting $k_{text{b}}T$ to unity yields
 \end{align}
 
 The drag parameter $\hat{\gamma}$ is a fix parameter in the DPD 
-force field implementation in the LAMMPS package. Changing the target temperature of the DPD force 
+force field implementation in the LAMMPS package \cite{LammpsDPD}. Changing the target temperature of the DPD force 
 adjusts the random force parameter $\hat{\sigma}$ according to the fluctuation dissipation theorem.
 
-The repulsion parameters used in the simulation were derived by Wang and Hernandez (\textbf{cite here}).
+The repulsion parameters used in the simulation were derived by Wang and Hernandez \cite{Wang2024}.
 The values are shown in \cref{tab:dpd_params}. The derivation method is described below.
 
 The baseline is the repulsion parameter between two water beads W-W, called $A_{ww}$. 
@@ -981,7 +1027,7 @@ yields the fitting parameter
     \lambda_\chi = 0.28\, .
 \end{align}
 
-Wang and Hernandez (\textbf{cite here}) employed a formula which uses a baseline interaction matrix
+Wang and Hernandez \cite{Wang2024} employed a formula which uses a baseline interaction matrix
 $\epsilon_{AB}$ to calculate the size dependant Flory-Hugigns parameter.
 
 \begin{equation}
@@ -991,7 +1037,7 @@ $\epsilon_{AB}$ to calculate the size dependant Flory-Hugigns parameter.
 
 using $z$ as the effective number of nearest neighbors.
 The employed database 
-is the MARTINI model. The calculated values can be substituted into \cref{final_form_dpd}. 
+is the MARTINI model \cite{Martini}. The calculated values can be substituted into \cref{final_form_dpd}. 
 The final values in \cref{tab:dpd_params} are used in this work for every 
 simulation.
 
@@ -1068,6 +1114,27 @@ Holding the inital water to lipid ratio and the fixed number density
 numerous simulations are performed on a pre-assembled bilayer configuration consisting of 128 lipids,
 varying the area per lipid.
 
+\begin{figure}[!t]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/methods/bilayer_setup.png} 
+    \subcaption{}
+    \label{fig:128_bilayer_setup}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/methods/lipid_soup_setup.png} 
+    \subcaption{}
+    \label{fig:lipid_soup_methods}
+  \end{subfigure}
+  \caption{\textbf{(a)} System setup for a pre-assembled bilayer with 128 lipids.
+  \textbf{(b)} System setup for a lipid soup ready for self-assembly with 128 lipids.
+  \textbf{Red spheres} indicate polar head groups, while \textbf{cyan spheres} indicate the 
+  apolar tails. Water beads are ommited for clarity.}
+  \label{fig:system_setups}
+\end{figure}
+
 The pre-assembled bilayer is generated by configuring the atoms section 
 described in \cref{sec:sys_setup}.
 The \path{POPC-em.gro} file is used as a baseline for each molecule topology and each molecule 
@@ -1075,7 +1142,8 @@ is placed on one of two grids in the $xy$-planes, seperated by a fixed value.
 The lateral spacing of the grid points is 
 determined by the target area per lipid. To orient the tails inwards, one leaflet in rotated by 180° 
 degrees around the $x$-axis. To complete the atoms section water beads are placed outside of
-the leaflets to act as the solvent in the system.
+the leaflets to act as the solvent in the system. This setup for 128 lipids can 
+be seen in \cref{fig:128_bilayer_setup}.
 
 With this setup 15 simulations were carried out with 128 POPC lipids, an inital water to lipid ratio of $R_{w/l} = 22$ 
 with varying area per lipids ranging from $A_l = 0.5 \si{\nano\m\squared}$ to $A_l = 1.2 \si{\nano\m\squared}$
@@ -1099,7 +1167,8 @@ instead of the pre-assembled bilayer formation
 in the former section. Each lipid and water molecule is assigned a random center of mass. 
 To achieve random allignment of the lipids a rotation around every axis is added to each individual
 lipid. After these displacements the periodic boundary condition is applied to keep every bead inside 
-the designated box volume. 
+the designated box volume. The corresponding system setup for the self-assembly 
+can be seen in \cref{fig:lipid_soup_methods}.
 
 Equilibrating the system is achieved by running it a an elevated temperature of $\hat{T} = 2$
 where no self-assembly occurs. To prevent large tempreature temperature fluctuations
@@ -1688,6 +1757,6 @@ finite size effect is small and larger systems only complicate the self-assembly
 
 
 
-\cite{Wang2024}
+
 \printbibliography[title = {References}]
 \end{document}
