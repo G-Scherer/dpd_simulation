@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description='Create lipid soup system')
 parser.add_argument('--lipids', type=int, default=5000, help='Number of lipids')
 parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
 parser.add_argument("--apl", type=float, default=0.879, help="apl in nm^2")
-parser.add_argument("--inner_radius", type=float, default=12, help="inner radius in nm")
+parser.add_argument("--inner_radius", type=float, default=10, help="inner radius in nm")
 
 # parse arguments
 args = parser.parse_args()

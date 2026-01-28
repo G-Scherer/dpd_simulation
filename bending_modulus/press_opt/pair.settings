@@ -1,0 +1,24 @@
+pair_coeff 4 4 102.067126235101 4.5 # W - W 
+pair_coeff 4 1 130.61559292165586 4.5 # W - C1 
+pair_coeff 4 2 121.73384773028323 4.5 # W - C3 
+pair_coeff 4 3 108.4112299432243 4.5 # W - Na 
+pair_coeff 4 5 84.93804622316809 4.5 # W - Q0 
+pair_coeff 4 6 94.45420178535304 4.5 # W - Qa 
+pair_coeff 6 6 102.067126235101 4.5 yes # Qa - Qa 
+pair_coeff 6 1 130.61559292165586 4.5 # Qa - C1 
+pair_coeff 6 2 126.80913069678189 4.5 # Qa - C3 
+pair_coeff 6 3 108.4112299432243 4.5 # Qa - Na 
+pair_coeff 6 5 98.89507438103935 4.5 yes # Qa - Q0 
+pair_coeff 5 5 102.067126235101 4.5 yes # Q0 - Q0 
+pair_coeff 5 1 121.09943735947091 4.5 # Q0 - C1 
+pair_coeff 5 2 117.29297513459693 4.5 # Q0 - C3 
+pair_coeff 5 3 98.89507438103935 4.5 # Q0 - Na 
+pair_coeff 3 3 102.067126235101 4.5 # Na - Na 
+pair_coeff 3 1 115.38974402215993 4.5 # Na - C1 
+pair_coeff 3 2 115.38974402215993 4.5 # Na - C3 
+pair_coeff 2 2 102.067126235101 4.5 # C3 - C3 
+pair_coeff 2 1 102.067126235101 4.5 # C3 - C1 
+pair_coeff 1 1 102.067126235101 4.5 # C1 - C1   
+
+dielectric 78.3
+
