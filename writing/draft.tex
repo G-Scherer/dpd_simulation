@@ -931,7 +931,7 @@ In addition to that the drag parameter $\gamma$ has to be determined.
 The latter was derived from the early work of Groot and Warren \cite{DPD_groot_warren} who
 found at $\hat{T} =1$ the optimal value for the random force parameter was $\hat{\sigma} = 3$.
 Employing the connection between both parameters given by the fluctuation dissipation thoerem and 
-setting $k_{text{b}}T$ to unity yields
+setting $k_{\text{b}}T$ to unity yields
  
 \begin{align}
     \hat{\gamma} = 4.5\, .
@@ -993,11 +993,11 @@ From there the interaction of two arbitrary unlike beads ($A \neq B$) beads can 
 The parameter $\Delta A_{AB}$ can be expressed, using the Flory-Huggins parameter as 
 
 \begin{equation}
-    \chi_{AB} = \lambda_\chi \Delta A_{AB}\, ,
+    \chi_{AB} = \lambda_\chi \Delta A_{AB}\, 
 \end{equation}
 
-using a fitting parameter $\lambda_\chi$ that connects both models.
-Earlier works by Groot and Rabone (\textbf{cite here}) indicate that the Flory-Huggins 
+with an additional fitting parameter $\lambda_\chi$ that connects both models.
+Earlier works by Groot and Rabone \cite{GROOT_xi_scale} indicate that the Flory-Huggins 
 parameter $\chi_{AB}$ scales linear with the size of the beads which in this system is always $N_m = 4$ 
 molecules per bead, implying 
 
@@ -1065,7 +1065,7 @@ a square bilayer configuration, meaning
 \end{align}
 
 for a supposed bilayer in the $xy$-plane with dimensions $L_x$ and $L_y$. The number density 
-is a set parameter following the work of Groot and Warren (\textbf{cite here}) with $\rho=3$.
+is a set parameter following the work of Groot and Warren \cite{DPD_groot_warren} with $\rho=3$.
 The other two inputs, the area per lipid $A_l$ and water to lipid ratio $R_{w/l}$ 
 are examined in detail in the following
 sections.
@@ -1150,7 +1150,7 @@ With this setup 15 simulations were carried out with 128 POPC lipids, an inital 
 with varying area per lipids ranging from $A_l = 0.5 \si{\nano\m\squared}$ to $A_l = 1.2 \si{\nano\m\squared}$
 at a temperature of $\hat{T} = 1.0$ and $\hat{T} = 0.8$. The significance of the temperature choice will be investigated in the 
 subsequent sections. Each simulation run was $3000 \tau$ DPD timesteps with a timestep $\Delta \hat{t} = 0.01$ 
-following Wang and Hernandez (\textbf{cite here}). To quantify the quality of the bilayer the 
+following Wang and Hernandez \cite{Wang2024}. To quantify the quality of the bilayer the 
 nematic order parameter introduced in \cref{nematic} was utilized and calculted for the last $2000 \tau$
 DPD timesteps to discard effects from the grid starting position. To calculte the 
 order parameter the normalized head-to-tail vector was utilized as orientation. 
@@ -1168,7 +1168,7 @@ instead of the pre-assembled bilayer formation
 in the former section. Each lipid and water molecule is assigned a random center of mass. 
 To achieve random allignment of the lipids a rotation around every axis is added to each individual
 lipid. After these displacements the periodic boundary condition is applied to keep every bead inside 
-the designated box volume. The corresponding system setup for the self-assembly 
+the designated box volume. This procedure highlights an advantage of DPD. Usually when generating bead positions there is great care involved to stop beads from overlapping which would result in high energy starting configurations. Since DPD is soft there is no great penalty for overlapping particles making the starting position much less sensitive. The corresponding system setup for the self-assembly 
 can be seen in \cref{fig:lipid_soup_methods}.
 
 Equilibrating the system is achieved by running it a an elevated temperature of $\hat{T} = 2$
@@ -1177,7 +1177,7 @@ at the start of the simulation, every atom is assigned a random velocity
 governed by the temperature and a gaussian distribution. To induce bilayer formation the temperature is 
 gradually lowered to $\hat{T} = 1$ by changing 
 the temperature argument of the DPD force. Doing so does not allow to control the speed of 
-the temperature change as the DPD thermostat adjusts the random force strength parameter $\hat{sigma}$
+the temperature change as the DPD thermostat adjusts the random force strength parameter $\hat{\sigma}$
 instantaneously, via $\hat{\sigma} = \sqrt{2 \hat{\gamma}\hat{T}}$. To emulate a continous ramping of 
 the temperature 
 a loop is employed which changes the target 
@@ -1189,7 +1189,8 @@ the procedure is repeated using a production
 temperature of $\hat{T} = 0.8$.
 
 To quantify the bilayer structure the nemaitc order parameter and the contact number from \cref{nematic}
-are utilized to measure both the allignment and the packing density of the bilayer. Furthermore, a
+are utilized to measure both the allignment and the packing density of the bilayer.
+For the contact number the cutoff distance characterizing which lipids count as neighbors has to be chosen. The basis for this value is the area per lipid in the system which directly corresponds to a radius $r_c = \sqrt{A_l/\pi}$. Furthermore, a
 comparison to the MARTINI model is added, by calculating the same metrics for a pre-assembled and 
 equilibrated MARTINI bilayer at $T = 300\si{K}$. To test whether the bilayer reached the 
 target structure  
@@ -1227,47 +1228,46 @@ MARTINI bilayer but DPD bilayers at the same system size.
 
 \section{Determined input parameters}
 
-Bilayer stability for different area per lipids at $\hat{T} = 1.0$ and 
-$\hat{T} = 0.8$ is analysed by measurement of the nematic order parameter and is shown  
+Bilayer stability for different areas per lipid at $\hat{T} = 1.0$ and 
+$\hat{T} = 0.8$ was analyzed by measuring the nematic order parameter, as shown  
 in \cref{fig:apl_T_1} and \cref{fig:apl_T_08}. 
-Both curves show a similar shape with lower order at high and low areas per lipid 
-and a maximum at intermediate values.
-To further illustrate this, snapshots of the bilayers with area per lipid in all 
+Both curves exhibit a comparable shape, characterized by lower alignment at the extremes  
+and a maximum in the intermediate range.
+To further illustrate this, snapshots of the bilayers with areas per lipid representing all 
 three regions are shown in \cref{fig:apl_mol_05}, \cref{fig:apl_mol_09} and \cref{fig:apl_mol_12}. 
-It is apparent that a lower area per lipid leads to a high repulsion between the lipids 
-destroying the bilayer structure. This is evident by the fact that there is no clean 
-phase seperation between the heads and the tails. For an elevated area per lipid there 
+It is apparent that a lower area per lipid leads to a structure where the lipids lack sufficient space, resulting in instabilities. This is evident by the fact that there is no distinct 
+phase separation between the heads and the tails. For an elevated area per lipid there 
 is too much space which leads to the formation of hole defects in the bilayer. The 
-bilayer at an area per lipid of $0.9\si{\nano\m\squared}$ shows a clean phase seperation 
-between heads and tails and reaches a good alignment for a fluid lipid bilayer.
+bilayer at an area per lipid of $0.9\si{\nano\m\squared}$ shows distinct phase separation 
+between heads and tails and reaches a degree of alignment characteristic of a fluid lipid bilayer.
 
-The curve at $\hat{T} = 0.8$ reaches much
+The curve at $\hat{T} = 0.8$ attains much
 higher values around the maximum, which can be attributed to the lower thermal excitation.  
-The maximum of both curves does not overlap perfectly but is close to $0.85 \si{\nano\m\squared}$
+The maxima of both curves do not coincide perfectly but occur near $0.85 \si{\nano\m\squared}$
 in both cases. This value is also utilized for the self-assembly of the 128 lipid system,
-whereas the larger 256 system used an elevated value of $0.87\si{\nano\m\squared}$. 
+whereas the larger 256 lipid system uses an elevated value of $0.87\si{\nano\m\squared}$. 
 
-Comparing the chosen ares per lipid to the typical area per lipid of
+Comparing the chosen area per lipid to the typical area per lipid of
 a POPC MARTINI bilayer of $0.65 \si{\nano\m\squared}$
-shows significant differences. To explain this difference an investigation of the potentials 
-of both methods is needed. The area per lipid is greatly influenced by the effective size of 
+shows significant differences. To clarify this distinction, an examination of the respective potentials 
+of both methods is necessary. The area per lipid is strongly influenced by the effective size of 
 the beads, which is the distance 
-between two beads at which the force is no longer repulsive. For MARTINI and the 
-Lennard-Jones potential this is the minimum which depends on the bead types used. 
+between two beads where the repulsive force ends. For MARTINI and the 
+Lennard-Jones potential this corresponds to the potential minimum, which depends on the bead types used. 
 For the POPC and water system only consisting of regular beads the 
 $\sigma$ parameter which governs the effective size reads $\sigma = 0.47\si{\nano\m}$. 
 The minimum of the Lennard-Jones potential can be calculated as $1.12 \sigma \approx 0.53\si{\nano\m}$.
-As the DPD potential does not have a minimum the force needs to be investigated and 
+Since the DPD potential lacks a minimum, investigating the force  
 shows that the effective size of the beads is simply the cutoff at $0.711\si{\nano\m}$.
-This deviation in the underlinying forces and potential leads to the
-difference in area per lipid for a stable bilayer and is a key difference 
-between MARTINI and DPD.
+This discrepancy in the underlying forces and potential leads to the observed
+difference in area per lipid for a stable bilayer and is a fundamental difference 
+between MARTINI and this implementation of DPD.
 
-As described in \cref{sec:input_opt} the water to lipid ratio also has to be analyzed as it was
-set to 22 for the previous simulation runs. The reslts are for the bilayer stability 
-are shown in \cref{fig:wpl_T_1} and \cref{fig:wpl_T_08}. Again the curves display 
-a very similar shape with a rise of the order when elevating the water to lipid ratio 
-and becoming more flat at high ratios. This especially holds when taking the largly overlapping
+As described in \cref{sec:input_opt} the water-to-lipid ratio requires analysis, as it was
+kept constant at 22 in the previous simulation runs. The results for the bilayer stability 
+are shown in \cref{fig:wpl_T_1} and \cref{fig:wpl_T_08}. Once again the curves display 
+a very similar shape, with the order increasing as the water to lipid ratio rises
+and leveling off at higher ratios. This is especially evident given the large overlap between the
 error bars.  
 
 \begin{figure}[!t]
@@ -1304,7 +1304,7 @@ error bars.
     \label{fig:apl_mol_12}
   \end{subfigure}
   \caption{ Nematic order parameter vs area per lipid for a pre-assembled bilayer with
-  a constant water to lipid ratio of $22$
+  constant water to lipid ratio of $22$
   at \textbf{(a)} $\hat{T} = 1.0$ and \textbf{(b)} $\hat{T} = 0.8$. The dashed lines indicate the chosen 
   area per lipid for the self-assembly simulations. Equilibrated pre-assembled bilayer 
   at $\hat{T} = 1.0$ with an area per lipid of \textbf{(c)} $0.5\si{\nano\m\squared}$, 
@@ -1315,26 +1315,24 @@ error bars.
 \end{figure}
 
 The additional snapshots 
-in \cref{fig:wpl_mol_8}, \cref{fig:wpl_mol_22} and \cref{fig:wpl_mol_28} also show that for 
-low a water to lipid ratio the bilayer collapses, whereas both the bilayers at a ratio of 22 and 28
-hold the structure. Crucially, when fixing the area per lipid, a change in the water to lipid 
-ratio only scales the remaining $z$-axis to maintain the desired density of $\rho = 3$. 
-This also explaines the occoring unstabilities at low ratios. The water phase outside the 
-bilayer is responsible for shielding the neighboring bilayer from the periodic boundary condition.
-For low ratios the water phase is too, leading to interaction between the bilayer leaflets. 
-This also explains the flattening of the curve at higher ratios, because if the water phase is 
-big enough, further increasing it does not improve stability. To reduce useless simulation of
-solvent interaction a low value for the water to lipid ratio which still garantees sufficient 
-shielding is optimal. For the self-assembly of 128 lipids this leads to a ratio of 24 and for
+in \cref{fig:wpl_mol_8}, \cref{fig:wpl_mol_22} and \cref{fig:wpl_mol_28} also show that
+the bilayer collapses for low water-to-lipid ratios, whereas the bilayers at ratios of 22 and 28
+remain stable. Crucially, when the area per lipid is fixed, a change in the water-to-lipid 
+ratio soley scales the $z$-axis to maintain the target density of $\rho = 3$. 
+This also explains the instabilities observed at low ratios. The water phase outside the 
+bilayer shields the membrane from interactions with its periodic images.
+For low ratios the water phase is too thin, allowing for interactions between the bilayer leaflets across the periodic boundary. 
+This also explains the leveling off of the curve at higher ratios, because if the water phase is 
+big enough, further increasing it does not improve stability. To reduce redundant computational effort from
+solvent interaction, it is ideal to choose the lowest water-to-lipid ratio that still ensures sufficient 
+shielding. For the self-assembly of 128 lipids this results in a ratio of 24 and for
 256 lipids a ratio of 22. 
 
 To conclude this section
-it is cruicial to note that a high nematic order parameter does 
-not necessitate a perfectly stable or defect-free bilayer. This means that 
-the nematic order parameter is not a perfect parameters to judge the structure of 
-a bilayer but is a valid way to get a fast estimate of the bilayer stability. 
-Additionally, every simulation run was only performed once and due to the statistical nature of
-the DPD force different seed would result in slightly different results. Hence, slight 
+it is important to note that a high nematic order parameter does 
+not guarantee a perfectly stable or defect-free bilayer. Thus, while  
+the nematic order parameter is not a comprehensive metric for judging the entire structure, it remains a reliable way to obtain a quick estimate of membrane stability. 
+Furthermore, as each simulation run was only performed once, the stochastic nature of DPD forces means that different seeds could lead to slight variations. Therefore, minor 
 differences between measured values should be interpreted with this in mind.
 
 \begin{figure}[!t]
@@ -1382,12 +1380,11 @@ differences between measured values should be interpreted with this in mind.
 \section{Observation of Bilayer Formation}\label{sec:self_ass_128}
 
 The procedure in \cref{sec:128_assembly} lead to a bilayer formation process shown in \cref{fig:bilayer_form_128_T_1}.
-The system starts with a random distribution of POPC lipids and water which equilibrates at a 
-temperature $\hat{T} = 2.0$. There is no sign of assembly of general structure. During 
-the cooling phase the lipids start to build a connected structure but there is 
-no clean phase seperation between the heads and the tails. When reaching the target temperature
-of $\hat{T} = 1.0$ this changes and the bilayer formation is completed with clear seperation 
-between the polar heads and the aploar tails.
+The system begins with a random distribution of POPC lipids and water, equilibrated at a 
+temperature $\hat{T} = 2.0$, where no discernible structural assembly is observed. During 
+the cooling phase, the lipids begin to from an interconnected structure, though distinc phase separation between the heads and the tails is not apparent. Upon reaching the target temperature
+of $\hat{T} = 1.0$, the bilayer formation is finalized, showing clear separation 
+between the polar headgroups and the apolar tails.
 
 \begin{figure}[!t]
     \centering
@@ -1450,12 +1447,12 @@ between the polar heads and the aploar tails.
     \label{fig:bilayer_128_nem_con}
 \end{figure}
 
-For a quantitative comparison there is a pre-assembled DPD and MARTINI bilayer.
-Especially the DPD bilayer serves as a baseline if the self-assembly reached the same 
-strcuture as the pre-assembled equilibrated bilayer. The chosen metric for 
-the analysis of self-assembly are the neamtic order parameter and the contact number, 
-measuring alignment and packing density. The results along snapshots of the 
-compared bilayers are shown in \cref{fig:bilayer_128_nem_con}.
+For a quantitative comparison, pre-assembled DPD and MARTINI bilayers are used.
+The DPD bilayer, in particular, serves as a baseline to determine if the self-assembly reached the same 
+structure as the equilibrated, pre-assembled system. The chosen metrics for 
+this analysis are the nematic order parameter and the contact number, which 
+measure alignment and packing density, respectively. The results, alongside snapshots of the 
+compared bilayers are presented in \cref{fig:bilayer_128_nem_con}.
 The evolution of the nematic order parameter in \cref{fig:128_T_1_nem} matches the observations from 
 \cref{fig:bilayer_form_128_T_1}, where the equlibration phase shows no sign of 
 assembly and the order is very low in the system. With the cooling phase the order gradually 

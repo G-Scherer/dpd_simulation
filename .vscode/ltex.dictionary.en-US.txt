@@ -1,0 +1,5 @@
+bilayers
+POPC
+Lennard-Jones
+apolar
+headgroups
