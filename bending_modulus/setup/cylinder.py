@@ -7,10 +7,10 @@ from scipy.constants import Boltzmann,Avogadro
 parser = argparse.ArgumentParser(description='Create lipid soup system')
 
 # define arguments, box default taken from past sim
-parser.add_argument('--lipids', type=int, default=5000, help='Number of lipids')
+parser.add_argument('--lipids', type=int, default=4096, help='Number of lipids')
 parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
 parser.add_argument("--apl", type=float, default=0.879, help="apl in nm^2")
-parser.add_argument("--inner_radius", type=float, default=10, help="inner radius in nm")
+parser.add_argument("--inner_radius", type=float, default=8, help="inner radius in nm")
 
 # parse arguments
 args = parser.parse_args()
@@ -36,7 +36,7 @@ box_z = (n_lipids*apl)/(4*np.pi*R)
 N_out = int((2*np.pi*R_out*box_z)/apl)
 N_in = n_lipids - N_out
 
-box_x = box_y = 2*R_out + 12
+box_x = box_y = 2*R_out + 10
 
 print(f"radius: R={R}, innen Radius R_in={R_in}, außen Radius {R_out} \n lipids {n_lipids}, außen {N_out}, innnen {N_in}, box {box_y, box_x,box_z}")
 

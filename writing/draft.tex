@@ -187,6 +187,40 @@
 
 \usepackage[autostyle=true]{csquotes}
 
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18} % Verwendet die modernste Engine für Achsen
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+
+\tikzset{
+    process/.style = {
+        rectangle, 
+        draw=black, 
+        fill=blue!10, 
+        rounded corners, 
+        minimum width=3cm, 
+        minimum height=1.2cm, 
+        align=center,      % <--- Das hier ist entscheidend!
+        font=\small
+    },
+    fitblock/.style = {
+        rectangle, 
+        draw=black, 
+        fill=green!5, 
+        dashed, 
+        rounded corners, 
+        minimum width=3cm, 
+        minimum height=1.2cm, 
+        align=center,      % <--- Auch hier wichtig!
+        font=\small
+    },
+    arrow/.style = {
+        thick, 
+        -{Stealth[scale=1.2]}
+    }
+}
+
 \begin{document}
 \onehalfspacing
 
@@ -551,7 +585,7 @@ be quantified to ensure that the lipids form a connected structure. To quantify 
 contact number is defined as the average number of neighboring lipids. A lipid is 
 classified as a neighbor if the distance is smaller than a specified cutoff distance $r_c$. 
 
-\section{Membrane Fluctuations}
+\section{Membrane Fluctuations} \label{sec:ben_mod_fourier}
 
 The general energy of a membrane \cite{Markus_tethers} is defined as an integral over the 
 membrane area with two moduli $\kappa$, the bending modulus and $\bar{\kappa}$,
@@ -633,7 +667,7 @@ as the dimension of $[\delta(\mathbf k + \mathbf{k'})] = [L^2 \delta_{\mathbf k 
 match. This leads to a slighty different result for a discrete fourier tansformation
 
 \begin{align}
-    \langle |\tilde{h}_\mathbf{k}|^2\rangle = \frac{k_{\mathrm B}T}{L^2(\kappa k^4 + \Sigma k^2)}\, .
+    \langle |\tilde{h}_\mathbf{k}|^2\rangle = \frac{k_{\mathrm B}T}{L^2(\kappa k^4 + \Sigma k^2)}\, . \label{eq:cental_ben_formula_fourier}
 \end{align}
 
 \section{Stretching tethers}
@@ -760,8 +794,8 @@ black C1 beads and the silver C3 bead. The assigned ID is shwon abvove each bead
             (Q0, 2) & (Na, 3) & (Na, 4) & 2\\
             (Q0, 2) & (Na, 3) & (C1, 5) & 1\\
             (Na, 3) & (C1, 5) & (C3, 6) & 1\\
-            (C1, 5) & (C3, 6) & (C1, 7) & 1\\
-            (C3, 6) & (C1, 7) & (C1, 8) & 2\\
+            (C1, 5) & (C3, 6) & (C1, 7) & 3\\
+            (C3, 6) & (C1, 7) & (C1, 8) & 1\\
             (Na, 4) & (C1, 9) & (C1, 10) & 1\\
             (C1, 9) & (C1, 10) & (C1, 11) & 1\\
             (C1, 10) & (C1, 11) & (C1, 12) & 1\\
@@ -1224,6 +1258,131 @@ phase begins. The time of simulation is increased for this system due to the inc
 The investigation of the bilayer quality is identical to \cref{sec:128_assembly} with the same 
 MARTINI bilayer but DPD bilayers at the same system size. 
 
+\section{Simulations of membrane Fluctuations}\label{sec:method_ben_mod_fourier}
+
+To determine the bending modulus of a POPC membrane the theoretical foundation of \cref{sec:ben_mod_fourier} is utilized. For this the power spectrum of each mode in \cref{eq:cental_ben_formula_fourier} has to be measured and with a corresponding fit results in the bending modulus. This procedure however is not straightforward.
+Once $1/k$ where $k$ is the wave vector is comparable to the bilayer thickness $w$ continuums theory breaks down and. This means that small wave vectors have to be investigated, but this also proves to be difficult as for values smaller than the critical wavelength $k_c = \sqrt{\Sigma/\kappa}$ the lateral tension dominates. Therefore, the simulations have to be carried out at zero lateral tension to ensure the target scaling of $k^{-4}$. Guaranteeing this condition is difficult by manually adjusting the box dimensions is difficult. To circumvent this a Nose/Hoover barostat (\textbf{cite here}) is utilized, takes a specific target pressure and changes the box volume accordingly. To achieve zero tension a low damping parameters which determines how fast the barostat reacts is chosen. To allow for small wave vectors the system needs to be substantially larger than the self-assembly system. 
+
+The start of the simulation is similar to \cref{sec:input_opt} with a pre-assembled membrane with 4096 lipids similar to earlier work of Cook and Deserno (\textbf{cite here}). After an equilibration phase of 100$\tau$ to disregard the effects of the grid start 100 samples of the system are taken. To produce a height function the mean tail position of each lipid is interpolated on a $16 \times 16$ grid. This interpolation has to be handled with care as it introduces discretation artefacts. This is also discussed in the works of Cook and Deserno (\textbf{cite here}). For the two dimensional wave numbers $(n_x, n_y)$ and a $N \times N$ grid a dampening factor of 
+
+\begin{align}
+    \mathrm{sinc}^2\left(\frac{n_x}{N}\right)\mathrm{sinc}^2\left(\frac{n_y}{N}\right)
+\end{align}
+
+has to be accounted for as it is q dependant and would interfere with the results. This issue is solved by dividing out this factor.
+A two-dimensional fast fourier transformation is applied on the grid. The absolute value squared is averaged and is ordered into bins of corresponding $k$ values. As the lateral tension is zero a simple $k^{-4}$ fit of
+
+\begin{align}
+    L^2 \langle |\tilde{h}_k|^2 \rangle L^2 \approx \frac{k_\text{B}T}{\kappa} k^{-4}
+\end{align}
+
+reveals the bending modulus of the POPC membrane. \cref{fig:spectrum_pipeline_final_aligned} visualizes the pipeline of the bending modulus measurement.  
+
+
+\begin{figure}[t]
+    \centering
+    
+    % --- Row 1, Left: Continuous Real Space (Sehr kleine Amplituden) ---
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                view={35}{25},
+                width=6.5cm, height=6cm,
+                axis lines=none, 
+                colormap/viridis,
+                colorbar,
+                colorbar style={width=0.2cm, title={$h$}, font=\tiny},
+                title={\textbf{(1) Continuous Height function}},
+                title style={at={(0.5, 1.05)}, anchor=south} % Fixer Titel-Bezug
+            ]
+            % Amplituden nochmals reduziert für eine "straffere" Membran
+            \addplot3[
+                surf, domain=-2.2:2.2, domain y=-2.2:2.2, samples=35, 
+                opacity=0.9, mesh/check=false, shader=faceted interp
+            ] 
+            { 0.06*sin(deg(x*2.3)) + 0.05*cos(deg(y*3.1)) 
+             + 0.04*sin(deg(x*4.7 + y*1.2)) + 0.03*cos(deg(y*5.5 - x*0.8)) };
+            \end{axis}
+        \end{tikzpicture}
+    \end{subfigure}
+    \hfill
+    % --- Row 1, Right: Discretized Grid ---
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.8]
+            \draw[step=0.4cm, gray!30, thin] (0,0) grid (4.4, 4.4);
+            \foreach \x in {0,0.4,...,4.0} {
+                \foreach \y in {0,0.4,...,4.0} {
+                    \pgfmathtruncatemacro{\val}{max(0, min(100, abs(50 + 22*sin(deg(\x*3.1)) + 22*cos(deg(\y*2.5)) )))}
+                    \fill[blue!\val] (\x,\y) rectangle (\x+0.4,\y+0.4);
+                }
+            }
+            % Colorbar
+            \foreach \i in {0,2,...,100} {
+                \fill[blue!\i] (4.8, \i/25) rectangle (5.0, \i/25+0.1);
+            }
+            \node[right, font=\tiny] at (5.0, 4.0) {$h_{max}$};
+            \node[right, font=\tiny] at (5.0, 0.0) {$h_{min}$};
+            
+            \node[anchor=south] at (2.2, 5.0) {\textbf{(2) Discretized height function}};
+            \draw[thick, <->] (0,-0.3) -- (4.4,-0.3) node[midway, below] {$L$};
+        \end{tikzpicture}
+    \end{subfigure}
+
+    \vspace{0.8cm}
+
+    % --- Row 2, Left: Fourier Space ---
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.8, baseline={(0, 2.2)}]
+            \foreach \x in {-2.0,-1.6,...,2.0} {
+                \foreach \y in {-2.0,-1.6,...,2.0} {
+                    \pgfmathsetmacro{\dist}{sqrt(\x*\x + \y*\y) + 0.6}
+                    \pgfmathtruncatemacro{\fcolor}{max(0, min(100, 85/(\dist*\dist)))}
+                    \fill[orange!\fcolor] (\x+2.2,\y+2.2) rectangle (\x+2.6,\y+2.6);
+                }
+            }
+            \draw[thick, ->] (2.4,2.4) -- (4.0,2.4) node[right] {$k_x$};
+            \draw[thick, ->] (2.4,2.4) -- (2.4,4.0) node[above] {$k_y$};
+            
+            % Colorbar
+            \foreach \i in {0,2,...,100} {
+                \fill[orange!\i] (4.8, \i/25) rectangle (5.0, \i/25+0.1);
+            }
+            \node[right, font=\tiny] at (5.0, 4.0) {$P_{max}$};
+            \node[right, font=\tiny] at (5.0, 0.0) {$0$};
+
+            \node[anchor=south] at (2.4, 5.0) {\textbf{(3) 2D-FFT}};
+        \end{tikzpicture}
+    \end{subfigure}
+    \hfill
+    % --- Row 2, Right: Radial Averaging (Jetzt mit korrektem Dummy-Alignment) ---
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.8, baseline={(0, 2.2)}]
+            \draw[step=0.4cm, gray!20, thin] (0,0) grid (4.4, 4.4);
+            \foreach \r in {0.5, 1.1, 1.7, 2.2}
+                \draw[darkblue, thick] (2.2, 2.2) circle (\r);
+            
+            \begin{scope}
+                \clip (2.2, 2.2) circle (1.7);
+                \fill[darkblue!20, even odd rule] (2.2, 2.2) circle (1.7) (2.2, 2.2) circle (1.1);
+            \end{scope}
+            
+            % DUMMY SPACE: Dieser Block simuliert exakt die Breite der Colorbar links
+            \path (4.8, 0) -- (5.8, 0); 
+            
+            \draw[darkblue, ultra thick, ->] (2.2, 2.2) -- (2.2+1.7, 2.2) node[midway, above, font=\tiny] {$k$};
+            \node[anchor=south] at (2.2, 5.0) {\textbf{(4) Radial Binning}};
+        \end{tikzpicture}
+    \end{subfigure}
+
+    \caption{Visual pipeline of the membrane fluctuation analysis. \textbf{(1)} Measure the deviation from the bilayer plane of every lipid resulting in a near continouus height function. \textbf{(2)} Discretization of the height function into a grid. \textbf{(3)} Utilize two-dimensional fast Fourier transform. \textbf{(4)} Radial binning connects value in Fourier space to absolute value of wave vector.}
+    \label{fig:spectrum_pipeline_final_aligned}
+\end{figure}
+
+
 \chapter{Results}
 
 \section{Determined input parameters}
@@ -1477,24 +1636,6 @@ also lacks in comparison.
 For a more structure based analysis the density profile can be utilized. The results are 
 shown in \cref{fig:bilayer_128_density_T_1}.
 
-
-Looking at both density profiles there are very significant differences in 
-the structure of the bilayers. The MARTINI bilayer clearly seperates each bead group. The 
-peaks do not overlap there are regions of the bilayer where a specific group is not 
-located. This is perfectly illustrated by the fact that the curve for the heads is 
-constantly zero in the terminal tail regime. The same behavior can not be 
-observed for the DPD bilayer. There, especially the head and first tail groups overlap greatly.
-Furthermore, there are still some heads in the terminal tail regime. 
-The combined plot \cref{fig:128_high_T_combined_den} illustrates this well and 
-shows that every peak in DPD in wider and penetrates in the other regimes. 
-Especially the head beads still contribute to the density when there should be an 
-apolar phase. One explanation for this is that DPD simply allows the polar heads to pass
-through beads to get inside the bilayer which can also sometimes be seen in some  
-snapshots like \cref{fig:128_high_T_selfbilayer}. Additionally this can be 
-exhilarated by a membrane that is not perfectly planar like the martini bilayer in \cref{fig:martini_comp}.
-Another big differnece which can be read from \cref{fig:128_high_T_combined_den} and confirmed by 
-the comparison of the snapshots is the reduced thickness of the DPD bilayer. 
-
 \begin{figure}[!t]
     \centering
     \begin{subfigure}{0.48\textwidth}
@@ -1523,6 +1664,26 @@ the comparison of the snapshots is the reduced thickness of the DPD bilayer.
     The dashed lines are the MARTINI profile while the solid line are DPD.}
     \label{fig:bilayer_128_density_T_1}
 \end{figure}
+
+
+Looking at both density profiles there are very significant differences in 
+the structure of the bilayers. The MARTINI bilayer clearly seperates each bead group. The 
+peaks do not overlap there are regions of the bilayer where a specific group is not 
+located. This is perfectly illustrated by the fact that the curve for the heads is 
+constantly zero in the terminal tail regime. The same behavior can not be 
+observed for the DPD bilayer. There, especially the head and first tail groups overlap greatly.
+Furthermore, there are still some heads in the terminal tail regime. 
+The combined plot \cref{fig:128_high_T_combined_den} illustrates this well and 
+shows that every peak in DPD in wider and penetrates in the other regimes. 
+Especially the head beads still contribute to the density when there should be an 
+apolar phase. One explanation for this is that DPD simply allows the polar heads to pass
+through beads to get inside the bilayer which can also sometimes be seen in some  
+snapshots like \cref{fig:128_high_T_selfbilayer}. Additionally this can be 
+exhilarated by a membrane that is not perfectly planar like the martini bilayer in \cref{fig:martini_comp}.
+Another big differnece which can be read from \cref{fig:128_high_T_combined_den} and confirmed by 
+the comparison of the snapshots is the reduced thickness of the DPD bilayer. 
+
+
 
 Both differences can also be observed in the snapshots \cref{fig:128_dpd_comp_high_T} 
 and \cref{fig:martini_comp}. Especially the bigger thickness of the MARTINI bilayer is 
@@ -1578,26 +1739,6 @@ is significant.
   \label{fig:128_low_T_all_info}
 \end{figure}
 
-
-Next is testing the bilayer formation at lower temperatures. The procedure is similar but 
-with a target temperature of $\hat{T} = 0.8$. The snapshots alongside the quantitative
-measurements are shown in \cref{fig:128_low_T_all_info}. The snapshots show a very similar 
-evolution to \cref{fig:bilayer_form_128_T_1} due to the identical production script. 
-There is a differnece however in the finished bilayer as it looks much more ordered and planar. 
-This can be confirmed by the nematic order parameter in \cref{fig:128_low_T_nem} which 
-reaches much higher values of 0.7 and greatly outperforms the bilayer at $\hat{T} = 1$ which
-is also marked in the plot. This is expected as lower temperatures mean that 
-there is less random movement making the assembled membrane much more stable. This 
-is also evident by the fact that the measured values are much less noisy. The contact number also 
-rises and even matches with the MARTINI bilayer. To further probe the structure, the 
-density profiles are again utilized and shown in \cref{fig:bilayer_128_density_T_08}. 
-Like for the higher temperature counterpart the profile shows worse phase sepereation 
-than the MARTINI bilayer but does improve. The head curve is very close to zero inside 
-the apolar phase, meaning that the lower temperature makes for a flatter bilayer and 
-allows fewer heads to penetrate the membrane. The bilayer thickness is 
-still reduced compared to MARTINI ($4.1\si{\nano\m}$) with a value of $2.7\si{\nano\m}$ 
-which is in agreeance with the higher temperature bilayer.
-
 \begin{figure}[!t]
     \centering
     \begin{subfigure}{0.48\textwidth}
@@ -1622,6 +1763,27 @@ which is in agreeance with the higher temperature bilayer.
     follow \cref{fig:bilayer_128_density_T_1}.}
     \label{fig:bilayer_128_density_T_08}
 \end{figure}
+
+Next is testing the bilayer formation at lower temperatures. The procedure is similar but 
+with a target temperature of $\hat{T} = 0.8$. The snapshots alongside the quantitative
+measurements are shown in \cref{fig:128_low_T_all_info}. The snapshots show a very similar 
+evolution to \cref{fig:bilayer_form_128_T_1} due to the identical production script. 
+There is a differnece however in the finished bilayer as it looks much more ordered and planar. 
+This can be confirmed by the nematic order parameter in \cref{fig:128_low_T_nem} which 
+reaches much higher values of 0.7 and greatly outperforms the bilayer at $\hat{T} = 1$ which
+is also marked in the plot. This is expected as lower temperatures mean that 
+there is less random movement making the assembled membrane much more stable. This 
+is also evident by the fact that the measured values are much less noisy. The contact number also 
+rises and even matches with the MARTINI bilayer. To further probe the structure, the 
+density profiles are again utilized and shown in \cref{fig:bilayer_128_density_T_08}. 
+Like for the higher temperature counterpart the profile shows worse phase sepereation 
+than the MARTINI bilayer but does improve. The head curve is very close to zero inside 
+the apolar phase, meaning that the lower temperature makes for a flatter bilayer and 
+allows fewer heads to penetrate the membrane. The bilayer thickness is 
+still reduced compared to MARTINI ($4.1\si{\nano\m}$) with a value of $2.7\si{\nano\m}$ 
+which is in agreeance with the higher temperature bilayer.
+
+
 
 
 \begin{figure}[!t]
@@ -1670,18 +1832,6 @@ form in favor of flat bilayers. This was also the motivation behind the finetuni
 per lipid and the water to lipid ratio. Additionally, as \cref{sec:larger_systems} 
 mentioned this led to a protocol which rescaled box dimensions to allow for bilayer formation. 
 
-The analysis steps are the same as in \cref{sec:self_ass_128} and are shown in \cref{fig:256_high_T_all_info}.
-The formation process look very similar to the smaller bilayers with no strcutres as $\hat{T} = 2.0$,
-clumping during the cooling process and then stabilization at the target temperatreu of $\hat{T} = 1.0$.
-The order parameter reaches the same values as the smaller counterpart but in the contact number 
-at the beginning of the production phase, there is a strong dip. This can 
-attributed to the box rescaling that was discussed above where for a small time each lipid had 
-more space which means the distance between them will increase lowering the contact number. 
-There is still a significant discrepancy to the MARTINI system. The quality of the bilayer
-can be observed in \cref{fig:256_mol_lipidsoup}, \cref{fig:256_mol_transition} and 
-\cref{fig:256_mol_bilayer} matches the evolution of the samller systems with a 
-lipid soup clumping together while cooling down the system and resulting in a bilayer.
-
 \begin{figure}[!t]
     \centering
     \begin{subfigure}{0.48\textwidth}
@@ -1707,6 +1857,20 @@ lipid soup clumping together while cooling down the system and resulting in a bi
     \label{fig:bilayer_256_den_profiles}
 \end{figure}
 
+The analysis steps are the same as in \cref{sec:self_ass_128} and are shown in \cref{fig:256_high_T_all_info}.
+The formation process look very similar to the smaller bilayers with no strcutres as $\hat{T} = 2.0$,
+clumping during the cooling process and then stabilization at the target temperatreu of $\hat{T} = 1.0$.
+The order parameter reaches the same values as the smaller counterpart but in the contact number 
+at the beginning of the production phase, there is a strong dip. This can 
+attributed to the box rescaling that was discussed above where for a small time each lipid had 
+more space which means the distance between them will increase lowering the contact number. 
+There is still a significant discrepancy to the MARTINI system. The quality of the bilayer
+can be observed in \cref{fig:256_mol_lipidsoup}, \cref{fig:256_mol_transition} and 
+\cref{fig:256_mol_bilayer} matches the evolution of the samller systems with a 
+lipid soup clumping together while cooling down the system and resulting in a bilayer.
+
+
+
 Further insight is granted by analyzing the density profiles in \cref{fig:bilayer_256_den_profiles}.
 The profile shows the typical structure of the lipid bilayer but with even more 
 washed or phases. Especially the first tail group still has a very high density in the 
@@ -1716,6 +1880,9 @@ and thus comparable to the smaller bilayer. In total the evolution process and t
 quantitative metrics are very similar to the 128 lipid system. This indicates that the 
 finite size effect is small and larger systems only complicate the self-assembly process.
 
+\section{Bending modulus by power spectrum}
+
+The method in \cref{sec:method_ben_mod_fourier} can be applied on a DPD and MARTINI bilayer and results in two power spectra. 
 
 
 

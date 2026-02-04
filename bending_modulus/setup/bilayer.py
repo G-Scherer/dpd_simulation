@@ -7,7 +7,7 @@ from scipy.constants import Boltzmann,Avogadro
 parser = argparse.ArgumentParser(description='Create lipid soup system')
 
 # define arguments, box default taken from past sim
-parser.add_argument('--lipids', type=int, default=1024, help='Number of lipids')
+parser.add_argument('--lipids', type=int, default=8192, help='Number of lipids')
 parser.add_argument('--density', type=float, default=3.0, help='Number density of beads')
 parser.add_argument("--apl", type=float, default=0.879, help="apl in nm^2")
 
@@ -333,7 +333,7 @@ lines.append(f"1 {k_a1} 180")
 lines.append(f"2 {k_a1} 120")
 lines.append(f"3 {k_a2} 120")
 
-out_file = os.path.join(script_dir, "bilayer_press.data")
+out_file = os.path.join(script_dir, "bilayer_big.data")
 with open(out_file, "w") as f:
     f.write("\n".join(lines))
 
