@@ -3,3 +3,7 @@ POPC
 Lennard-Jones
 apolar
 headgroups
+timestep
+timesteps
+LAMMPS
+equipartition

@@ -1,5 +1,5 @@
 # Load trajectories
-mol new cylinder_sim_10_smaller_box.lammpstrj type lammpstrj waitfor all
+mol new cylinder_sim_10.lammpstrj type lammpstrj waitfor all
 
 mol delrep 0 top
 

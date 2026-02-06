@@ -311,29 +311,26 @@ versatile molecular dynamics simulation package.
 
 \section{Coarse-Grained Simulations}
 Coarse-grained simulations \cite{CGwater_review} aim to simulate the behavior of large systems by reducing the 
-available degrees of freedom in the system, while still conserving the main thermodynamic and
-structural properties. The main method employed is a mapping mechanism that
-simplifies groups of atoms into a single interaction vertex or bead. The amount of atoms 
+available degrees of freedom in the system, while preserving the main thermodynamic and
+structural properties. The primary technique is a mapping mechanism that
+represents groups of atoms as a single interaction site or “bead”. The number of atoms 
 that are coarse-grained differ between different methods and the length scale of interest.
 
-This approach results in the ability to simulate much larger time scales \cite{CGwater_review}. Typical all atom 
-approaches only utilize a timestep in the order of femtoseconds \cite{Atomic_timescales}.
-This can be enhanced greatly to values in the range of nanoseconds or even microseconds. 
-Furthermore, an improvement in computational efficiency comes with decreasing the degrees of freedom. 
+Coarse-graining methods provide four major advantages that improve performance \cite{cg_review_speedups}. A reduction in the degrees of freedom by the mapping mechanism, decreases the number of particles to compute. Furthermore, omitting atomistic detail smooths the potential energy surface and lowers friction and leads to faster dynamics. Typically, coarse-grained methods employ a truncated interaction force and a larger timestep. While all atom simulations utilize a timestep on the order of femtoseconds\cite{Atomic_timescales}, coarse-graining allows these to be extended into tens or hundreds of femtoseconds, depending on the method.  
 
-The core challenge of a coarse grained simulation is the parametrization of the method. Two main 
-methods exist: utilizing empirical data like the outcome of experiments
-or the results of more accurate all atom simulations to parametrize the coarse-grained interactions.
-Not every thermodynamic property can be replicated in coarse-grained system, thus 
-the method is chosen to reproduce the desired properties \cite{CGwater_review}.
+A central challenge in CG simulations is parametrization. Two main 
+strategies exist: utilizing experimental data
+or the results from more accurate all atom simulations to define the CG interactions.
+Since not every thermodynamic property can be captured simultaneously, 
+models are chosen to reproduce the desired properties \cite{CGwater_review}.
 
-This work employs the mapping method of the MARTINI method \cite{Martini}, the details of which are explained in 
+This work employs the mapping method of the MARTINI force field \cite{Martini}, the details of which are explained in 
 \cref{martini}. 
 
 
 \section{The MARTINI Model}\label{martini}
 
-The MARTINI model \cite{Martini} is one of the most widely used methods for coarse-grained simulations.
+The MARTINI force field \cite{Martini} is one of the most widely used methods for coarse-grained simulations.
 Central to this approach is the representation of different groups of atoms, 
 MARTINI distinguishes between five basic bead 
 types: water (W), polar (P), non-polar (N), apolar (C), charged (Q).
@@ -343,28 +340,28 @@ polar whereas C1 is the most apolar and C5 the least apolar.
 The W bead is identical to the P4 bead. The Q and N beads can also have 
 subtypes which quantify the hydrogen bond forming capabilities.
 There is 0 meaning no capabilities, d meaning some donor capabilities and 
-a meaning some acceptor capabilities.  
+a meaning some acceptor capabilities. The coarse-graining degree is 4:1 for most structures, while smaller structures like rings utilize 3:1 or a 2:1 mapping.    
 
 While the MARTINI scheme usually utilizes the Lennard-Jones potential and the corresponding
-force for non-bonded beads, in this work another force field, explained in \cref{dpd}
-is employed while adapting the same 
+force for non-bonded beads, using the underlying interaction matrix $\epsilon_{ij}$ to determine the interaction.This work employs another force field, explained in \cref{dpd}
+while adapting the same 
 mapping mechanism of the MARTINI method. 
 
 \section{Dissipative Particle Dynamics} \label{dpd}
-The DPD force field was first presented by Groot and Warren in their work on simulating systems on 
-the mesoscopic scale \cite{DPD_groot_warren} and is widely used in simulations of fluids.
-The equations of motion for a particle $i$ influenced by all other particles $j$
-in a DPD force field is governed by
+The DPD force field was introduced by Groot and Warren for the simulation of systems at 
+the mesoscopic scale \cite{DPD_groot_warren} and is widely used for fluid simulations.
+The equations of motion for a particle $i$ interacting with surrounding particles $j$
+in a DPD force field are governed by
 
 \begin{equation}
     m \frac{\text{d}\mathbf{v}_i}{\text{d}t} = \sum_{j \neq i} \mathbf{F}^C_{ij} + 
     \mathbf{F}^D_{ij} + \mathbf{F}^R_{ij}\, ,  
 \end{equation}
 
-containing three different parts, more specifically the conservative
+consisting of three different components: the conservative
 force $\mathbf{F}^C$, the dissipative force $\mathbf{F}^D$ and the random force $\mathbf{F}^R$. 
 
-The conservative force can be expressed as
+The conservative force is defined as
 
 \begin{equation}
     \mathbf{F}^C_{ij} = \begin{cases}
@@ -374,17 +371,15 @@ The conservative force can be expressed as
     \, ,
 \end{equation}
 
-where $r_c$ is a cutoff distance and $A_{ij}$ is
-a particle pair specific repulsion parameter. Furthermore,
-$\mathbf{r}_{ij} = \mathbf{r}_i - \mathbf{r}_j$ defines the distance vector,
-with $r_{ij} = |\mathbf{r}_{ij}|$ being its magnitude 
-and $\hat{\mathbf{r}}_{ij} = \mathbf{r}_{ij}/r_{ij}$ the corresponding unit vector.
+where $r_c$ represents the cutoff distance and $A_{ij}$ is the maximum repulsion between 
+a specific particle pair. Furthermore, the relative position is given by the distance vector
+$\mathbf{r}_{ij} = \mathbf{r}_i - \mathbf{r}_j$, with $r_{ij} = |\mathbf{r}_{ij}|$ as its magnitude and $\hat{\mathbf{r}}_{ij} = \mathbf{r}_{ij}/r_{ij}$ the corresponding unit vector.
 
-Usually the cutoff distance is set to $r_c = 1$ when working with reduced units, which will be 
+Typically, the cutoff distance is set to $r_c = 1$ when working with reduced units, which will be 
 discussed in \cref{dpd_units}, 
-making it redundant in the formula above. Both force fields are presented in \cref{comp_forces} 
+which simplifies the expression above. Both force fields are compared in \cref{comp_forces} 
 to further illustrate the difference between the MARTINI method 
-in \cref{martini} with the Lennard-Jones potential parametrized by the length scale $\sigma$ and the
+in \cref{martini}, based on the Lennard-Jones potential, parametrized by the length scale $\sigma$ and the
 energy scale $\epsilon$
 \begin{equation}
     U^{LJ} = 4 \epsilon \left [\left(\frac{\sigma}{r} \right)^{12} 
@@ -392,13 +387,11 @@ energy scale $\epsilon$
 \end{equation}
 
 and the previously defined DPD force.
-The key difference between both 
+The key distinciton between the two
 approaches is that the DPD force and the corresponding potential
-do not diverge at $r=0$ which means that overlapping particles are allowed
-making it a soft potential. Adding to this DPD is a purely repulsive 
-force whereas Lennard-Jones has a clear attractive part and a minimum.
-Furthermore the DPD force is a short range interaction, whereas the Lennard-Jones force 
-has theoretically unlimited range but is usually truncated to accelerate simulations. 
+do not diverge at $r=0$, which allows for particle overlap and characterizes it as a soft potential. Additionally, DPD is a purely repulsive 
+force, whereas Lennard-Jones includes an attractive component and a potential minimum.
+Furthermore, the DPD force is a short-range interaction, while the Lennard-Jones force  theoretically has an infinite range but is typically truncated to improve computational efficiency. 
 
 \begin{figure}[t]
   \centering
@@ -421,8 +414,8 @@ has theoretically unlimited range but is usually truncated to accelerate simulat
 
 The dissipative and random force can best be described by using two weight 
 functions $w^D$ and $w^R$. Using the work of Espanol and Warren \cite{Espanol_warren}
-one weight function can be arbitrarily chosen but in turn fixes the other one. 
-The usual choice for the weighting funciton yields
+one weight function can be chosen arbitrarily, which in turn determines the other one. 
+The common choice for the weighting function is
 
 \begin{equation}
     w^D(r_{ij}) = \left [w^R(r_{ij}) \right ]^2 = \begin{cases}
@@ -431,19 +424,19 @@ The usual choice for the weighting funciton yields
     \end{cases}\, .
 \end{equation}
 
-Both forces are controlled by strength coefficients, namely $\sigma$ for the random force
-and $\gamma$ for the drag force. The fluctuation dissipation theorem connects these
+The magnitude of both forces are governed by scaling coefficients: $\sigma$ for the random force
+and $\gamma$ for the dissipative force. The fluctuation dissipation theorem connects these
 two parameters with the thermal Energy $k_B T$ and yields
 
 \begin{equation}
-    \sigma^2 = 2 \gamma k_B T. \label{connection_fluc_dis}
+    \sigma^2 = 2 \gamma k_B T\, . \label{connection_fluc_dis}
 \end{equation}
 
-Defining $\mathbf{v}_{ij} = \mathbf{v}_i - \mathbf{v}_j$ as the
+By defining $\mathbf{v}_{ij} = \mathbf{v}_i - \mathbf{v}_j$ as the
 relative velocity between two particles
 and $\alpha_{ij}$ as 
-a random number with zero mean and unit variance 
-results in a final expression for both forces
+a stochastic variable with zero mean and unit variance, 
+the final expression for both forces is obtained
 
 \begin{align}
     \mathbf{F}^D_{ij} &= -\gamma w^D(r_{ij})(\hat{\mathbf{r}}_{ij}\cdot \mathbf{v}_{ij})
@@ -451,17 +444,17 @@ results in a final expression for both forces
     \mathbf{F}^R_{ij} &= \sigma w^R(r_{ij}) \alpha_{ij} \Delta t^{-1/2} \hat{\mathbf{r}}_{ij}\, .
 \end{align}
 
-As mentioned both forces are deeply connected through the fluctuation dissipation theorem with 
-\cref{connection_fluc_dis} meaning that the amount of energy added through the random force
-$\mathbf{F}^R$ 
-is balanced by the dissipative force $\mathbf{F}^D$. Consequently, both forces act as internal 
-thermostat of the system allowing sampling of the canonical ensemble and eliminates the need for any
-external thermostats during simulation.
-
-Notably a factor of $\Delta t^{-1/2}$ appears in the random force. This correction
-follows the argument of Groot and Warren \cite{DPD_groot_warren} as this 
-corrects the time dependency of displacement to the known expression 
+Notably, a factor of $\Delta t^{-1/2}$ appears in the random force expression. This correction
+follows the work of Groot and Warren \cite{DPD_groot_warren} and
+ensures that the mean square displacement follows the correct time dependency
 $\left < x^2\right >\propto t$.
+
+As previously mentioned, both forces are linked by the fluctuation dissipation theorem 
+\cref{connection_fluc_dis}. This assures that the energy added by the random force
+$\mathbf{F}^R$ 
+is exactly balanced by the energy dissipated through force $\mathbf{F}^D$. Consequently, both forces act as an internal 
+thermostat, allowing sampling of the canonical ensemble and eliminating the need for any
+external thermostats during simulation.
 
 To fully describe DPD interaction, the only parameters to determine are the 
 repulsion parameters $A_{ij}$ and the drag coefficient $\gamma$ which in turn fixes the 
@@ -469,21 +462,20 @@ random force parameter $\sigma$. This step will be further discussed in \cref{se
 
 \section{Electrostatic Interaction}\label{coulomb}
 
-The DPD force in \cref{dpd} does not differentiate between a charged or an uncharged bead, meaning 
-some kind of coulomb interaction has to be added to the force field, 
-or the repulsion have to be adapted correspondingly. Crucially a simple 
-coulomb potential is an unfitting choice because it would destroy the soft property of the
-potential at $r=0$. To solve this 
-a exponentially smeared charge distribution resulting in a Slater potential is employed 
-. This is following the work of Wang and Hernandez \cite{Wang2024}
-who also introduce a factor $\beta$ which controls the strength of the
+The standard DPD force in \cref{dpd} does not differentiate between a charged or an uncharged bead. Therefore, 
+an electrostatic interaction has must be integrated into the force field, 
+or the repulsion have to be adjusted accordingly. Crucially, a simple 
+coulomb potential is unsuitable, as its divergence at $r=0$ would negate the softness of the DPD potential. To address this, 
+an exponentially smeared charge distribution, resulting in a Slater potential, is employed 
+. This follows the work of Wang and Hernandez \cite{Wang2024}
+who introduce a factor $\beta$ which controls the extend of the
 smearing effect. The charge distribution then reads
 
 \begin{equation}
     \rho(r) = \frac{q\beta^2}{\pi r} \exp(-2\beta r)\, . \label{charge_density}
 \end{equation}
 
-Utilizing a conversion constant $C$ the coulomb interaction follows
+Utilizing a conversion constant $C$, the resulting electrostatic force between two beads $i$ and $j$ follows
 
 \begin{align}
     \mathbf{F}^E_{ij} = \frac{C q_i q_j}{4 \pi r_{ij}}[1 - \exp(-2\beta r_{ij})
@@ -493,28 +485,26 @@ Utilizing a conversion constant $C$ the coulomb interaction follows
 
 \section{Intramolecular Interactions}\label{intermol}
 
-Beyond the non-bonded interacitons defined in \cref{dpd} and \cref{coulomb}, intramolecular potentials
-between different number of participating beads ensure the structural integrity of the moldecules \cite{Martini}.
-Interaction between two beads are defined as bonds and determine the equilibrium distance
+Beyond the non-bonded interactions defined in \cref{dpd} and \cref{coulomb}, intramolecular potentials
+involving various numbers of participating beads ensure the structural integrity of the molecules \cite{Martini}.
+Two-body interactions are defined as bonds and determine the equilibrium distance
 between two beads,
-whereas angle potentials control the local geometry between three consecutive beads. 
-For four body interaction 
-a dihedral interaction is utilized characterizing the torsion around a central bond, convserving 
-properties like the orientation of specific atomic groups. Lastly the improper interaction 
-maintain the chriality or planarity of molecular groups.
+while angle potentials control the local geometry between three consecutive beads. 
+For four-body interactions
+a dihedral potential is utilized to characterize the torsion around a central bond, preserving 
+properties such as the orientation of specific atomic groups. Lastly, improper dihedrals 
+maintain the chirality or planarity of molecular groups.
 
-The employed potential depends on the molecule that is represented and not every molecle utilizes every
-kind of interaction. More explicit application of this will be discussed in \cref{topology}.
+The specific potentials depend on the molecule being represented, and not every molecule utilizes every
+type of interaction. A more detailed application of these bonded will be discussed in \cref{topology}.
 
 \section{Numerical Integration}
 
-The forces defined in \cref{dpd}, \cref{coulomb} and \cref{intermol} yield a system of
-ordinary differential equations for 
-the system that must be solved in molecular dynamics simulations. Therefore 
-numerical integrators are employed which rely on the discretization of time, partitoning it into 
-timesteps of the size $\Delta t$. The standard method for LAMMPS is the velocity verlet integrator \cite{Allen2017_verlet} which
-calculates the desired quantities of a bead at the new timestep $t+ \Delta t$ using the former timestep 
-$t$. The procedure repeated every timestep is
+The forces defined in \cref{dpd}, \cref{coulomb} and \cref{intermol} result in a system of
+ordinary differential equations that must be solved in molecular dynamics simulations. Therefore, 
+numerical integrators are employed that partition time into discrete time steps of size $\Delta t$. The standard algorithm in LAMMPS is the Velocity Verlet integrator \cite{Allen2017_verlet} which
+computes the poistion and velocity of a bead at $t+ \Delta t$, based on the state of the previous timestep 
+$t$. The iterative procedure is
 
 \begin{alignat}{2}
     &1.\ \text{Predict half step velocity} \quad &&\mathbf{v}(t + \Delta t/2) = \mathbf{v}(t) + 
@@ -527,9 +517,7 @@ $t$. The procedure repeated every timestep is
     \mathbf{v}(t + \Delta t/2) + \mathbf{a}(t + \Delta t)\Delta t/2\, .
 \end{alignat}
 
-This version of verlet differentiates itself from other methods by utilizing the velocity of the beads 
-at an intermediate timestep $t+\Delta t/2$ which is central for the DPD force as the dissipative force 
-depends on the velocity. This scheme \cite{Allen2017_verlet} is numerically stable 
+This scheme is fitting for DPD as the dissipative force is velocity-dependant. Utilizing the intermediate velocity at $t+\Delta t/2$ allows for a better treatment of the forces. Furthermore, this scheme \cite{Allen2017_verlet} is numerically stable 
 and conserves energy even for large timesteps. 
 
 
@@ -544,51 +532,48 @@ and conserves energy even for large timesteps.
     \label{fig:pbc}
 \end{figure}
 
-Computer simulation face the challenge of only being able to simulate finite systems. This 
-limitation leads to unphysical surface effects when particles reach the boundary of the system. 
-Numerous possibilites exist to mitigate this
-but the standard meachnism is to enforce a periodic boundary condition (PBC) \cite{LammpsBoundary}. Employing a 
-PBC means that a particle leaving the simulation box re-enters simultaneously enters
-the box from the opposing boundary. Furthermore 
-a particle near a boundary also interacts with the particles on the other side of the box, utilizing the nearest
-image convention, meaning that any particle only interact with the closest image of each neighboring particle. 
-This leads to 
-a system consisting of an infinfite grid of the same finite system. The effect of the PBC is 
+Computer simulation face the challenge of being limited to finite systems. This 
+limitation leads to unphysical surface effects when particles reach the boundaries of the system. 
+Numerous possibilities exist to mitigate this
+but the standard mechanism is to enforce a periodic boundary condition (PBC) \cite{LammpsBoundary}. Employing a 
+PBC means that a particle leaving the simulation box simultaneously re-enters from the opposing boundary. Furthermore, 
+a particle near a boundary also interacts with the particles on the other side of the box via the nearest
+image convention, meaning that any particle only interacts with the closest periodic image of its neighbors. 
+Effectively, this creates
+a system that behaves like an infinite grid of the same finite system. The effect of the PBC is 
 visualized in \cref{fig:pbc}.
 
 \section{Assembly parameters}\label{nematic}
 
-The degree of order in a system is of high importance when simulating self-assembly processes as 
+The degree of order in a system is a critical metric when simulating self-assembly, as 
 it quantifies the macroscopic state of the system. The nematic order parameter 
 \cite{Ramasubramani2020_freud}, \cite{FreudNematicDoc} measures 
-how much particles align. The parameter is derived from the traceless second-order
+the collective alignment of particles. The parameter is derived from the traceless second-order
 tensor $\mathbf{Q}$, defined as 
 
 \begin{align}
     \mathbf{Q} = \mathbf{M} - \frac{1}{3}\mathbf{I}\, ,
 \end{align}
 
-where $\mathbf{M}$ describes the particle orientation and  $\mathbf{I}$ is the unit matrix.
-The definition of $\mathbf{M}$ utilizes the normalized orientation vecotor $\mathbf{m}^{(i)}$ 
-of the particle $i$ and reads
+where $\mathbf{M}$ is the orientation tensor and $\mathbf{I}$ is the identity matrix.
+The components of $\mathbf{M}$ are calculated using the normalized orientation vector $\mathbf{m}^{(i)}$ 
+of the particle $i \in \{1,\dots,N \}$ and reads
 
 \begin{align}
     \mathbf{M}_{\alpha \beta} = \sum_{i=1}^N \mathbf{m}_\alpha^{(i)}\mathbf{m}_\beta^{(i)}\, .
 \end{align}
 
-The eigenvalues of $\mathbf{Q}$ are $\frac{2}{3}S$, $-\frac{1}{3}S$ and $-\frac{1}{3}S$, where $S$ is 
-the desired order parameter. The corresponding eigenvector of the largest eigenvector is called the 
-director and measures the principal alignment of the system. 
+The eigenvalues of $\mathbf{Q}$ are $\frac{2}{3}S$, $-\frac{1}{3}S$ and $-\frac{1}{3}S$, where $S$ represents
+the desired order parameter. The eigenvector corresponding to the largest eigenvalue is called the 
+director, indicating the principal alignment of the system. 
 
-In addition to the measurement of alignment in the system, the packing density of the system can 
-be quantified to ensure that the lipids form a connected structure. To quantify this a 
-contact number is defined as the average number of neighboring lipids. A lipid is 
-classified as a neighbor if the distance is smaller than a specified cutoff distance $r_c$. 
+In addition to alignment, the packing density is quantified to ensure that the lipids form a connected structure. For this purpose, a 
+contact number is defined as the average number of neighboring lipids within a specific cutoff distance $r_c$. This metric is highly dependent on this cutoff parameters, which is determined in \cref{sec:128_assembly}.
 
 \section{Membrane Fluctuations} \label{sec:ben_mod_fourier}
 
 The general energy of a membrane \cite{Markus_tethers} is defined as an integral over the 
-membrane area with two moduli $\kappa$, the bending modulus and $\bar{\kappa}$,
+membrane area, governed by two moduli: $\kappa$, the bending modulus and $\bar{\kappa}$,
 the saddle splay modulus 
 
 \begin{align}
@@ -596,17 +581,16 @@ the saddle splay modulus
     (K - C_0)^2 + \bar{\kappa}K_G \right]\, , \label{eq:helfrich_energy}
 \end{align}
 
-with the curvature $K$, gaussian curvature $K_G$ and the intrinsic curvature $C_0$.
-Utilizing a height function $h(x,y)$ (Monge parametrization) the curvature \cite{Markus_tethers}
-of an almost flat membrane is 
+where $K$ is the mean curvature, the Gaussian curvature $K_G$ and the intrinsic curvature $C_0$.
+Utilizing the Monge parametrization with a height function $h(x,y)$, the mean curvature \cite{Markus_tethers}
+of an almost flat membrane can be approximated as
 
 \begin{align}
     K = \nabla \cdot \left( \frac{\nabla h}{\sqrt{1 + (\nabla h)^2}}\right)
     \approx \Delta h \, .
 \end{align}
 
-This results in an energy expression \cite{Cooke_bending_mod}, where the 
-lateral tension $\Sigma$ is added 
+Including the lateral tension $\Sigma$, this results in the following energy expression \cite{Cooke_bending_mod}
 
 \begin{align}
     E = \frac{1}{2} \int \mathrm d\mathbf x \left[ 
@@ -614,24 +598,24 @@ lateral tension $\Sigma$ is added
 \end{align}
 
 To further investigate
-the membrane \cite{Schwarz2024}
-the height function can be expressed 
-as the inverse of the fourier transform 
+the membrane fluctuations \cite{Schwarz2024},
+the height function is expressed 
+via its inverse Fourier transform 
 
 \begin{align}
     h(\mathbf x) = \frac{1}{(2\pi)} \int \mathrm d\mathbf k 
     \tilde{h}(\mathbf k) \exp(i\mathbf k \cdot \mathbf x)\, , 
 \end{align}
 
-whith the wave vector $\mathbf k$. It is instructive to introduce 
-the dirac delta distribution represented in fourier space 
+with the wave vector $\mathbf k$. It is instructive to introduce 
+the dirac delta distribution represented in Fourier space 
 
 \begin{align}
     (2\pi)^2 \delta(\mathbf k) = \int \mathrm d \mathbf x \exp(i\mathbf k \cdot \mathbf x)\, .
 \end{align}
 
-Crucially, the height function is purely real, meaning $h(\mathbf x) = h(\mathbf x)^*$ leading to 
-the relation in fourier space $h(\mathbf k)^* = h(-\mathbf k)$. Inserting the results into 
+The height function is purely real. Consequently, $h(\mathbf x) = h(\mathbf x)^*$, leading to 
+the relation in Fourier space $h(\mathbf k)^* = h(-\mathbf k)$. Inserting the results into 
 \cref{eq:mem_energy} yields 
 
 \begin{align}
@@ -639,56 +623,41 @@ the relation in fourier space $h(\mathbf k)^* = h(-\mathbf k)$. Inserting the re
     |\tilde{h}(\mathbf k)|^2 \left[\kappa k^4 + \Sigma k^2 \right]\, .
 \end{align}
 
-The equipartition theorem connects the average of each mode squared $\langle |\tilde{h}
-(\mathbf k)|^2\rangle$ with the thermal energy of $k_{\mathrm B} T/2 $ leading to the 
+Applying the equipartition theorem, which relates the average of each squared mode  $\langle |\tilde{h}
+(\mathbf k)|^2\rangle$ to the thermal energy of $k_{\mathrm B} T/2 $, leads to the 
 expression 
 
 \begin{align}
     \langle |\tilde{h}(\mathbf k)|^2\rangle = \frac{k_{\mathrm B}T}{\kappa k^4 + \Sigma k^2}\, .
 \end{align}
 
-Instead of the continuous fourier transform a discrete fourier transform
+For practical application, a discrete Fourier transform is employed 
 
 \begin{align}
     h(\mathbf{x}) = \frac{1}{(2\pi)}\sum_\mathbf{k} \tilde{h}_\mathbf{k} \exp(i \mathbf k \cdot \mathbf x) 
 \end{align}
 
-is typically employed whith the discrete wave vectors $\mathbf k = 2\pi/L\cdot (n_x,n_y)$.
-Repeating the calculation for a membrane of the area $A = L^2$ leads to the integral 
-
-\begin{align}
-    \int_A \mathrm d\mathbf x \exp(i\mathbf x \cdot(\mathbf k + \mathbf {k'})) = 
-    L^2 \delta_{\mathbf k , -\mathbf{k'} }\, ,  
-\end{align}
-
-which differs from the continuous calculation only in a factor $L^2$ and substituting the 
-dirac delta function for a Kronecker delta. Dimensionality analysis further confirms this result 
-as the dimension of $[\delta(\mathbf k + \mathbf{k'})] = [L^2 \delta_{\mathbf k , -\mathbf{k'} }] = m^2$
-match. This leads to a slighty different result for a discrete fourier tansformation
+with discrete wave vectors $\mathbf k = 2\pi/L\cdot (n_x,n_y)$.
+For a membrane of the area $A = L^2$ this discrete approach leads to the final expression for the fluctuation power spectrum
 
 \begin{align}
     \langle |\tilde{h}_\mathbf{k}|^2\rangle = \frac{k_{\mathrm B}T}{L^2(\kappa k^4 + \Sigma k^2)}\, . \label{eq:cental_ben_formula_fourier}
 \end{align}
 
+Notably, an additional factor of $1/L^2$ arises from the transition to a discrete basis. In this context, the continuous Dirac delta distribution $\delta(\mathbf{k})$ is replaced by its discrete counterpart $L^2 \delta_{\mathbf{k}, -\mathbf{k}}$. Dimensionality analysis confirms this substitution, as $[\delta(\mathbf{k})]$ and $[L^2 \delta_{\mathbf{k}, -\mathbf{k}}]$ possess the dimensions of area. 
+
 \section{Stretching tethers}
 
 The energy expression in \cref{eq:helfrich_energy} can be applied to a 
-cylindrical membrane \cite{Markus_tethers} with the curvature $K = 1/R$ where $R$ is the cylinder 
-radius. The contribution from the saddle splay modulus and the gaussian curvature 
-only contributes a constant and will be ommited. After integration 
-this yields the curvature energy of a cylinder alinged in the $z$ direction with
-length $L_z$
+cylindrical membrane geometry \cite{Markus_tethers}.For cylinder with radius $R$ the mean curvature is $K = 1/R$. According to Harmandaris and Deserno \cite{Markus_tethers}, the contribution from the Gaussian curvature and saddle splay modulus $\bar{\kappa}$ results in a constant, which can be omitted for this analysis. Integrating over the surface area 
+yields the curvature energy of a cylinder of length $L_z$ aligned along the $z$ axis
 
 \begin{align}
     E = \frac{\kappa}{2} \left(\frac{1}{R} \right)^2 2\pi RL_z 
     = \frac{\pi \kappa L_z}{R}\, .
 \end{align}
 
-This expression means that in order to maintain the cylindrical shape a 
-force along the $z$ direction is necessary, which encodes the 
-bending modulus $\kappa$ and can be calculated as the 
-derivative of the energy with respect to $L_z$ with the fixed area condition
-$A = 2\pi R L_z$
+To maintain a cylindrical shape a force $F_z$ must be applied. This force can be directly to the bending modulus by taking the derivative of the energy with respect to $L_z$ under the constraint of fixed surface area
 
 \begin{align}
     F_z = \frac{\partial E}{\partial L_z} = \frac{2 \pi \kappa}{R}\, .
@@ -705,50 +674,46 @@ $A = 2\pi R L_z$
 
 \section{System Topology}\label{topology}
 
-The topology of the molecule is defined in the \path{martini_v_2.0_POPC.itp} file 
+The molecular topology is defined in the \path{martini_v_2.0_POPC.itp} file, 
 obtained from the MARTINI website \cite{Martini,MartiniLipidome}. It serves as the baseline for the 
 parametrization in the following sections. It lists the employed potential for the 
 bonds and angles, including their equilibrium parameters in MARTINI units, as well
 as the bead types used in the representation.
 
-\cref{martini} introduced the basic bead types in the MARTINI method. In this work the system consists 
+\cref{martini} introduces the basic bead types in the MARTINI method. In this work the system consists 
 of POPC lipids and water molecules acting as the solvent. Each water bead is a P4 bead and 
 contains four classical water molecules. 
-
-The POPC lipids consist of a choline head group (Q0, 1), a phosphate group (Qa, 2) and two 
-glycerol groups (Na, 3/4) connecting the polar part to two tails. These are made up of a oleoyl (C1, 5/6/8; C3, 7)
-and a palmitoyl group (C1, 9/10/11/12) and are highly apolar. Each bead is assigned an ID ranging from
-one to twelve to precicely reference specific bead. The resulting molecule consiting of 
-the five unique bead types and twelve total beads
-is shown in \cref{fig:popc_lammps}. The relative position of the beads is based on MARTINI and extraced from the 
-\path{POPC-em.gro} file \cite{Martini,MartiniLipidome} which contains the positions of each bead in one molecule. The beads are connected by eleven bonds and eight angles, with 
-two unique bond types and three angle types. The specific bonds and angles are described in \cref{tab:bond_angle_connections}.
+The POPC lipids consist of a choline head group (Q0, bead 1), a phosphate group (Qa, bead 2) and two 
+glycerol groups (Na, beads 3 and 4) that connect the polar head to two hydrophobic tails. These tails are comprised of an oleoyl (C1, beads 5, 6, 8; C3, bead 7)
+and a palmitoyl group (C1, beads 9, 10, 11, 12) and are highly apolar. Each bead is assigned a unique ID ranging from
+one to twelve to precisely reference specific bead. The resulting coarse-grained molecule, consisting of 
+five unique bead types and twelve total beads
+is illustrated in \cref{fig:popc_lammps}. The relative bead positions are based on MARTINI mapping and were extracted from the 
+\path{POPC-em.gro} file \cite{Martini,MartiniLipidome}. The beads are connected by eleven bonds and eight angles, categorized into 
+two unique bond types and three angle types, as detailed in \cref{tab:bond_angle_connections}.
 There are no dihedral or improper interactions in the POPC molecule.
 
-\cref{intermol} defined the interaction between beads inside a molecule. For the bond interaction the potential is a 
-simple harmonic potential, which is implemented 
-in LAMMPS \cite{LammpsBond} as
+While \cref{intermol} defined the general interaction between beads inside a molecule, the specific bond potential is implemented as a simple harmonic potential
+in LAMMPS \cite{LammpsBond} 
 
 \begin{equation}
     E_{ij} = \hat{K}^b(r_{ij} - r^0_{ij})^2. \label{harmonic}\, ,
 \end{equation}
 
-where $K_b$ encodes the bond stiffness, containing the usual 
-factor of $1/2$ and $r^0_{ij}$ is the equilibrium
-bond distance of the bead pair. This works similarly for the angle \cite{LammpsAngle} using the potential
+where $K_b$ represents the bond stiffness, containing the usual 
+factor of $1/2$, and $r^0_{ij}$ is the equilibrium
+bond distance of the bead pair.
+Similarly, the angle potential \cite{LammpsAngle} is a cosine-squared function
 
 \begin{equation}
     E_{ijk} = \hat{K}^a[\cos(\theta_{ijk} - \cos(\theta^0_{ijk}))]^2\, , \label{cosine/squared}
 \end{equation}
 
 
-with $K_a$ fulfills the identical role as $K_b$ and similarly
-to before $\theta^0_{ijk}$ the equilibrium angle between the three beads. Though the choice 
-is given by the MARTINI database it is interesting to ask why potential of choice is 
-not simply harmonic for the angles. Mainly, the potential in \cref{cosine/squared}
-is much more computationally efficient because the calculation of a cosine does not include the $\arccos(\theta)$
-function, which is expensive and numerically sensitive.
-A detailed calculation of the equilibrium parameters is done in \cref{sec:dpd_bond_params}.
+where $K_a$ serves as the angular stiffness and  $\theta^0_{ijk}$ denotes the equilibrium angle between the three beads. Although this choice 
+is dictated by the MARTINI force field, it is worth noting why a cosine based potential is preferred over a simple harmonic one. The formulation in \cref{cosine/squared}
+is significantly more computationally efficient, as it avoids the use of the $\arccos(\theta)$ function, which is expensive and numerically sensitive.
+A detailed computation of the equilibrium parameters is done in \cref{sec:dpd_bond_params}.
 
 \begin{figure}[t]
 \centering
@@ -814,20 +779,18 @@ black C1 beads and the silver C3 bead. The assigned ID is shwon abvove each bead
 \section{DPD Units}\label{dpd_units}
 
 Molecular dynamics simulations frequently employ reduced units,
-which utilizes reference parameters to render every physical quantity
-dimensionless. For MARTINI these are usually the parameters of the Lennard-Jones potential
-$\epsilon$ and $\sigma$ as in \cref{LJ_pot}. However, since DPD has a different 
-force and thus potential one needs different reference parameters. For the 
-length parameter, the work of Wang and Hernandez \cite{Wang2024} is followed. They
-defined the length scale based on the volume required to contain three CG water beads. This 
+which utilize reference parameters to render physical quantities
+dimensionless. For MARTINI these are typically the Lennard-Jones parameters 
+$\epsilon$ and $\sigma$, defined in \cref{LJ_pot}. However, since DPD utilizes a different 
+force and potential, an alternative set of reference parameters is required. Following the work of Wang and Hernandez \cite{Wang2024}, the length scale is defined based on the volume required to contain three CG water beads. This 
 choice is not arbitrary as it 
 follows the early
 work of Groot and Warren 
-\cite{DPD_groot_warren} who established the number density $\rho=3$ DPD beads per unit of volume $V = r_{\text{ref}}^3$. 
-In MARTINI every water bead contains $N_w = 4$ molecules and
-the volume of one water molecule $V_w$ can be calculated by
-using the molar mass $M=18.02 \si{\g\per\mol}$,
-the density $\rho_w = 1 \si{\g\per\cubic\centi\meter}$ and the avogadro
+\cite{DPD_groot_warren} who established a standard number density of $\rho=3$ DPD beads per unit volume $V = r_{\text{ref}}^3$. 
+In the MARTINI model, every water bead represents $N_w = 4$ classical molecules. 
+The volume of a single water molecule, $V_w$, can be calculated using its
+molar mass $M=18.02 \si{\g\per\mol}$,
+the density $\rho_w = 1 \si{\g\per\cubic\centi\meter}$ and the Avogadro
 constant $N_A = 6.022 \cdot 10^{23} 
 \text{molecules}/\text{mol}$
 
@@ -836,32 +799,31 @@ constant $N_A = 6.022 \cdot 10^{23}
     = 29.9 \si{\cubic\angstrom}\, .
 \end{equation}
 
-The DPD length follows directly
+The DPD reference length follows directly from the previous computations
 
 \begin{equation}
     r_{\text{ref}} = \sqrt[3]{\rho \cdot N_w \cdot V_w} = 7.11 \si{\angstrom}\, ,
 \end{equation}
 
-which from now on can be used to convert every length into DPD units by division with the 
-reference length.
+which serves as the basis to convert any physical length into DPD units through normalization by $r_\text{ref}$.
 
-The definition of an energy scale is much simpler. The reference temperature was defined as
-$T_{\text{ref}}=298.15 \si{\K}$ and using the thermal energy as the reference unit is 
+The energy scale is defined more directly. By choosing the reference temperature as
+$T_{\text{ref}}=298.15 \si{\K}$, the thermal energy at this temperature is used as reference unit 
 
 \begin{equation}
     \epsilon_{\text{ref}} = k_{\mathrm{B}} T_{\text{ref}} = 4.12 \cdot 10^{-21} \si{\J} = 
     25.7 \si{\milli\eV}\, .
 \end{equation}
 
-Similarly to the length scale this energy scale allows conversion of every energy value to 
-be converted into DPD units by division. Furthermore, the combination of both scales can be 
-utilized to make every physical quantity dimensionless. 
+Similar to the length scale, this energy scale allows for the conversion of every energy value to 
+be converted into DPD units by division. Furthermore, the combination of these two scales can be 
+employed to render physical quantities dimensionless. 
 
-Since this work aims to investigate dynamic processes, namely the self-assembly it is cruicial
-to introduce a timescale. Usually this entails a simple composition of the 
-previously introduce scales but for DPD this has to be handled with more care. 
+Since this work aims to investigate dynamic processes, specifically the self-assembly, it is crucial
+to establish a timescale. While this usually entails a simple combination of the 
+existing scales, the DPD timescale has to be handled with more care. 
 Following the work of Wang and Hernandez \cite{Wang2024} the timescale is calculated by 
-matching the diffusion constant of DPD water to the experimental value. This leads to 
+matching the diffusion constant of DPD water to its experimental value. This leads to 
 a timescale of 
 
 \begin{align}
@@ -871,40 +833,36 @@ a timescale of
 
 \section{Determination of DPD Bonded Parameters}\label{sec:dpd_bond_params}
 
-As detailed in \cref{topology} the equilibrium parameters are sourced from the \path{martini_v_2.0_POPC.itp}
-file. They are given in SI units by the MARTINI \cite{Martini,MartiniLipidome} database, specifically the unit for distances is 
-$[r] = \si{\nano\m}$ and for the bond stiffness $[k^b] = \si{\kilo\J\per\mol\per\nano\m\squared}$.
-Similarly the angle stiffness is given in $[k^a] = \si{\kilo\J\per\mol}$ as the angles 
-themselves are already dimensionless. 
+The \path{martini_v_2.0_POPC.itp} file provides the equilibrium parameters, as detailed in \cref{topology}. The MARTINI database \cite{Martini,MartiniLipidome} specifies these parameters in SI units, specifically, it uses 
+$[r] = \si{\nano\m}$ for distances and $[k^b] = \si{\kilo\J\per\mol\per\nano\m\squared}$ for the bond stiffness.
+Similarly, the database defines the angle stiffness $[k^a] = \si{\kilo\J\per\mol}$, reflecting that angles are intrinsically dimensionless.
 
-For the conversion into DPD unists the reference scales defined in \cref{dpd_units} are utilized. 
-Besides the application of the scales, the MARTINI units have to be divided by the avogadro constant as 
-they are given in molar units.
+
+The conversion into DPD units employs the reference scales defined in \cref{dpd_units}
+Besides the application of the scales, the MARTINI units are divided by the avogadro constant to account for their molar basis.
 The bond spring 
-constant in DPD unit, $\hat{K}^b$, is calculates as
+constant in DPD unit, $\hat{K}^b$, follows as 
 
 \begin{align}
     \hat{K}^b = \frac{1}{2} k^b \frac{r_{\text{ref}}^2}{e_{\text{ref}}N_A}\, , \label{eq:bond_spring_conversion}
 \end{align}
 
-where $k^b$ is the equilibrium force constant from MARTINI with the factor $1/2$ discussed in \cref{topology}. 
-The conversion of the equilibrium distinances 
-is simply 
+where $k^b$ is the equilibrium force constant from MARTINI with the included factor of $1/2$ discussed in \cref{topology}. 
+The conversion of the equilibrium distances requires a simple scaling
 
 \begin{align}
     \hat{r}^0 = r^0/r_{\text{ref}}\, .
 \end{align}
 
-The angle spring constant follows the same pattern as \cref{eq:bond_spring_conversion}, 
+The angle spring constant follows a pattern identical to \cref{eq:bond_spring_conversion}, 
 yielding
 
 \begin{align}
     \hat{K}^a = \frac{1}{2}  \frac{k^a}{e_{\text{ref}}N_A}\, ,
 \end{align}
 
-with the MARTINI value $k^a$. The POPC molecule utilizes multiple bond and angle types, as defined 
-in \cref{topology}. The converted values, alongside their MARTINI  counterparts for each type 
-are summarized in \cref{tab:bond_angle_params}. The shown values are used in the simulations.
+where $k^a$ denotes the original MARTINI value. The POPC molecule utilizes multiple bond and angle types, as specified
+in \cref{topology}. \cref{tab:bond_angle_params} summarizes the converted values alongside their MARTINI counterparts for each type. The simulations employ these finalized parameters.  
 
 \begin{table}
     \centering
@@ -929,23 +887,22 @@ are summarized in \cref{tab:bond_angle_params}. The shown values are used in the
 
 \section{Determination of DPD Charge}
 
-As introduced in \cref{coulomb} the coulombic interaction for the beads is modeled using a slater potential, 
-as detailed in \cref{charge_density} and \cref{coulomb_force}. It employs a strength parameter and
-based on earlier works from Gonzales-Melchor et al \cite{Gonzales-Melchor_beta} who 
-calculated the value for a coarse-graining degree of $N = 3$ as $\beta_3 = 0.929$.
-Wang and Hernandez \cite{Wang2024} converted this factor $\beta$ 
-to the applied coarse-graining of $N = 4$ by assuming linearity. 
-The LAMMPS implementation \cite{LammpsSlater} utilizes the inverse value $\lambda = 1/\beta$ and the results are  
+Following the introduction in \cref{coulomb}, a slater potential models the coulombic interaction, as detailed in \cref{charge_density} and \cref{coulomb_force}. The model utilizes a strength parameter 
+derived from earlier works from Gonzales-Melchor et al \cite{Gonzales-Melchor_beta}, who 
+determine a value of $\beta_3 = 0.929$ for a coarse-graining degree of $N = 3$.
+Wang and Hernandez \cite{Wang2024} scaled this factor $\beta$ 
+to the applied coarse-graining of $N = 4$ under the assumption of linearity. 
+Because the LAMMPS implementation \cite{LammpsSlater} requires the inverse value $\lambda = 1/\beta$, the conversion yields  
 
     
 \begin{align}
     \beta = 0.844 = 1/\lambda = 1/1.185\, .
 \end{align}
     
-The introduction of a length and energy scale also has an effect on the charge scaling . To adjust 
+The introduction of a length and energy scale also impact the charge scaling. To adjust 
 the charge, the potential energy of two point charges in SI units is equated
-with the corresponding energy in DPD units \cite{Wang2024,Allen2017_verlet} 
-yielding 
+with the corresponding energy in DPD units \cite{Wang2024,Allen2017_verlet}, 
+resulting increase
 
 \begin{align}
     &\frac{q^2}{4\pi \epsilon_0 r}  = 
@@ -953,9 +910,8 @@ yielding
     &\hat{q} = \frac{q}{\sqrt{4\pi \epsilon_0 r_{\text{ref}}e_{\text{ref}}}} = 8.86\, .
 \end{align}
 
-Defining this charge means that a charge of one elemental charge in SI units corresponds 
-to a dimensionless DPD charge of $\hat{q} = 8.86$. The additional factors of $4\pi\epsilon_0$ are also absorbed 
-in the charge definition as is standard in LAMMPS.
+Under this definition, one elemental charge in SI units maps 
+to a dimensionless DPD charge of $\hat{q} = 8.86$. Standard LAMMPS convention absorbs the factors of $4\pi\epsilon_0$ directly into the charge definition.
 
 \section{Determination of DPD Force Parameters}\label{sec:dpd_parameters}
 
@@ -1748,7 +1704,7 @@ is significant.
     \end{subfigure}\hfill
     \begin{subfigure}{0.48\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{figures/self_assembly/128/martini_den.png} 
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/martini_profile.png} 
         \subcaption{}
     \end{subfigure}
     \begin{subfigure}{0.48\textwidth}
@@ -1841,7 +1797,7 @@ mentioned this led to a protocol which rescaled box dimensions to allow for bila
     \end{subfigure}\hfill
     \begin{subfigure}{0.48\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{figures/self_assembly/128/martini_den.png} 
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/martini_profile.png} 
         \subcaption{}
     \end{subfigure}
     \begin{subfigure}{0.48\textwidth}
@@ -1869,7 +1825,37 @@ can be observed in \cref{fig:256_mol_lipidsoup}, \cref{fig:256_mol_transition} a
 \cref{fig:256_mol_bilayer} matches the evolution of the samller systems with a 
 lipid soup clumping together while cooling down the system and resulting in a bilayer.
 
-
+\begin{figure}[!t]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/membrane_fluctuations/dpd_slope.png} 
+        \subcaption{}
+        \label{fig:dpd_slope}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/membrane_fluctuations/dpd_kappa.png} 
+        \subcaption{}
+        \label{fig:dpd_kappa}
+    \end{subfigure}
+    \medskip
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/membrane_fluctuations/martini_slope.png} 
+        \subcaption{}
+        \label{fig:martini_slope}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/membrane_fluctuations/martini_kappa.png} 
+        \subcaption{}
+        \label{fig:martini_kappa}
+    \end{subfigure}
+    \caption{\textbf{(a)} The power spectrum of the DPD membrane with a fit for the characteristic $k^{-4}$ sclaing consistent with \cref{eq:cental_ben_formula_fourier}. The shaded area marks the fit regime \textbf{(b)} The bending modulus values for every data point with the fittet value as horizontal line. \textbf{(c)} and \textbf{(d)} are the same plots but for the MARTINI membrane.}
+    \label{fig:ben_fourier}
+\end{figure}
 
 Further insight is granted by analyzing the density profiles in \cref{fig:bilayer_256_den_profiles}.
 The profile shows the typical structure of the lipid bilayer but with even more 
@@ -1882,7 +1868,31 @@ finite size effect is small and larger systems only complicate the self-assembly
 
 \section{Bending modulus by power spectrum}
 
-The method in \cref{sec:method_ben_mod_fourier} can be applied on a DPD and MARTINI bilayer and results in two power spectra. 
+The method in \cref{sec:method_ben_mod_fourier} can be applied on a DPD and MARTINI bilayer and results in two power spectra. The characteristic scaling of the power spectrum can be observed in both systems in \cref{fig:dpd_slope} and \cref{fig:martini_slope}. The fit according to \cref{eq:cental_ben_formula_fourier} yields a value for each membrane. The experimental value for POPC membranes from Kuĉerka (\textbf{cite here}) is about $21 k_\text{B}T$. This is very close to the reported MARTINI value. The DPD value however deviates substantially but is very fitting after closer examination. The softer DPD force allows much more free movement of the lipids in the membrane meaning that the fluctuations are not strongly limited by neighboring lipids. This is apparent by taking a deeper look at the membranes during the simulation runs in \cref{fig:bilayer_flucutations}.   
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/membrane_fluctuations/bilayer_4096.png} 
+    \subcaption{}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/membrane_fluctuations/martini_bilayer.png} 
+    \subcaption{}
+    \label{fig:sub2}
+  \end{subfigure}
+  \caption{\textbf{(a)} The DPD membrane consisting of 4096 lipids during the thermal undulation measurement. \textbf{(b)} The MARTINI membrane consisting of 8192 lipids.}
+  \label{fig:bilayer_flucutations}
+\end{figure}
+
+It is clearly visible that the DPD membranes has very strong undulations which corresponds to a lower bending modulus as less force is needed for deformation. Contrarily, the MARTINI bilayer is very straight, only showing slight undulations.
+
+
+
+
+
 
 
 

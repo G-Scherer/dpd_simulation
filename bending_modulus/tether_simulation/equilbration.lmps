@@ -8,7 +8,7 @@ angle_style cosine/squared
 kspace_style pppm 1.0e-4
 
 
-variable R equal 10
+variable R equal 8
 
 read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/bending_modulus/setup/cylinder_${R}.data 
 # read_data /remote/pi066a/scherer/dpd_simulation/bending_modulus/setup/cylinder_${R}.data 
