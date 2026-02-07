@@ -899,10 +899,10 @@ Because the LAMMPS implementation \cite{LammpsSlater} requires the inverse value
     \beta = 0.844 = 1/\lambda = 1/1.185\, .
 \end{align}
     
-The introduction of a length and energy scale also impact the charge scaling. To adjust 
+The introduced length and energy scales also impact the charge scaling. To calibrate 
 the charge, the potential energy of two point charges in SI units is equated
 with the corresponding energy in DPD units \cite{Wang2024,Allen2017_verlet}, 
-resulting increase
+resulting in
 
 \begin{align}
     &\frac{q^2}{4\pi \epsilon_0 r}  = 
@@ -915,37 +915,38 @@ to a dimensionless DPD charge of $\hat{q} = 8.86$. Standard LAMMPS convention ab
 
 \section{Determination of DPD Force Parameters}\label{sec:dpd_parameters}
 
-The repulsion parameters $A_{ij}$ for the DPD force are the core of the force field,
-determining the maximum repulsion of the conservative force defined in \cref{dpd}.
-In addition to that the drag parameter $\gamma$ has to be determined.
-The latter was derived from the early work of Groot and Warren \cite{DPD_groot_warren} who
-found at $\hat{T} =1$ the optimal value for the random force parameter was $\hat{\sigma} = 3$.
-Employing the connection between both parameters given by the fluctuation dissipation thoerem and 
-setting $k_{\text{b}}T$ to unity yields
+The repulsion parameters $A_{ij}$ constitute the core of the DPD force field,
+as they determine the maximum repulsion of the conservative force introduced in \cref{dpd}.
+In addition, the model requires the definition of the drag parameter $\gamma$.
+The work of Groot and Warren \cite{DPD_groot_warren} provides the basis for this value, identifying $\hat{\sigma} = 3$ as the optimal value for the random force parameter at a reduced temperature of $\hat{T} = 1$.
+Applying the fluctuation dissipation theorem and 
+setting the thermal energy $k_{\text{b}}T$ to unity yields
  
 \begin{align}
     \hat{\gamma} = 4.5\, .
 \end{align}
 
-The drag parameter $\hat{\gamma}$ is a fix parameter in the DPD 
-force field implementation in the LAMMPS package \cite{LammpsDPD}. Changing the target temperature of the DPD force 
-adjusts the random force parameter $\hat{\sigma}$ according to the fluctuation dissipation theorem.
+Within LAMMPS, the drag parameter $\hat{\gamma}$ serves as a fixed value in the force field implementation. Changing the target temperature of the DPD force automatically scales
+the random force parameter $\hat{\sigma}$, according to the fluctuation dissipation theorem.
 
-The repulsion parameters used in the simulation were derived by Wang and Hernandez \cite{Wang2024}.
-The values are shown in \cref{tab:dpd_params}. The derivation method is described below.
+Wang and Hernandez \cite{Wang2024} derived the repulsion parameters used in this simulation. 
+\cref{tab:dpd_params} presents these values, while the following section details derivation method.
 
-The baseline is the repulsion parameter between two water beads W-W, called $A_{ww}$. 
-This is done by matching the inverse compressibility $\kappa^{-1}$ from experimental data 
-to the corresponding value of $A_{ww}$. The discovered value is 
+The repulsion between two water beads $A_{ww}$ serves as the baseline. 
+Determining this value involves matching the inverse compressibility $\kappa^{-1}$ from experimental data 
+to DPD simulation data. This approach yields 
 
 \begin{align}
     A_{ww} = 102.067\, .
 \end{align}
 
-In MARTINI model the effective Lennard-Jones radius
-$\sigma_{ww}$ parameter of W-W interaction is used for every other same bead, meaning 
-$\sigma_{AA} = \sigma_{ww}$. Analogous to this the discovered repulsion parameter $A_{ww}$ is 
-also chosen for every other same bead repulsion $A_{AA} = A_{ww}$ for all bead types $A$.
+
+at a number density of $\rho = 3$.
+When correcting for coarse-graining, this value agrees well with the value found by Groot at Warren \cite{DPD_groot_warren} of $a = 25$, as the factor 4 is simply the coarse-graining degree. 
+
+The MARTINI model applies the effective Lennard-Jones radius
+$\sigma_{ww}$ from water-water interaction to all identical bead pairs, enforcing the condition 
+$\sigma_{AA} = \sigma_{ww}$. Analogously, this work assigns the determined repulsion parameter $A_{ww}$to every interaction between identical beads, resulting in $A_{AA} = A_{ww}$ for all bead types A.
 
 
 \begin{table}[t]
@@ -974,98 +975,79 @@ interaction paramters of the MARTINI model.}
 \label{tab:dpd_params}
 \end{table}
 
-From there the interaction of two arbitrary unlike beads ($A \neq B$) beads can be expressed as 
+The following expression defines the interaction between two distinc beads $(A \neq B)$ as
 
 \begin{equation}
     A_{AB} = A_{ww} + \Delta A_{AB}\, .
 \end{equation}
 
-The parameter $\Delta A_{AB}$ can be expressed, using the Flory-Huggins parameter as 
+The parameter $\Delta A_{AB}$ is related to the Flory-Huggins parameter 
 
 \begin{equation}
     \chi_{AB} = \lambda_\chi \Delta A_{AB}\, 
 \end{equation}
 
-with an additional fitting parameter $\lambda_\chi$ that connects both models.
-Earlier works by Groot and Rabone \cite{GROOT_xi_scale} indicate that the Flory-Huggins 
-parameter $\chi_{AB}$ scales linear with the size of the beads which in this system is always $N_m = 4$ 
-molecules per bead, implying 
+where the fitting parameter $\lambda_\chi$ links the two models.
+Earlier work by Groot and Rabone \cite{GROOT_xi_scale} demonstrate that the Flory-Huggins 
+parameter $\chi_{AB}$ scales linearly with the coarse-graining degree, $N_m = 4$
+molecules per bead, yielding 
 
 \begin{equation}
     \chi_{AB} = \bar{\chi}_{AB} N_m\, .
 \end{equation}
 
-This results in a final formula for the interaction parameter
+The final expression for the repulsion parameter reads
 
 \begin{equation}
     A_{AB} = A_{ww} + \bar{\chi}_{AB} N_m/\lambda_\chi\, . \label{final_form_dpd}
 \end{equation}
 
-To determine the $\lambda$ fitting parameter a phase seperation simulation is 
-conducted to using a box initially filled with two different bead types $A$ and $B$.
-After equilibration the volume fraction is measured. This method is repeated for 
-different values of $\Delta a_{AB}$. For each simulation run the Flory-Huggins paremter is 
-calculated using the measured equilibrium volume fraction $\phi$
+Determining the fitting parameter $\lambda_\chi$ requires a phase seperation simulation within a box initially containing two different bead types $A$ and $B$.
+The simulation measures the equilibrium volume fraction $\phi$. Repeating this procedure for 
+different values of $\Delta a_{AB}$ provides the necessary data point for the calculation. For each run, the measured volume fraction determines the Flory-Huggins parameter $\chi$ according to
 
 \begin{equation}
-    \chi = \frac{\ln[(1-\phi)/\phi]}{1 - 2\phi}
+    \chi = \frac{\ln[(1-\phi)/\phi]}{1 - 2\phi}\, .
 \end{equation}
 
-and plotted against the parameter $\Delta A_{AB}$. The slope of the resulting linear fit 
-yields the fitting parameter 
+A linear fit of the resulting data, plotted against the parameter $\Delta A_{AB}$, identifies the fitting parameter from its slope 
 
 \begin{align}
     \lambda_\chi = 0.28\, .
 \end{align}
 
-Wang and Hernandez \cite{Wang2024} employed a formula which uses a baseline interaction matrix
-$\epsilon_{AB}$ to calculate the size dependant Flory-Hugigns parameter.
+Wang and Hernandez \cite{Wang2024} utilize a baseline interaction matrix 
+$\epsilon_{AB}$ to calculate the size-dependant Flory-Hugigns parameter.
 
 \begin{equation}
     \bar{\chi}_{AB}N_m = \chi_{AB} = \frac{z}{k_{\mathrm{B}}T} \left[\epsilon_{AB} - 
     \frac{1}{2} (\epsilon_{AA} + \epsilon_{BB}) \right] \, ,
 \end{equation}
 
-using $z$ as the effective number of nearest neighbors.
-The employed database 
-is the MARTINI model \cite{Martini}. The calculated values can be substituted into \cref{final_form_dpd}. 
-The final values in \cref{tab:dpd_params} are used in this work for every 
-simulation.
+where $z$ represents the effective number of nearest neighbors.
+The MARTINI model \cite{Martini} serves as the baseline interaction matrix. Substituting the resulting values into \cref{final_form_dpd} yields the final repulsion coefficient. 
+This work employs the parameters displayed in \cref{tab:dpd_params} for every simulation.
 
 \section{System Setup}\label{sec:sys_setup}
 
-Initiating a simulation in LAMMPS requires an input files containing a header that specifies
-the number of beads, number of bond/angle/dihedral/improper types (\cref{intermol}),
-box dimensions and bead masses. Additionally, an atoms section, defining the position of every bead, 
-a bonds section, defining which beads 
-are connected by bonds and an angles section, defining which beads are connected by angles. Lastly
-there is a section
-containing the equilibrium parameters of the bonds and angle types.
-Usually, there are also sections for dihedral and improper interactions but, as mentioned, for the system 
-in this work they can be omitted.
+Initiating a simulation in LAMMPS requires an input files. A header specifies
+the number of beads, the count of bond, angle, dihedral, improper types (\cref{intermol}),
+the box dimensions and the bead masses. Following the header, specific sections define the position of every beads (atoms sections), the connections by bonds (bons section), the connections by angles (angles sections). The file concludes with the equilibrium parameters for each bond and angle type.
+Although dihedral and improper interactions typically require dedicated sections, this work omits them as previously discussed.
 
-To generate this file a python script is utilized which takes as input: the number of lipids in the system $N_l$,
-the number density $\rho$,
-the area per lipid $A_l$ and the water to lipid ratio $R_{w/l} = N_w/N_l$, where $N_w$ is the 
-amount of water beads in the system. The area per lipid is defined as the available area in 
-a square bilayer configuration, meaning 
+A Python script generates this file using several inputs: the number of lipids $N_l$, the number density $\rho$, the area per lipid $A_l$, and the water-to-lipid ratio $R_{w/l} = M_w/N_l$, where $N_w$ denotes the quantity of water beads. 
 
 \begin{align}
     A_l = \frac{L_x L_y}{N_l/2}\, , \label{eq:def_apl}
 \end{align}
 
-for a supposed bilayer in the $xy$-plane with dimensions $L_x$ and $L_y$. The number density 
-is a set parameter following the work of Groot and Warren \cite{DPD_groot_warren} with $\rho=3$.
-The other two inputs, the area per lipid $A_l$ and water to lipid ratio $R_{w/l}$ 
-are examined in detail in the following
-sections.
+defines the area per lipid, assuming a square bilayer in the $xy$-plane with dimensions $L_x$ and $L_y$. The number density 
+is a set parameter at $\rho=3$. This not only follows the work of Groot and Warren \cite{DPD_groot_warren} but is also mandatory as Wang and Hernandez \cite{Wang2024} determined the repulsion parameters at $\rho = 3$.
+The following sections examine the other two inputs, the area per lipid $A_l$ and the water-to-lipid ratio $R_{w/l}$ in greater detail.
 
-The header information 
-number of bead, bond, angle, improper and dihedral type was already discussed in \cref{topology} and \cref{tab:bond_angle_connections}.
-In a system of POPC molecules with water this yields: 6 bead types, 2 bond types and 3 angle types. 
+\cref{topology} and \cref{tab:bond_angle_connections} provide the specific counts of for each bead, bond, angle, improper and dihedral type. For the POPC-water system, this configuration yields six bead types, two bond types and three angle types.
 
-The total amount of beads, bonds and angles are calculated based on the number of bonds and angles per 
-molecule described in \cref{tab:bond_angle_connections} and the input parameters $N_l$ and $R_{w/l}$
+The script computes the total quantities of beads, beads, bonds and angles using the per-molecule definitions from \cref{tab:bond_angle_connections} and the input parameters $N_l$ and $R_{w/l}$
 
 \begin{align}
     &N(\text{beads}) = (12 + R_{w/l}) \cdot N_l \label{eq:num_beads}\\ 
@@ -1073,9 +1055,7 @@ molecule described in \cref{tab:bond_angle_connections} and the input parameters
     &N(\text{angles}) = 8 \cdot N_l\, .
 \end{align}
 
-The box dimensions, introduced in \cref{eq:def_apl}, are calculated by 
-utilizing the area per lipid, the number density and the total number of beads in the system
-calculated in \cref{eq:num_beads}
+The box dimensions derive from the area per lipid, the number density, and the total bead count determined in \cref{eq:num_beads}
 
 \begin{align}
     V &= \frac{N(\text{beads})}{\rho}\\
@@ -1083,26 +1063,19 @@ calculated in \cref{eq:num_beads}
     L_z &= \frac{V}{L_x L_y}\, .
 \end{align}
 
-The masses for each bead are set to unity in DPD units, $\hat{m} = 1$,
-completing the information needed in the header.
+Assigning a mass of unity to each bead in DPD units, $\hat{m} = 1$, completes the necessary header information.
 
-The information for the bonds and angles section are taken from \cref{tab:bond_angle_connections}
-for every POPC molecule. Similarly, the equilibrium parameters are shwon in \cref{tab:bond_angle_params}
-and can be utilized directly. 
+The bonds and angles section incorporate the connectivity data from \cref{tab:bond_angle_connections} for every POPC molecule. Similarly, \cref{tab:bond_angle_params} provides the equilibrium parameters. 
 
-The remaining atom section sets the starting position of each bead 
-and is dependant on the target configuration and will be described in the following sections.
+The remaining atoms section establishes the starting position of each bead. As these coordinates depend on the target configuration, the following sections describe the specific initialization procedures.
 
 \section{Optimization of Input Parameters}\label{sec:input_opt}
 
-Before the self-assembly process can be investigated, the remaining input paramters must 
-be optimized. The optimal approach to determine the parameters would be to test every 
-combination of area per lipid $A_l$ and water to lipid ratio $R_{w/l}$ resulting in a grid search, where 
-the global maximum is the optimal parameter pairing. This is a computationally expensive approach,
-requiring the simulation of potentially irrelevant combinations. To circumvent this procedure an 
-initial guess for the water to lipid ratio is employed: $R_{w/l}^{\text{init}} \approx 22$.   
-Holding the inital water to lipid ratio and the fixed number density 
-numerous simulations are performed on a pre-assembled bilayer configuration consisting of 128 lipids,
+Optimization of the remaining input parameters must precede the investigation of the self-assembly process. While a large grid search testing every combination of area per lipid $A_l$ and water-to-lipid ratio $R_{w/l}$ would identify the optimal parameter pairing at the global maximum, this approach would be computationally expensive, as it would simulate poentially irrelevant combinations. To bypass this procedure, this work employs an 
+initial guess for the water to lipid ratio $R_{w/l}^{\text{init}} \approx 22$. 
+
+Maintaining the initial ratio alongside the fixed number density, 
+numerous simulations of a pre-assembled bilayer configuration consisting of 128 lipids are performed, while
 varying the area per lipid.
 
 \begin{figure}[!t]
@@ -1126,107 +1099,88 @@ varying the area per lipid.
   \label{fig:system_setups}
 \end{figure}
 
-The pre-assembled bilayer is generated by configuring the atoms section 
-described in \cref{sec:sys_setup}.
-The \path{POPC-em.gro} file is used as a baseline for each molecule topology and each molecule 
-is placed on one of two grids in the $xy$-planes, seperated by a fixed value.
-The lateral spacing of the grid points is 
-determined by the target area per lipid. To orient the tails inwards, one leaflet in rotated by 180° 
-degrees around the $x$-axis. To complete the atoms section water beads are placed outside of
-the leaflets to act as the solvent in the system. This setup for 128 lipids can 
-be seen in \cref{fig:128_bilayer_setup}.
+The configuration of the atoms section, as detailed in \cref{sec:sys_setup}, generates the pre-assembled bilayer. Using the \path{POPC-em.gro} file as a structural baseline, the generation script places each molecule onto one of two grids in the $xy$-planes, separated by a fixed distance. The target area per lipid determines the lateral spacing of these grid points. To orient the lipid tails inward, the script rotates one leaflet by 180° around the x-axis. Finally, placing water beads outside the leaflets completes the atoms section and provides the solvent environment. \cref{fig:128_bilayer_setup} illustrates this setup for a system of 128 lipids.
 
-With this setup 15 simulations were carried out with 128 POPC lipids, an inital water to lipid ratio of $R_{w/l} = 22$ 
-with varying area per lipids ranging from $A_l = 0.5 \si{\nano\m\squared}$ to $A_l = 1.2 \si{\nano\m\squared}$
-at a temperature of $\hat{T} = 1.0$ and $\hat{T} = 0.8$. The significance of the temperature choice will be investigated in the 
-subsequent sections. Each simulation run was $3000 \tau$ DPD timesteps with a timestep $\Delta \hat{t} = 0.01$ 
-following Wang and Hernandez \cite{Wang2024}. To quantify the quality of the bilayer the 
-nematic order parameter introduced in \cref{nematic} was utilized and calculted for the last $2000 \tau$
-DPD timesteps to discard effects from the grid starting position. To calculte the 
-order parameter the normalized head-to-tail vector was utilized as orientation. 
+This study comprises 15 simulations performed with 128 POPC lipids and an initial water-to-lipid ratio of $R_{w/l}=22$. The simulations explore area-per-lipid values ranging from $A_l = 0.5\si{\nano\m\squared}$ to $1.2\si{\nano\m\squared}$ at temperatures of $\hat{T}=1.0$ and $0.8$. Subsequent sections investigate the significance of these temperature choices. Each run covers a duration of $3000\tau$ DPD time units with a timestep of $\Delta \hat{t} = 0.01$, following the protocol established by Wang and Hernandez \cite{Wang2024}. To quantify the bilayer quality, the analysis utilizes the 
+nematic order parameter introduced in \cref{nematic}. The calculation covers the last $2000 \tau$
+of the DPD trajectories to discard effects arising from the initial grid configuration. This procedure employs the normalized head-to-tail vector as the orientation axis for determining the order parameter. 
 
-The next step involves investigating the water to lipid ratio and ensure that the initial guess 
-was justified. The procedure is the same as before, but instead of varying the area per lipid, 
-the water to lipid ratio is varied with the area per lipid set to the best value of the previous 
-simulations. With the optimal pairing the self-assembly process can be started.
+The next investigating examines the water-to-lipid ratio to validate the initial guess. While following the previous methodology, the study now varies the water-to-lipid ratio instead of the area per lipid. During these runs, the area per lipid remains fixed at the optimal value identified in the preceding simulations. Establishing this optimal parameter pairing finally allows the self-assembly process to begin.
 
-\section{Spontanious Self-Assembly Protocol} \label{sec:128_assembly}
+\section{Spontaneous Self-Assembly Protocol} \label{sec:128_assembly}
 
-To simulate self-assembly the lipid and water molecules are dispersed randomly throughout the simulation 
-box. To achieve this the atom section is adjusted to display a disordered configuration (lipid soup)
-instead of the pre-assembled bilayer formation 
-in the former section. Each lipid and water molecule is assigned a random center of mass. 
-To achieve random allignment of the lipids a rotation around every axis is added to each individual
-lipid. After these displacements the periodic boundary condition is applied to keep every bead inside 
-the designated box volume. This procedure highlights an advantage of DPD. Usually when generating bead positions there is great care involved to stop beads from overlapping which would result in high energy starting configurations. Since DPD is soft there is no great penalty for overlapping particles making the starting position much less sensitive. The corresponding system setup for the self-assembly 
-can be seen in \cref{fig:lipid_soup_methods}.
+To investigate self-assembly, the simulation setup disperses the lipid and water molecules are randomly throughout the 
+box. The script adjusts the atom section to generate a disordered configuration, a lipid soup, instead of the pre-assembled bilayer formation described previously.
+The initialization assigns a random center of mass to each water and lipid molecule. To ensure random alignment, the procedure adds individual rotations around every axis to each lipid. Applying the periodic box condition retains every molecule within the designated box. 
 
-Equilibrating the system is achieved by running it a an elevated temperature of $\hat{T} = 2$
-where no self-assembly occurs. To prevent large tempreature temperature fluctuations
-at the start of the simulation, every atom is assigned a random velocity 
-governed by the temperature and a gaussian distribution. To induce bilayer formation the temperature is 
-gradually lowered to $\hat{T} = 1$ by changing 
-the temperature argument of the DPD force. Doing so does not allow to control the speed of 
-the temperature change as the DPD thermostat adjusts the random force strength parameter $\hat{\sigma}$
-instantaneously, via $\hat{\sigma} = \sqrt{2 \hat{\gamma}\hat{T}}$. To emulate a continous ramping of 
-the temperature 
-a loop is employed which changes the target 
-DPD temperature every few steps. 
-After reaching the target tempreature value of $\hat{T} = 1$, a longer production phase
-is excecuted to stabilize the structure.
-To investigate the effect of lower temperatures on the quality of the final structure 
-the procedure is repeated using a production
+This procedure highlights a significant advantage of DPD. While standard MD simulations require great care to prevent bead overlaps, which would result in high-energy starting configurations, the soft nature of the DPD minimizes the penalty for overlapping particles. Consequently, the simulation remains stable even with this simple setup scheme. \cref{fig:lipid_soup_methods} illustrates the corresponding system before self-assembly.
+
+Equilibrating the system is achieved by running it at an elevated temperature of $\hat{T} = 2$
+where high thermal energy prevents premature self-assembly. To minimize large temperature fluctuations
+during the initial phase, every atom is assigned a random velocity drawn from a Gaussian distribution, 
+consistent with the starting temperature. Gradually lowering the temperature to $\hat{T} = 1$, induces bilayer formation by modifying the temperature argument of the DPD force.
+However, simply updating the this value causes the DPD thermostat to adjust the random force parameter $\hat{\sigma} = \sqrt{2\hat{\gamma}\hat{T}}$ instantaneously, which prevents a controlled temperature ramp.
+To emulate a continuous cooling process, the simulation utilizes a loop that incrementally updates the target DPD temperature every few steps. 
+After reaching the target temperature of $\hat{T} = 1$, a longer production phase
+stabilizes the resulting structure.
+To evaluate how lower temperatures influence the quality of the final structure, a second set of simulations repeats this procedure using a production
 temperature of $\hat{T} = 0.8$.
 
-To quantify the bilayer structure the nemaitc order parameter and the contact number from \cref{nematic}
-are utilized to measure both the allignment and the packing density of the bilayer.
-For the contact number the cutoff distance characterizing which lipids count as neighbors has to be chosen. The basis for this value is the area per lipid in the system which directly corresponds to a radius $r_c = \sqrt{A_l/\pi}$. Furthermore, a
+The analysis utilizes the nematic order parameter and the contact number from \cref{nematic} to measure both the alignment and the packing density of the bilayer.
+The contact number requires selecting a cutoff distance to categorize which lipids count as neighbors. The area per lipid serves as the basis for this value, as it directly corresponds to a radius $r_c = \sqrt{A_l/\pi}$. Furthermore, a
 comparison to the MARTINI model is added, by calculating the same metrics for a pre-assembled and 
 equilibrated MARTINI bilayer at $T = 300\si{K}$. To test whether the bilayer reached the 
 target structure  
 a pre-assembled DPD bilayer at both temperatures is also compared. 
-Additionally, to investigate the bead distribution a density profile along the
-bilayer axis is analyzed. The beads are split into three groups: head group (ID 1,2,3,4)
-, first tail group (ID 5,6,9,10)  
-and the terminal tail group (ID 7,8,11,12). The IDs can be compared to \cref{fig:popc_lammps}
-for visualization.
+Additionally, a density profile along the
+bilayer axis reveals the bead distribution.  
+To emphasize phase seperation, the evaluation splits the bead types into three distinct groups 
 
+\begin{itemize}
+    \item Head group: ID 1, 2, 3, 4
+    \item First tail group: ID 5, 6, 9, 10 
+    \item Terminal tail group: ID 7, 8, 11, 12.
+\end{itemize}
+
+\cref{fig:popc_lammps} illustrates the different bead IDs and \cref{fig:popc_groups} the bead groups.
+
+\begin{figure}{t}
+\centering
+\includegraphics[width=9cm]{figures/methods/popc_groups.png}
+\caption{A Visualization of the different bead groups. The head group is red, the first tail group is violet and the terminal tail group isblue. This partition serves as the baseline for the density profile.}
+\label{fig:popc_groups}
+\end{figure}
 
 \section{Implementation of Larger Systems}\label{sec:larger_systems}
 
-To test the effect of the amount of lipids, a system containing double the amount of lipids at 256
-is utilized. The setup is similar to \cref{sec:128_assembly} but since the area per lipid and 
-the water to lipid ratio were optimized for 128 lipids the paramers for 256 lipids are finetuned 
-for this system. This entails slight changes to the area per lipid and the water to lipid ratio.
+To evaluate the finite size effect and the ability to generalize to larger systems, a system containing double the amount of lipids at 256
+is utilized. While the setup mirrors the 128-lipid assembly in \cref{sec:128_assembly}, the change in system size necessitates fine-tuning of the area per lipid and the water-to-lipid ratio. This process involves slight adjustments to both parameters to ensure optimal results.
 
-The simulation procedure starts at $\hat{T} = 2$ with an 
-identical velocity initialization. A longer 
-equilibration run was necessary to prevent ensure proper dispersion and prevent 
-unwanted clumping of lipid tails. The cooling 
-process commences until the system reaches the target temperature of $\hat{T} = 1$.
-This initial configuration resulted in bilayer formation within a non-cubic area where 
-the area per lipid is below the optimal value.
-To achive  a square-shaped bilayer the box is 
-gradually deformed to adjust the dimenstions while retining the same box volume.   
-After the deformation process the production
-phase begins. The time of simulation is increased for this system due to the increased size.
+The simulation initiates at $\hat{T} = 2$ with an 
+identical velocity initialization. Ensuring proper dispersion and preventing unwanted clumping of lipid tails necessitates a longer equilibration phase. The cooling 
+process then proceeds until the system reaches the target temperature of $\hat{T} = 1$.
 
-The investigation of the bilayer quality is identical to \cref{sec:128_assembly} with the same 
-MARTINI bilayer but DPD bilayers at the same system size. 
+This initial configuration yields a bilayer within a non-cubic area where 
+the area per lipid remains below the optimal value.
+To achieve a square-shaped bilayer, the simulation gradually deforms the box, adjusting the dimensions while maintaining a constant volume.   
+
+The production phase follows the deformation process. Due to the increased system size, a longer total simulation time is required. The analysis of bilayer quality follows the methodology described in \cref{sec:128_assembly}, comparing the results against the same MARTINI baseline and DPD bilayers of matching system size.
 
 \section{Simulations of membrane Fluctuations}\label{sec:method_ben_mod_fourier}
 
-To determine the bending modulus of a POPC membrane the theoretical foundation of \cref{sec:ben_mod_fourier} is utilized. For this the power spectrum of each mode in \cref{eq:cental_ben_formula_fourier} has to be measured and with a corresponding fit results in the bending modulus. This procedure however is not straightforward.
-Once $1/k$ where $k$ is the wave vector is comparable to the bilayer thickness $w$ continuums theory breaks down and. This means that small wave vectors have to be investigated, but this also proves to be difficult as for values smaller than the critical wavelength $k_c = \sqrt{\Sigma/\kappa}$ the lateral tension dominates. Therefore, the simulations have to be carried out at zero lateral tension to ensure the target scaling of $k^{-4}$. Guaranteeing this condition is difficult by manually adjusting the box dimensions is difficult. To circumvent this a Nose/Hoover barostat (\textbf{cite here}) is utilized, takes a specific target pressure and changes the box volume accordingly. To achieve zero tension a low damping parameters which determines how fast the barostat reacts is chosen. To allow for small wave vectors the system needs to be substantially larger than the self-assembly system. 
+The determination of the POPC membrane bending modulus utilizes the theoretical foundation of \cref{sec:ben_mod_fourier}. This process involves measuring the power spectrum of each mode in \cref{eq:cental_ben_formula_fourier} and applying a corresponding fit to derive the bending modulus. However, several physical constraints complicate this procedure
 
-The start of the simulation is similar to \cref{sec:input_opt} with a pre-assembled membrane with 4096 lipids similar to earlier work of Cook and Deserno (\textbf{cite here}). After an equilibration phase of 100$\tau$ to disregard the effects of the grid start 100 samples of the system are taken. To produce a height function the mean tail position of each lipid is interpolated on a $16 \times 16$ grid. This interpolation has to be handled with care as it introduces discretation artefacts. This is also discussed in the works of Cook and Deserno (\textbf{cite here}). For the two dimensional wave numbers $(n_x, n_y)$ and a $N \times N$ grid a dampening factor of 
+
+Continuum theory breaks down when the inverse wave vector 1/k becomes comparable to the bilayer thickness w. Consequently, the investigation must focus on small wave vectors. However, for values smaller than the critical wavelength $k_c = \sqrt{\Sigma/\kappa}$ the lateral tension dominates. The simulations must therefore run at zero lateral tension to ensure the target scaling of $k^{-4}$. Maintaining this condition is difficult by manually adjusting the box dimensions is difficult \cite{Cooke_bending_mod}. To circumvent this, a Nose/Hoover barostat (\textbf{cite here}) adjusts the box volume to maintain a specific target pressure, which is simply the average pressure given by LAMMPS for simulations without a barostat. Choosing a low damping parameter, which governs the reaction speed of the barostat, ensures the achievement of zero tension, while using a reduced timestep of $\Delta \hat{t} = 0.001\tau$. The timestep adjustment is central as for low damping parameters a large change in pressure leads to a large change in the box volume. If the time step is too large pressure spikes are more common, leading to oscillation or heavy reshaping of the box dimensions. The system must be substantially larger than the self-assembly setup to accommodate small wave vectors.
+
+The simulation begins with a pre-assembled membrane containing 4096 lipids, following the methodology of \cref{sec:input_opt} and the work of Cook and Deserno \cite{Cooke_bending_mod}. After an equilibration phase of 100$\tau$ to eliminate grid-initialization effects, 100 samples of the system are taken. To generate a height function the mean tail position of each lipid is interpolated on a $16 \times 16$ grid. This interpolation requires careful handling, as it introduces discretization artifacts, discussed by Cook and Deserno \cite{Cooke_bending_mod}.
+The calculation must account for a damping factor for the two-dimensional wave numbers $(n_x, n_y)$ and an $N \times N$ grid
 
 \begin{align}
-    \mathrm{sinc}^2\left(\frac{n_x}{N}\right)\mathrm{sinc}^2\left(\frac{n_y}{N}\right)
+    \mathrm{sinc}^2\left(\frac{n_x}{N}\right)\mathrm{sinc}^2\left(\frac{n_y}{N}\right)\, .
 \end{align}
 
-has to be accounted for as it is q dependant and would interfere with the results. This issue is solved by dividing out this factor.
-A two-dimensional fast fourier transformation is applied on the grid. The absolute value squared is averaged and is ordered into bins of corresponding $k$ values. As the lateral tension is zero a simple $k^{-4}$ fit of
+Dividing out this factor resolves its $k$-dependence, which would otherwise interfere with the results. A two-dimensional Fast Fourier Transform (FFT) then processes the grid data. The absolute value squared is averaged and is ordered into bins of corresponding $k$ values. As the lateral tension is zero a simple $k^{-4}$ fit of
 
 \begin{align}
     L^2 \langle |\tilde{h}_k|^2 \rangle L^2 \approx \frac{k_\text{B}T}{\kappa} k^{-4}
