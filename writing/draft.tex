@@ -270,6 +270,12 @@ Prof. Tristan Bereau
 
 \chapter*{Abstract}
 
+This work utilizes a coarse-grained DPD force field based on the MARTINI method, proposed by Wang and Hernandez (\textit{ACS Omega, 2024}), to investigate membrane self-assembly and the reproducibility of membrane properties. The evaluation assesses packing density, alignment, and phase separation. Furthermore, the study computes the area per lipid, membrane thickness, and bending modulus, comparing these results to their MARTINI counterparts. A power spectrum analysis, following the methodology of Cooke and Deserno (\textit{J. Chem. Phys. 2005}), determines the bending modulus. Successful self-assembly processes yield a structure that closely resembles a MARTINI bilayer. However, the increased effective size of DPD beads results in an elevated area per lipid of approximately $0.85\si{\nano\m\squared}$ compared to the MARTINI value of $0.65\si{\nano\m\squared}$. Additionally, the soft DPD interaction reduces the bilayer thickness to $2.9\si{\nano\m}$, contrasted with $4.1\si{\nano\m}$ for MARTINI. Similarly, the bending modulus decreases significantly to $5.2k_\text{B}T$ compared to the MARTINI value of $19.0k_\text{B}T$. The softness of the DPD force permits substantial overlap between beads, which explains these deviations.
+
+\chapter*{Zusammenfassung}
+
+Diese Arbeit nutzt ein grobkörniges (coarse-grained) DPD-Kraftfeld basierend auf der MARTINI-Methode, vorgeschlagen von Wang und Hernandez (\textit{ACS Omega, 2024}), um die Membran-Selbstassemblierung und die Reproduzierbarkeit von Membraneigenschaften zu untersuchen. Die Auswertung beinhaltet Analyse der Packungsdichte, der Ausrichtung (alignment) und die Phasenseparation. Darüber hinaus wird in dieser Arbeit der Platzbedarf pro Lipid (area per lipid), die Membrandicke sowie das Biegemodul (bending modulus) berechnet und vergleichen mit den entsprechenden MARTINI Ergebnissen. Eine Power-Spektrum-Analyse, welche der Methodik von Cooke und Deserno (\textit{J. Chem. Phys. 2005}) folgt, bestimmt das Biegemodul. Erfolgreiche Selbstassemblierungsprozesse liefern eine Struktur, die einem MARTINI-Bilayer stark ähnelt. Jedoch führt die erhöhte effektive Größe der DPD-Beads zu einem gesteigerten Platzbedarf pro Lipid von etwa $0.85\si{\nano\m\squared}$ im Vergleich zum MARTINI-Wert von $0.65\si{\nano\m\squared}$. Zusätzlich reduziert die weiche DPD-Wechselwirkung die Bilayer-Dicke auf $2.9\si{\nano\m}$, im Kontrast zu $4.1\si{\nano\m}$ bei MARTINI. Ebenso sinkt der Biegemodul signifikant auf $5.2k_\text{B}T$ verglichen mit dem MARTINI-Wert von $19.0k_\text{B}T$. Die Weichheit der DPD-Kraft ermöglicht eine erhebliche Überlappung zwischen den Beads, was diese Abweichungen erklärt.
+
 \tableofcontents
 
 \clearpage
@@ -279,33 +285,13 @@ Prof. Tristan Bereau
 
 \chapter{Introduction}
 
-Coarse-grained (CG) molecular dynamic (MD) models are a very 
-effective method to simulate large molecular systems. In contrast to all atom simulation 
-which resolve individual atomistic trajectories, CG models represent atomic groups
-as interaction sites or beads.
+Computer simulations provide an important technique to investigate biophysical processes that remain difficult to access experimentally. While all-atom force fields simulate every interaction individually and deliver very accurate results, they require substantial computational power. Coarse-grained models overcome this problem by reducing the degrees of freedom.
 
-The reduced complexity of the system offers substantial acceleration compared to the atomistic 
-approach making it possible to simulate much larger systems which are unattainable in all 
-atom simulations. The most popular method
-for CG molecular dynamics is the MARTINI model with the 
-Lennard-Jones potential as the underlying force-field. 
+This work proposes a coarse-grained implementation of Dissipative Particle Dynamics (DPD), first introduced by Groot and Warren \cite{DPD_groot_warren}, utilizing the MARTINI force field as a baseline for parametrization \cite{Wang2024}. DPD offers advantages over other force fields due to its integrated thermostat and soft-core interactions, which facilitate faster dynamics. The study tests the implemented DPD model on lipid membrane self-assembly across different system sizes and temperatures. The investigation focuses on homogeneous membranes consisting of 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine (POPC), a lipid that plays a significant role in biophysics. Choosing the self-assembly process provides a robust benchmark to evaluate the capabilities of the implementation. The evaluation assesses the membrane based on packing density and general alignment. Furthermore, the analysis examines multiple membrane properties, specifically the area per lipid, membrane thickness, and the bending modulus. The latter is computed by implementing a power spectrum analysis \cite{Cooke_bending_mod}.
 
-This thesis employs the MARTINI model as a baseline for a system but
-then applies a different force-field, namely \textbf{dissipative particle dynamics}
-(DPD). To test this approach the self-assembly of 
-a lipid bilayer is monitored and afterwards the mechanical properties are determined, more 
-specifically the bending modulus.
+First, a comprehensive theory section introduces important concepts and the foundations for the implementation and evaluation. Next, the methods section explores the transition from MARTINI to a coarse-grained DPD implementation, including a detailed description of the lipid system topology, the conversion into DPD units, and the simulation protocols. Lastly, a discussion of the results follows, with a strong focus on comparing DPD and MARTINI.
 
-Lipid bilayers are a fundamental biological structure as they constitute 
-the basis of almost all membranes in cells. The polar heads act as a barrier for
-any polar or charged particles and molecules thus
-making it a very effective structure and worth exploring with DPD.
-The chosen lipid 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine 
-(POPC) consists of a choline head group which is connected with the 
-oleoyl and palmitoyl tails by a phosphate and glycerol group. 
 
-The simulations were carried out using the LAMMPS software which is a
-versatile molecular dynamics simulation package.
 
 \chapter{Theory}
 
@@ -407,8 +393,7 @@ Furthermore, the DPD force is a short-range interaction, while the Lennard-Jones
     \label{fig:sub2}
   \end{subfigure}
   \caption{(a) The DPD force and its corresponding potential. (b) The Lennard-Jones 
-  potential used in the MARTINI method. Key difference is the DPD force and potential 
-  do not diverge at the pair distance $r_{ij}=0$. }
+  potential used in the MARTINI method, showed in dashed lines.}
   \label{comp_forces}
 \end{figure}
 
@@ -646,22 +631,22 @@ For a membrane of the area $A = L^2$ this discrete approach leads to the final e
 
 Notably, an additional factor of $1/L^2$ arises from the transition to a discrete basis. In this context, the continuous Dirac delta distribution $\delta(\mathbf{k})$ is replaced by its discrete counterpart $L^2 \delta_{\mathbf{k}, -\mathbf{k}}$. Dimensionality analysis confirms this substitution, as $[\delta(\mathbf{k})]$ and $[L^2 \delta_{\mathbf{k}, -\mathbf{k}}]$ possess the dimensions of area. 
 
-\section{Stretching tethers}
+% \section{Stretching tethers}
 
-The energy expression in \cref{eq:helfrich_energy} can be applied to a 
-cylindrical membrane geometry \cite{Markus_tethers}.For cylinder with radius $R$ the mean curvature is $K = 1/R$. According to Harmandaris and Deserno \cite{Markus_tethers}, the contribution from the Gaussian curvature and saddle splay modulus $\bar{\kappa}$ results in a constant, which can be omitted for this analysis. Integrating over the surface area 
-yields the curvature energy of a cylinder of length $L_z$ aligned along the $z$ axis
+% The energy expression in \cref{eq:helfrich_energy} can be applied to a 
+% cylindrical membrane geometry \cite{Markus_tethers}.For cylinder with radius $R$ the mean curvature is $K = 1/R$. According to Harmandaris and Deserno \cite{Markus_tethers}, the contribution from the Gaussian curvature and saddle splay modulus $\bar{\kappa}$ results in a constant, which can be omitted for this analysis. Integrating over the surface area 
+% yields the curvature energy of a cylinder of length $L_z$ aligned along the $z$ axis
 
-\begin{align}
-    E = \frac{\kappa}{2} \left(\frac{1}{R} \right)^2 2\pi RL_z 
-    = \frac{\pi \kappa L_z}{R}\, .
-\end{align}
+% \begin{align}
+%     E = \frac{\kappa}{2} \left(\frac{1}{R} \right)^2 2\pi RL_z 
+%     = \frac{\pi \kappa L_z}{R}\, .
+% \end{align}
 
-To maintain a cylindrical shape a force $F_z$ must be applied. This force can be directly to the bending modulus by taking the derivative of the energy with respect to $L_z$ under the constraint of fixed surface area
+% To maintain a cylindrical shape a force $F_z$ must be applied. This force can be directly to the bending modulus by taking the derivative of the energy with respect to $L_z$ under the constraint of fixed surface area
 
-\begin{align}
-    F_z = \frac{\partial E}{\partial L_z} = \frac{2 \pi \kappa}{R}\, .
-\end{align}
+% \begin{align}
+%     F_z = \frac{\partial E}{\partial L_z} = \frac{2 \pi \kappa}{R}\, .
+% \end{align}
 
 
 
@@ -721,59 +706,10 @@ A detailed computation of the equilibrium parameters is done in \cref{sec:dpd_bo
 \caption{Coarse-grained POPC molecule representation in LAMMPS. The Q0 choline head group is red, 
 the Qa phosphate group is blue,
 the connecting Na glycerol groups is violet and the apolar tails are made up of the
-black C1 beads and the silver C3 bead. The assigned ID is shwon abvove each bead.}
+black C1 beads and the silver C3 bead. The assigned ID is shown above each bead.}
 \label{fig:popc_lammps}
 \end{figure}
 
-\begin{table}[t]
-    \centering
-    
-    \begin{minipage}{0.48\textwidth}
-        \centering
-        \begin{tabular}{|cc|c|}
-            \hline
-            Bead 1 & Bead 2 & Bond type \\
-            \hline 
-            (Q0, 1) & (Q0, 2) & 1\\
-            (Q0, 2) & (Na, 3) & 1\\
-            (Na, 3) & (Na, 4) & 2\\
-            (Na, 3) & (C1, 5) & 1\\
-            (C1, 5) & (C3, 6) & 1\\
-            (C1, 6) & (C1, 7) & 1\\
-            (C1, 7) & (C1, 8) & 1\\
-            (Na, 4) & (C1, 9) & 1\\
-            (C1, 9) & (C1, 10) & 1\\
-            (C1, 10) & (C1, 11) & 1\\
-            (C1, 11) & (C1, 12) & 1\\
-            \hline
-        \end{tabular}
-        \subcaption{}
-    \end{minipage}%
-    \hfill 
-    \begin{minipage}{0.48\textwidth}
-        \centering
-        \begin{tabular}{|ccc|c|}
-            \hline
-            Bead 1 & Bead 2 & Bead 3 & Angle type \\
-            \hline
-            (Q0, 2) & (Na, 3) & (Na, 4) & 2\\
-            (Q0, 2) & (Na, 3) & (C1, 5) & 1\\
-            (Na, 3) & (C1, 5) & (C3, 6) & 1\\
-            (C1, 5) & (C3, 6) & (C1, 7) & 3\\
-            (C3, 6) & (C1, 7) & (C1, 8) & 1\\
-            (Na, 4) & (C1, 9) & (C1, 10) & 1\\
-            (C1, 9) & (C1, 10) & (C1, 11) & 1\\
-            (C1, 10) & (C1, 11) & (C1, 12) & 1\\
-            \hline
-        \end{tabular}
-        \subcaption{}
-    \end{minipage}
-    \caption{(a) Information about which bead pairs are connected by bonds and the bond type governging the
-    interaction. Each bead is referenced by the MARTINI bead type and an ID to differenciate between 
-    different beads of the same type. (b) Inforamtion about which beads are triplets are connected by 
-    angles and the angle types.}
-    \label{tab:bond_angle_connections}
-\end{table}
 
 
 \section{DPD Units}\label{dpd_units}
@@ -807,6 +743,56 @@ The DPD reference length follows directly from the previous computations
 
 which serves as the basis to convert any physical length into DPD units through normalization by $r_\text{ref}$.
 
+\begin{table}[t]
+    \centering
+    
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \begin{tabular}{ccc}
+            \toprule
+            Bead 1 & Bead 2 & Bond type \\
+            \midrule
+            (Q0, 1) & (Q0, 2) & 1\\
+            (Q0, 2) & (Na, 3) & 1\\
+            (Na, 3) & (Na, 4) & 2\\
+            (Na, 3) & (C1, 5) & 1\\
+            (C1, 5) & (C3, 6) & 1\\
+            (C1, 6) & (C1, 7) & 1\\
+            (C1, 7) & (C1, 8) & 1\\
+            (Na, 4) & (C1, 9) & 1\\
+            (C1, 9) & (C1, 10) & 1\\
+            (C1, 10) & (C1, 11) & 1\\
+            (C1, 11) & (C1, 12) & 1\\
+            \bottomrule
+        \end{tabular}
+        \subcaption{}
+    \end{minipage}%
+    \hfill 
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \begin{tabular}{cccc}
+            \toprule
+            Bead 1 & Bead 2 & Bead 3 & Angle type \\
+            \midrule
+            (Q0, 2) & (Na, 3) & (Na, 4) & 2\\
+            (Q0, 2) & (Na, 3) & (C1, 5) & 1\\
+            (Na, 3) & (C1, 5) & (C3, 6) & 1\\
+            (C1, 5) & (C3, 6) & (C1, 7) & 3\\
+            (C3, 6) & (C1, 7) & (C1, 8) & 1\\
+            (Na, 4) & (C1, 9) & (C1, 10) & 1\\
+            (C1, 9) & (C1, 10) & (C1, 11) & 1\\
+            (C1, 10) & (C1, 11) & (C1, 12) & 1\\
+            \bottomrule
+        \end{tabular}
+        \subcaption{}
+    \end{minipage}
+    \caption{(a) Information about which bead pairs are connected by bonds and the bond type governing the
+    interaction. Each bead is referenced by the MARTINI bead type and an ID to differentiate between 
+    different beads of the same type. (b) Information about which beads are triplets are connected by 
+    angles and the angle types.}
+    \label{tab:bond_angle_connections}
+\end{table}
+
 The energy scale is defined more directly. By choosing the reference temperature as
 $T_{\text{ref}}=298.15 \si{\K}$, the thermal energy at this temperature is used as reference unit 
 
@@ -837,7 +823,6 @@ The \path{martini_v_2.0_POPC.itp} file provides the equilibrium parameters, as d
 $[r] = \si{\nano\m}$ for distances and $[k^b] = \si{\kilo\J\per\mol\per\nano\m\squared}$ for the bond stiffness.
 Similarly, the database defines the angle stiffness $[k^a] = \si{\kilo\J\per\mol}$, reflecting that angles are intrinsically dimensionless.
 
-
 The conversion into DPD units employs the reference scales defined in \cref{dpd_units}
 Besides the application of the scales, the MARTINI units are divided by the avogadro constant to account for their molar basis.
 The bond spring 
@@ -866,21 +851,23 @@ in \cref{topology}. \cref{tab:bond_angle_params} summarizes the converted values
 
 \begin{table}
     \centering
-    \begin{tabular}{|c|cc|cc|}
-        \hline 
-         & \multicolumn{2}{c|}{\multirow{2}{*}{\textbf{Bonds}}} & \multicolumn{2}{c|}{\multirow{2}{*}{\textbf{Angles}}} \\
-         & & & & \\
-         \hline 
+    \renewcommand{\arraystretch}{1.3}
+    \setlength{\tabcolsep}{8pt}
+    \begin{tabular}{lccccc}
+        \toprule 
+         & \multicolumn{2}{c}{Bonds} & \multicolumn{2}{c}{Angles} \\
+         & Equilibrium & Force constant & Equilibrium & Force constant \\
+         \midrule 
          & $r_1^0 = \SI{0.47}{\nano\m}$ & $k_1^b = 1250\si{\kilo\J\per\mol\per\nano\m\squared}$ & $\theta_1^0 = 180^\circ$ & $k_1^a = 25\si{\kilo\J\per\mol}$ \\
-        \textbf{MARTINI} & $r_2^0 = \SI{0.37}{\nano\m}$ & $k_2^b = 1250\si{\kilo\J\per\mol\per\nano\m\squared}$ & $\theta_2^0 = 120^\circ$ & $k_2^a = 25\si{\kilo\J\per\mol}$ \\
+        MARTINI & $r_2^0 = \SI{0.37}{\nano\m}$ & $k_2^b = 1250\si{\kilo\J\per\mol\per\nano\m\squared}$ & $\theta_2^0 = 120^\circ$ & $k_2^a = 25\si{\kilo\J\per\mol}$ \\
          & & & $\theta_3^0 = 120^\circ$ & $k_3^a = 45\si{\kilo\J\per\mol}$ \\
-         \hline 
+         \midrule 
          & $\hat{r}_1^0 = 0.611$ & $\hat{K}_1^b = 127.5$ & $\hat{\theta}_1^0 = 180^\circ$ & $\hat{K}_1^a = 5.04$ \\
-        \textbf{DPD} & $\hat{r}_2^0 = 0.520$ & $\hat{K}_1^b = 127.5$ & $\hat{\theta}_2^0 = 120^\circ$ & $\hat{K}_2^a = 5.04$ \\
+        DPD & $\hat{r}_2^0 = 0.520$ & $\hat{K}_1^b = 127.5$ & $\hat{\theta}_2^0 = 120^\circ$ & $\hat{K}_2^a = 5.04$ \\
          & & & $\hat{\theta}_3^0 = 120^\circ$ & $\hat{K}_3^a = 9.08$ \\
-         \hline
+         \bottomrule
     \end{tabular}
-    \caption{Resulst for the conversion of MARTINI bond and angle parameters for the POPC molecule 
+    \caption{Results for the conversion of MARTINI bond and angle parameters for the POPC molecule 
     to dimensionless DPD units defined in \cref{dpd_units}.}
     \label{tab:bond_angle_params}
 \end{table}
@@ -951,10 +938,10 @@ $\sigma_{AA} = \sigma_{ww}$. Analogously, this work assigns the determined repul
 
 \begin{table}[t]
 \centering
-\begin{tabular}{|cc|cc|}
-\hline
+\begin{tabular}{cccc}
+\toprule
 Bead pair & $A_{ij}$ & Bead pair & $A_{ij}$\\
-\hline 
+\midrule
 W - C1     & 130.616 & Q0 - Q0    & 102.067 \\ 
 W - C3     & 121.734 & Q0 - C1    & 121.099 \\ 
 W - Na     & 108.411 & Q0 - C3    & 117.293 \\ 
@@ -966,7 +953,7 @@ Qa - C3    & 126.809 & C3 - C3    & 102.067 \\
 Qa - Na    & 108.411 & C3 - C1    & 102.067 \\ 
 Qa - Q0    & 98.895  & C1 - C1    & 102.067 \\ 
 
-\hline
+\bottomrule
 \end{tabular}
 \caption{DPD force repulsion parameter $a_{ij}$ for every bead pair. The same bead interaction
 are the same as the water-water interaction which was derived by matching simulation data to
@@ -1078,7 +1065,7 @@ Maintaining the initial ratio alongside the fixed number density,
 numerous simulations of a pre-assembled bilayer configuration consisting of 128 lipids are performed, while
 varying the area per lipid.
 
-\begin{figure}[!t]
+\begin{figure}[t]
   \centering
   \begin{subfigure}{0.48\textwidth}
     \centering
@@ -1144,10 +1131,10 @@ To emphasize phase seperation, the evaluation splits the bead types into three d
 
 \cref{fig:popc_lammps} illustrates the different bead IDs and \cref{fig:popc_groups} the bead groups.
 
-\begin{figure}{t}
+\begin{figure}[t]
 \centering
 \includegraphics[width=9cm]{figures/methods/popc_groups.png}
-\caption{A Visualization of the different bead groups. The head group is red, the first tail group is violet and the terminal tail group isblue. This partition serves as the baseline for the density profile.}
+\caption{A Visualization of the different bead groups. The head group is red, the first tail group is violet and the terminal tail group is blue. This partition serves as the baseline for the density profile.}
 \label{fig:popc_groups}
 \end{figure}
 
@@ -1171,7 +1158,7 @@ The production phase follows the deformation process. Due to the increased syste
 The determination of the POPC membrane bending modulus utilizes the theoretical foundation of \cref{sec:ben_mod_fourier}. This process involves measuring the power spectrum of each mode in \cref{eq:cental_ben_formula_fourier} and applying a corresponding fit to derive the bending modulus. However, several physical constraints complicate this procedure
 
 
-Continuum theory breaks down when the inverse wave vector 1/k becomes comparable to the bilayer thickness w. Consequently, the investigation must focus on small wave vectors. However, for values smaller than the critical wavelength $k_c = \sqrt{\Sigma/\kappa}$ the lateral tension dominates. The simulations must therefore run at zero lateral tension to ensure the target scaling of $k^{-4}$. Maintaining this condition is difficult by manually adjusting the box dimensions is difficult \cite{Cooke_bending_mod}. To circumvent this, a Nose/Hoover barostat (\textbf{cite here}) adjusts the box volume to maintain a specific target pressure, which is simply the average pressure given by LAMMPS for simulations without a barostat. Choosing a low damping parameter, which governs the reaction speed of the barostat, ensures the achievement of zero tension, while using a reduced timestep of $\Delta \hat{t} = 0.001\tau$. The timestep adjustment is central as for low damping parameters a large change in pressure leads to a large change in the box volume. If the time step is too large pressure spikes are more common, leading to oscillation or heavy reshaping of the box dimensions. The system must be substantially larger than the self-assembly setup to accommodate small wave vectors.
+Continuum theory breaks down when the inverse wave vector 1/k becomes comparable to the bilayer thickness w. Consequently, the investigation must focus on small wave vectors. However, for values smaller than the critical wavelength $k_c = \sqrt{\Sigma/\kappa}$ the lateral tension dominates. The simulations must therefore run at zero lateral tension to ensure the target scaling of $k^{-4}$. Maintaining this condition is difficult by manually adjusting the box dimensions is difficult \cite{Cooke_bending_mod}. To circumvent this, a Nose/Hoover barostat \cite{LammpsNPH} adjusts the box volume to maintain a specific target pressure, which is simply the average pressure given by LAMMPS for simulations without a barostat. Choosing a low damping parameter, which governs the reaction speed of the barostat, ensures the achievement of zero tension, while using a reduced timestep of $\Delta \hat{t} = 0.001\tau$. The timestep adjustment is central as for low damping parameters a large change in pressure leads to a large change in the box volume. If the time step is too large pressure spikes are more common, leading to oscillation or heavy reshaping of the box dimensions. The system must be substantially larger than the self-assembly setup to accommodate small wave vectors.
 
 The simulation begins with a pre-assembled membrane containing 4096 lipids, following the methodology of \cref{sec:input_opt} and the work of Cook and Deserno \cite{Cooke_bending_mod}. After an equilibration phase of 100$\tau$ to eliminate grid-initialization effects, 100 samples of the system are taken. To generate a height function the mean tail position of each lipid is interpolated on a $16 \times 16$ grid. This interpolation requires careful handling, as it introduces discretization artifacts, discussed by Cook and Deserno \cite{Cooke_bending_mod}.
 The calculation must account for a damping factor for the two-dimensional wave numbers $(n_x, n_y)$ and an $N \times N$ grid
@@ -1297,49 +1284,23 @@ reveals the bending modulus of the POPC membrane. \cref{fig:spectrum_pipeline_fi
 
 \section{Determined input parameters}
 
-Bilayer stability for different areas per lipid at $\hat{T} = 1.0$ and 
-$\hat{T} = 0.8$ was analyzed by measuring the nematic order parameter, as shown  
-in \cref{fig:apl_T_1} and \cref{fig:apl_T_08}. 
-Both curves exhibit a comparable shape, characterized by lower alignment at the extremes  
+Measuring the nematic order parameter reveals the bilayer stability for various areas per lipid at $\hat{T}=1.0$ and $\hat{T}=0.8$, as shown in \cref{fig:apl_T_1} and \cref{fig:apl_T_08}. 
+Both curves exhibit a comparable shape, characterized by reduced alignment at extreme values  
 and a maximum in the intermediate range.
-To further illustrate this, snapshots of the bilayers with areas per lipid representing all 
-three regions are shown in \cref{fig:apl_mol_05}, \cref{fig:apl_mol_09} and \cref{fig:apl_mol_12}. 
-It is apparent that a lower area per lipid leads to a structure where the lipids lack sufficient space, resulting in instabilities. This is evident by the fact that there is no distinct 
-phase separation between the heads and the tails. For an elevated area per lipid there 
-is too much space which leads to the formation of hole defects in the bilayer. The 
-bilayer at an area per lipid of $0.9\si{\nano\m\squared}$ shows distinct phase separation 
+\cref{fig:apl_mol_05}, \cref{fig:apl_mol_09}, and \cref{fig:apl_mol_12} display snapshots representing these three regions. 
+A lower area per lipid restricts the available space for the lipids, inducing structural instabilities and preventing distinct phase separation between heads and tails. Conversely, excessive space at elevated areas per lipid triggers the formation of hole defects within the bilayer. The 
+membrane at an area per lipid of $0.9\si{\nano\m\squared}$ shows distinct phase separation 
 between heads and tails and reaches a degree of alignment characteristic of a fluid lipid bilayer.
 
-The curve at $\hat{T} = 0.8$ attains much
-higher values around the maximum, which can be attributed to the lower thermal excitation.  
-The maxima of both curves do not coincide perfectly but occur near $0.85 \si{\nano\m\squared}$
-in both cases. This value is also utilized for the self-assembly of the 128 lipid system,
-whereas the larger 256 lipid system uses an elevated value of $0.87\si{\nano\m\squared}$. 
+Reduced thermal excitation allows the curve at $\hat{T}=0.8$ to attain significantly higher values around the maximum. While the maxima of both curves do not coincide perfectly, both occur near $0.85\si{\nano\m\squared}$. The 128-lipid self-assembly system employs this value, whereas the larger 256-lipid system utilizes an elevated value of $0.87\si{\nano\m\squared}$.
 
-Comparing the chosen area per lipid to the typical area per lipid of
-a POPC MARTINI bilayer of $0.65 \si{\nano\m\squared}$
-shows significant differences. To clarify this distinction, an examination of the respective potentials 
-of both methods is necessary. The area per lipid is strongly influenced by the effective size of 
-the beads, which is the distance 
-between two beads where the repulsive force ends. For MARTINI and the 
-Lennard-Jones potential this corresponds to the potential minimum, which depends on the bead types used. 
-For the POPC and water system only consisting of regular beads the 
-$\sigma$ parameter which governs the effective size reads $\sigma = 0.47\si{\nano\m}$. 
-The minimum of the Lennard-Jones potential can be calculated as $1.12 \sigma \approx 0.53\si{\nano\m}$.
-Since the DPD potential lacks a minimum, investigating the force  
-shows that the effective size of the beads is simply the cutoff at $0.711\si{\nano\m}$.
-This discrepancy in the underlying forces and potential leads to the observed
-difference in area per lipid for a stable bilayer and is a fundamental difference 
-between MARTINI and this implementation of DPD.
+A comparison between the selected area per lipid and the typical values for a POPC MARTINI bilayer $(0.65\si{\nano\m\squared})$ and an all-atom bilayer $(0.684\si{\nano\m\squared})$ \cite{all_atom_popc} reveal significant differences. Examining the respective potentials of both methods clarifies this distinction. The effective bead size, defined as the distance at which the repulsive force ends, strongly influences the area per lipid. In the MARTINI model, the Lennard-Jones potential minimum dictates this size, varying with the specific bead types. For a POPC and water system composed solely of regular beads, the $\sigma$ parameter governing the effective size equals $0.47\si{\nano\m}$. Calculating the Lennard-Jones potential minimum yields $1.12\sigma\approx0.53\si{\nano\m}$. Since the DPD potential lacks a minimum, a force analysis identifies the effective bead size as the cutoff value of $0.711\si{\nano\m}$. This discrepancy in the underlying forces and potentials drives the observed difference in area per lipid, as the effective size of MARTINI beads is smaller than the DPD beads. This represents a fundamental distinction between this implementation of CG DPD and MARTINI.
 
-As described in \cref{sec:input_opt} the water-to-lipid ratio requires analysis, as it was
-kept constant at 22 in the previous simulation runs. The results for the bilayer stability 
-are shown in \cref{fig:wpl_T_1} and \cref{fig:wpl_T_08}. Once again the curves display 
-a very similar shape, with the order increasing as the water to lipid ratio rises
-and leveling off at higher ratios. This is especially evident given the large overlap between the
-error bars.  
+As described in \cref{sec:input_opt}, validating the water-to-lipid ratio remains essential, as the previous simulation runs utilized a constant value of 22. \cref{fig:wpl_T_1} and \cref{fig:wpl_T_08} present the results for bilayer stability at $\hat{T}=1.0$ and $\hat{T}=0.8$.
 
-\begin{figure}[!t]
+The curves again display a similar shape: the order parameter increases as the water-to-lipid ratio rises before leveling off at higher ratios. The large overlap between the error bars highlights this trend. 
+
+\begin{figure}[t]
   \centering
   \begin{subfigure}{0.48\textwidth}
     \centering
@@ -1378,33 +1339,21 @@ error bars.
   area per lipid for the self-assembly simulations. Equilibrated pre-assembled bilayer 
   at $\hat{T} = 1.0$ with an area per lipid of \textbf{(c)} $0.5\si{\nano\m\squared}$, 
   \textbf{(d)} $0.9\si{\nano\m\squared}$ and \textbf{(e)} $1.2\si{\nano\m\squared}$. 
-  \textbf{Red spheres} indicate polar head groups, while \textbf{cyan spheres} indicate the 
-  apolar tails. Water beads are ommited for clarity.}
+  Display settings follow \cref{fig:system_setups}.}
   \label{fig:apl_ana}
 \end{figure}
 
-The additional snapshots 
-in \cref{fig:wpl_mol_8}, \cref{fig:wpl_mol_22} and \cref{fig:wpl_mol_28} also show that
-the bilayer collapses for low water-to-lipid ratios, whereas the bilayers at ratios of 22 and 28
-remain stable. Crucially, when the area per lipid is fixed, a change in the water-to-lipid 
-ratio soley scales the $z$-axis to maintain the target density of $\rho = 3$. 
-This also explains the instabilities observed at low ratios. The water phase outside the 
-bilayer shields the membrane from interactions with its periodic images.
-For low ratios the water phase is too thin, allowing for interactions between the bilayer leaflets across the periodic boundary. 
-This also explains the leveling off of the curve at higher ratios, because if the water phase is 
-big enough, further increasing it does not improve stability. To reduce redundant computational effort from
-solvent interaction, it is ideal to choose the lowest water-to-lipid ratio that still ensures sufficient 
-shielding. For the self-assembly of 128 lipids this results in a ratio of 24 and for
-256 lipids a ratio of 22. 
+The additional snapshots in \cref{fig:wpl_mol_8}, \cref{fig:wpl_mol_22}, and \cref{fig:wpl_mol_28} demonstrate that the bilayer collapses at low water-to-lipid ratios, whereas the membranes at ratios of 22 and 28 remain stable. Crucially, fixing the area per lipid implies that a change in the water-to-lipid ratio solely scales the z-axis to maintain the target density of $\rho=3$.
 
-To conclude this section
-it is important to note that a high nematic order parameter does 
-not guarantee a perfectly stable or defect-free bilayer. Thus, while  
-the nematic order parameter is not a comprehensive metric for judging the entire structure, it remains a reliable way to obtain a quick estimate of membrane stability. 
-Furthermore, as each simulation run was only performed once, the stochastic nature of DPD forces means that different seeds could lead to slight variations. Therefore, minor 
-differences between measured values should be interpreted with this in mind.
+This geometric scaling explains the instabilities observed at low ratios, as the water phase outside the bilayer shields the membrane from interactions with its periodic images. At low ratios, an insufficiently thick water phase permits interactions between the bilayer leaflets across the periodic boundary. This effect accounts for the leveling off of the curve at higher ratios, once the water phase reaches a sufficient thickness, further increases provide no additional stability.
 
-\begin{figure}[!t]
+Selecting the lowest water-to-lipid ratio that still ensures sufficient shielding minimizes redundant computational effort from solvent interactions. For the self-assembly of 128 lipids, this criterion results in a ratio of 24, while the 256-lipid system utilizes a ratio of 22.
+
+A high nematic order parameter does not guarantee a perfectly stable or defect-free bilayer. Thus, while the nematic order parameter represents an incomplete metric for evaluating the entire structure, it provides a reliable quick estimate of membrane stability.
+
+Furthermore, since each simulation run occurred only once, the stochastic nature of DPD forces implies that different random seeds may introduce slight variations. Therefore, interpreting minor differences between measured values requires consideration of this inherent variability.
+
+\begin{figure}[t]
   \centering
   \begin{subfigure}{0.48\textwidth}
     \centering
@@ -1442,20 +1391,34 @@ differences between measured values should be interpreted with this in mind.
   at \textbf{(a)} $\hat{T} = 1.0$ and \textbf{(b)} $\hat{T} = 0.8$. The dashed lines indicate the chosen 
   water to lipid ratios for the self-assembly simulations. Equilibrated pre-assembled bilayer 
   at $\hat{T} = 1.0$ with a water to lipid ratio of \textbf{(c)} $8$, 
-  \textbf{(d)} $22$ and \textbf{(e)} $28$. Color coding follows \cref{fig:apl_ana}.}
+  \textbf{(d)} $22$ and \textbf{(e)} $28$. Display settings follow \cref{fig:system_setups}.}
   \label{fig:wpl_ana}
 \end{figure}
 
 \section{Observation of Bilayer Formation}\label{sec:self_ass_128}
 
-The procedure in \cref{sec:128_assembly} lead to a bilayer formation process shown in \cref{fig:bilayer_form_128_T_1}.
-The system begins with a random distribution of POPC lipids and water, equilibrated at a 
-temperature $\hat{T} = 2.0$, where no discernible structural assembly is observed. During 
-the cooling phase, the lipids begin to from an interconnected structure, though distinc phase separation between the heads and the tails is not apparent. Upon reaching the target temperature
+The procedure detailed in \cref{sec:128_assembly} leads to a bilayer formation process illustrated in \cref{fig:bilayer_form_128_T_1}.
+The simulation starts with a random distribution of POPC lipids and water, equilibrated at a 
+temperature $\hat{T} = 2.0$, where no structural assembly is observed. During 
+the cooling phase, the lipids begin to from an interconnected structure, though distinct phase separation between the heads and the tails is not apparent. Upon reaching the target temperature
 of $\hat{T} = 1.0$, the bilayer formation is finalized, showing clear separation 
 between the polar headgroups and the apolar tails.
 
-\begin{figure}[!t]
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/nematic.png} 
+        \subcaption{}
+        \label{fig:128_T_1_nem}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/contact.png} 
+        \subcaption{}
+        \label{fig:128_T_1_con}
+    \end{subfigure}
+    \medskip
     \centering
     \begin{subfigure}{0.32\textwidth}
         \centering
@@ -1473,28 +1436,17 @@ between the polar headgroups and the apolar tails.
         \subcaption{}
         \label{fig:128_high_T_selfbilayer}
   \end{subfigure}
-  \caption{The evolution of the randomly distributed lipid water system over time with \textbf{(a)}
-  equlibrated system at $\hat{T} = 2.0$, \textbf{(b)} at intermediate temperature during the 
-  cooling phase and \textbf{(c)} at the target temperature of $\hat{T} = 1.0$. The system was 
-  shifted to display the bilayer in the middle of the simulation box. Color coding follows \cref{fig:apl_ana}.}
+  \caption{\textbf{(a)} Nematic order parameter vs simulation time. \textbf{(b)} Contact 
+    number vs simulation time. Both curves are split in the three stages of the 
+    self-assembly process. As baseline there is the mean value of both metrics for pre-assembled
+    MARTINI and DPD bilayers. The evolution of the randomly distributed lipid water system over time with \textbf{(c)}
+  equilibrated system at $\hat{T} = 2.0$, \textbf{(d)} at intermediate temperature during the 
+  cooling phase and \textbf{(e)} at the target temperature of $\hat{T} = 1.0$. The system was 
+  shifted to display the bilayer in the middle of the simulation box. Display settings follow \cref{fig:system_setups}.}
   \label{fig:bilayer_form_128_T_1}
 \end{figure}
 
-\begin{figure}[!t]
-    \centering
-    \begin{subfigure}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/nematic.png} 
-        \subcaption{}
-        \label{fig:128_T_1_nem}
-    \end{subfigure}\hfill
-    \begin{subfigure}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{figures/self_assembly/high_T_128/contact.png} 
-        \subcaption{}
-        \label{fig:128_T_1_con}
-    \end{subfigure}
-    \medskip
+\begin{figure}[t]
     \centering
     \begin{subfigure}{0.48\textwidth}
         \centering
@@ -1508,45 +1460,25 @@ between the polar headgroups and the apolar tails.
         \subcaption{}
         \label{fig:martini_comp}
     \end{subfigure}
-    \caption{\textbf{(a)} Nematic order parameter vs simulation time. \textbf{(b)} Contact 
-    number vs simulation time. Both curves are split in the three stages of the 
-    self-assembly process. As baseline there is the mean value of both metrics for pre-assembled
-    MARTINI and DPD bilayers. Snapshots of the compared \textbf{(c)} DPD and \textbf{(d)} 
-    MARTINI bilayers.}
+    \caption{Snapshots of the compared \textbf{(c)} DPD and \textbf{(d)} 
+    MARTINI bilayers. Display settings follow \cref{fig:system_setups}}
     \label{fig:bilayer_128_nem_con}
 \end{figure}
 
-For a quantitative comparison, pre-assembled DPD and MARTINI bilayers are used.
+Pre-assembled DPD and MARTINI bilayers provide a quantitative comparison.
 The DPD bilayer, in particular, serves as a baseline to determine if the self-assembly reached the same 
 structure as the equilibrated, pre-assembled system. The chosen metrics for 
 this analysis are the nematic order parameter and the contact number, which 
-measure alignment and packing density, respectively. The results, alongside snapshots of the 
-compared bilayers are presented in \cref{fig:bilayer_128_nem_con}.
-The evolution of the nematic order parameter in \cref{fig:128_T_1_nem} matches the observations from 
-\cref{fig:bilayer_form_128_T_1}, where the equlibration phase shows no sign of 
-assembly and the order is very low in the system. With the cooling phase the order gradually 
-rises and plateaus in the production phases. There are fluctuations in the production phase 
-but these can mainly be attributed to thermal fluctuations. 
+measure alignment and packing density, respectively. \cref{fig:bilayer_128_nem_con} presents the results alongside snapshots of the compared bilayers.
+The evolution of the nematic order parameter in \cref{fig:128_T_1_nem} mirrors the observations from \cref{fig:bilayer_form_128_T_1}, where the equilibration phase exhibits no sign of assembly and low system order. The order gradually rises during the cooling phase and plateaus in the production phases. The production phase exhibits fluctuations mainly attributable to thermal noise.
 
-The contact number in \cref{fig:128_T_1_con}
-is very similar, apart from the fact that the contact number rises at the bginning meaning that 
-even though there is no alignment in the system the lipids start to from clumps even at elevated 
-temperatures. The cooling down process results in a rising contact number and the production 
-phase again results in a plateau, where fluctuations are again caused by thermal fluctuations.
+The contact number in \cref{fig:128_T_1_con} follows a similar trend, although an initial rise indicates that lipids form clumps even at elevated temperatures despite the lack of alignment. The cooling process leads to a rising contact number, while the production phase reaches a plateau where thermal fluctuations drive further variance.
 
-When compairing both values it is apparent that the self-assembly was successful as both 
-the nematic order parameter and the contact number reach the same values the pre-assembled 
-DPD bilayer. But the MARTINI bilayer shows significant deviations especially when 
-examining the order in the system. The MARTINI bilayer reaches a mean values of about 0.8 whereas
-the DPD bilayer has maximum values of only 0.6. This means that the possible alignment in MARTINI 
-is much higher than that in a DPD based model. Additionally the contact number also 
-reaches smaller values as the MARTINI bilayer, indicating that the packing density 
-also lacks in comparison. 
+The comparison confirms a successful self-assembly, as both the nematic order parameter and the contact number reach the values of the pre-assembled DPD bilayer. However, the MARTINI bilayer exhibits significant deviations, particularly regarding the system's order. The MARTINI bilayer attains a mean value of approximately 0.8, whereas the DPD bilayer reaches maximum values of only 0.6. Consequently, the MARTINI model allows for significantly higher alignment than the DPD-based approach. Furthermore, the DPD contact number remains lower than the MARTINI value, suggesting a reduced packing density in comparison.
 
-For a more structure based analysis the density profile can be utilized. The results are 
-shown in \cref{fig:bilayer_128_density_T_1}.
+A structural analysis utilizes the density profile to provide further insight. \cref{fig:bilayer_128_density_T_1} presents these results.
 
-\begin{figure}[!t]
+\begin{figure}[t]
     \centering
     \begin{subfigure}{0.48\textwidth}
         \centering
@@ -1576,37 +1508,24 @@ shown in \cref{fig:bilayer_128_density_T_1}.
 \end{figure}
 
 
-Looking at both density profiles there are very significant differences in 
-the structure of the bilayers. The MARTINI bilayer clearly seperates each bead group. The 
-peaks do not overlap there are regions of the bilayer where a specific group is not 
-located. This is perfectly illustrated by the fact that the curve for the heads is 
-constantly zero in the terminal tail regime. The same behavior can not be 
-observed for the DPD bilayer. There, especially the head and first tail groups overlap greatly.
-Furthermore, there are still some heads in the terminal tail regime. 
-The combined plot \cref{fig:128_high_T_combined_den} illustrates this well and 
-shows that every peak in DPD in wider and penetrates in the other regimes. 
-Especially the head beads still contribute to the density when there should be an 
-apolar phase. One explanation for this is that DPD simply allows the polar heads to pass
-through beads to get inside the bilayer which can also sometimes be seen in some  
-snapshots like \cref{fig:128_high_T_selfbilayer}. Additionally this can be 
-exhilarated by a membrane that is not perfectly planar like the martini bilayer in \cref{fig:martini_comp}.
-Another big differnece which can be read from \cref{fig:128_high_T_combined_den} and confirmed by 
-the comparison of the snapshots is the reduced thickness of the DPD bilayer. 
+Both density profiles reveal significant structural differences between the bilayers. The MARTINI bilayer effectively segregates each bead group, resulting in peaks that do not overlap and specific regions where certain groups do not reside. The head group curve remaining at zero within the terminal tail regime illustrates this segregation perfectly.
 
+The DPD bilayer does not replicate this behavior. In that system, the head and first tail groups overlap substantially. Furthermore, some head beads reside within the terminal tail regime. The combined plot in \cref{fig:128_high_T_combined_den} highlights that every peak in the DPD model is wider and penetrates adjacent regimes. In particular, head beads contribute to the density in regions intended as a purely apolar phase.
 
-
-Both differences can also be observed in the snapshots \cref{fig:128_dpd_comp_high_T} 
-and \cref{fig:martini_comp}. Especially the bigger thickness of the MARTINI bilayer is 
-striking in these pictures. The reasons for the differences lies in the softness of the DPD 
-force which allows overlapping beads. This means that it is easier for heads to penetrate 
-the apolar phase or yields the opportunity for tails to overlap causing a thinner bilayer. 
-To quantify the thickness the full width half maximum of the density profile of the full bilayer 
-is utilized. The result for DPD is $2.9\si{\nano\m}$ and for MARTINI $4.1\si{\nano\m}$ which
-is significant. 
-
-
-\begin{figure}[!t]
+\begin{figure}[t]
   \centering
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/128/nematic_128.png} 
+    \subcaption{}
+    \label{fig:128_low_T_nem}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/128/contact_128.png} 
+    \subcaption{}
+    \label{fig:128_low_T_con}
+  \end{subfigure}
   \begin{subfigure}{0.32\textwidth}
     \centering
     \includegraphics[width=\linewidth]{figures/self_assembly/128/lipid_soup_128.png} 
@@ -1625,31 +1544,29 @@ is significant.
     \subcaption{}
     \label{fig:128_low_T_bilayer}
   \end{subfigure}
-  \begin{subfigure}{0.48\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{figures/self_assembly/128/nematic_128.png} 
-    \subcaption{}
-    \label{fig:128_low_T_nem}
-  \end{subfigure}\hfill
-  \begin{subfigure}{0.48\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{figures/self_assembly/128/contact_128.png} 
-    \subcaption{}
-    \label{fig:128_low_T_con}
-  \end{subfigure}
   \medskip % Optionaler vertikaler Abstand
-  \caption{Snapshots that visualize 
-  the evolution are \textbf{(a)} lipid soup at $\hat{T} = 2$, \textbf{(b)} transition 
-  at intermediate temperature and \textbf{(c)} the finished bilayer at $\hat{T} = 0.8$. The 
-  color coding is the same as in \cref{fig:apl_ana}
-  \textbf{(d)} Nematic order parameter vs simulation time. \textbf{(e)} Contact 
+  \caption{\textbf{(a)} Nematic order parameter vs simulation time. \textbf{(b)} Contact 
   number vs simulaiton time. Both curves correspond to the bilayer produced at $\hat{T} = 0.8$ and 
   are split into the three assembly steps. The same comparisons as in \cref{fig:bilayer_128_nem_con}
-  but with additional comparison to the lower temperature counterpart.}
+  but with additional comparison to the lower temperature counterpart.
+  Snapshots that visualize 
+  the evolution are \textbf{(c)} lipid soup at $\hat{T} = 2$, \textbf{(d)} transition 
+  at intermediate temperature and \textbf{(e)} the finished bilayer at $\hat{T} = 0.8$. Display settings follow \cref{fig:system_setups}.}
   \label{fig:128_low_T_all_info}
 \end{figure}
 
-\begin{figure}[!t]
+The soft-potential nature of DPD likely allows polar heads to penetrate through other beads and enter the bilayer core, as snapshots like \cref{fig:128_high_T_selfbilayer} suggest. A non-planar membrane geometry, contrasting with the perfectly planar MARTINI bilayer in \cref{fig:martini_comp}, may emphasize this overlap.
+
+\cref{fig:128_high_T_combined_den} and the snapshots also confirm a reduced thickness for the DPD bilayer compared to the MARTINI model.
+
+Snapshots \cref{fig:128_dpd_comp_high_T} and \cref{fig:martini_comp} also reveal both differences. The strikingly greater thickness of the MARTINI bilayer stands out in these images. The softness of the DPD force, which permits bead overlaps, explains these structural variations.
+
+This allows headgroups to penetrate the apolar phase more easily and enables tail groups to overlap, resulting in a thinner bilayer. The analysis quantifies the thickness by utilizing the full-width at half-maximum (FWHM) of the density profile for the entire bilayer.
+
+The measurement yields a thickness of $2.9\si{\nano\m}$ for DPD and $4.1\si{\nano\m}$ for MARTINI, confirming a significant discrepancy. All-atom simulations carried out using the CHARMM36 force field \cite{all_atom_popc} found $3.946\si{\nano\m}$, which is much closer to the MARTINI membrane value. 
+
+
+\begin{figure}[t]
     \centering
     \begin{subfigure}{0.48\textwidth}
         \centering
@@ -1674,30 +1591,20 @@ is significant.
     \label{fig:bilayer_128_density_T_08}
 \end{figure}
 
-Next is testing the bilayer formation at lower temperatures. The procedure is similar but 
-with a target temperature of $\hat{T} = 0.8$. The snapshots alongside the quantitative
-measurements are shown in \cref{fig:128_low_T_all_info}. The snapshots show a very similar 
-evolution to \cref{fig:bilayer_form_128_T_1} due to the identical production script. 
-There is a differnece however in the finished bilayer as it looks much more ordered and planar. 
-This can be confirmed by the nematic order parameter in \cref{fig:128_low_T_nem} which 
-reaches much higher values of 0.7 and greatly outperforms the bilayer at $\hat{T} = 1$ which
-is also marked in the plot. This is expected as lower temperatures mean that 
-there is less random movement making the assembled membrane much more stable. This 
-is also evident by the fact that the measured values are much less noisy. The contact number also 
-rises and even matches with the MARTINI bilayer. To further probe the structure, the 
-density profiles are again utilized and shown in \cref{fig:bilayer_128_density_T_08}. 
-Like for the higher temperature counterpart the profile shows worse phase sepereation 
-than the MARTINI bilayer but does improve. The head curve is very close to zero inside 
-the apolar phase, meaning that the lower temperature makes for a flatter bilayer and 
-allows fewer heads to penetrate the membrane. The bilayer thickness is 
-still reduced compared to MARTINI ($4.1\si{\nano\m}$) with a value of $2.7\si{\nano\m}$ 
-which is in agreeance with the higher temperature bilayer.
+Testing the bilayer formation at lower temperatures follows a similar protocol, utilizing a target temperature of $\hat{T}=0.8$. \cref{fig:128_low_T_all_info} displays the resulting snapshots alongside the quantitative measurements. The snapshots reveal an evolution similar to \cref{fig:bilayer_form_128_T_1} due to the use of the same production script. However, the finished bilayer appears significantly more ordered and planar.
 
-
-
-
-\begin{figure}[!t]
+\begin{figure}[t]
   \centering
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/nematic.png} 
+    \subcaption{}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/contact.png} 
+    \subcaption{}
+  \end{subfigure}
   \begin{subfigure}{0.32\textwidth}
     \centering
     \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/lipid_soup_256.png} 
@@ -1716,33 +1623,28 @@ which is in agreeance with the higher temperature bilayer.
     \subcaption{}
     \label{fig:256_mol_bilayer}
   \end{subfigure}
-  \begin{subfigure}{0.48\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/nematic.png} 
-    \subcaption{}
-  \end{subfigure}\hfill
-  \begin{subfigure}{0.48\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{figures/self_assembly/high_T_256/contact.png} 
-    \subcaption{}
-  \end{subfigure}
   \medskip % Optionaler vertikaler Abstand
-  \caption{\textbf{(a) - (c)} Snapshots of bilayer evolution, \textbf{(d)} nematic order parmater vs 
+  \caption{\textbf{(d)} nematic order parmater vs 
   simulation time and \textbf{(e)} contact number vs simulation time for a bilayer 
-  at $\hat{T} = 1.0$ containing 256 lipids. Display setting similar to \cref{fig:128_low_T_all_info}.}
+  at $\hat{T} = 1.0$ containing 256 lipids. \textbf{(c) - (e)} Snapshots of bilayer evolution. Display settings follow \cref{fig:system_setups}}
   \label{fig:256_high_T_all_info}
 \end{figure}
 
+The nematic order parameter in \cref{fig:128_low_T_nem} confirms this observation, reaching values of 0.7 and significantly exceeding the performance of the $\hat{T}=1.0$ bilayer indicated in the plot. This result aligns with expectations, as reduced thermal energy at lower temperatures restricts random molecular movement, thereby enhancing the stability of the assembled membrane. The significantly reduced noise in the measured values further corroborates this increased stability. Additionally, the contact number rises and eventually matches the values of the MARTINI bilayer.
+
+To further probe the structure, the analysis again utilizes density profiles, as shown in \cref{fig:bilayer_128_density_T_08}. While phase separation still lags behind the MARTINI model, the profile demonstrates improvement compared to its higher-temperature counterpart. The head group density nears zero within the apolar phase, indicating that the lower temperature promotes a flatter bilayer and reduces head group penetration into the membrane core.
+
+The bilayer thickness remains reduced at $2.7\si{\nano\m}$ compared to the MARTINI value of $4.1\si{\nano\m}$, which aligns with the results from the higher-temperature simulations.
+
+
+
 \section{Bilayer formation of larger systems}
 
-Before showing the results for the larger sytsem of 256 lipids it is important to emphasize 
-that the self-assembly process becomes much more difficult for larger systems. This 
-means that cylindrical structures, vesicles or even grid like formations begin to 
-form in favor of flat bilayers. This was also the motivation behind the finetuning of the area
-per lipid and the water to lipid ratio. Additionally, as \cref{sec:larger_systems} 
-mentioned this led to a protocol which rescaled box dimensions to allow for bilayer formation. 
+Scaling the system to 256 lipids emphasizes the increased difficulty of the self-assembly process. In larger systems, cylindrical structures, vesicles, or grid-like formations often emerge instead of flat bilayers.
 
-\begin{figure}[!t]
+This tendency motivated the fine-tuning of the area per lipid and the water-to-lipid ratio. Additionally, as \cref{sec:larger_systems} mentions, these challenges necessitated a protocol that rescales the box dimensions to facilitate bilayer formation. 
+
+\begin{figure}[t]
     \centering
     \begin{subfigure}{0.48\textwidth}
         \centering
@@ -1767,19 +1669,10 @@ mentioned this led to a protocol which rescaled box dimensions to allow for bila
     \label{fig:bilayer_256_den_profiles}
 \end{figure}
 
-The analysis steps are the same as in \cref{sec:self_ass_128} and are shown in \cref{fig:256_high_T_all_info}.
-The formation process look very similar to the smaller bilayers with no strcutres as $\hat{T} = 2.0$,
-clumping during the cooling process and then stabilization at the target temperatreu of $\hat{T} = 1.0$.
-The order parameter reaches the same values as the smaller counterpart but in the contact number 
-at the beginning of the production phase, there is a strong dip. This can 
-attributed to the box rescaling that was discussed above where for a small time each lipid had 
-more space which means the distance between them will increase lowering the contact number. 
-There is still a significant discrepancy to the MARTINI system. The quality of the bilayer
-can be observed in \cref{fig:256_mol_lipidsoup}, \cref{fig:256_mol_transition} and 
-\cref{fig:256_mol_bilayer} matches the evolution of the samller systems with a 
-lipid soup clumping together while cooling down the system and resulting in a bilayer.
 
-\begin{figure}[!t]
+The analysis follows the procedure established in \cref{sec:self_ass_128}, with \cref{fig:256_high_T_all_info} displaying the corresponding results. The formation process mirrors that of the smaller bilayers: the system remains unstructured at $\hat{T}=2.0$, exhibits clumping during the cooling phase, and stabilizes upon reaching the target temperature of $\hat{T}=1.0$.
+
+\begin{figure}[t]
     \centering
     \begin{subfigure}{0.48\textwidth}
         \centering
@@ -1811,18 +1704,19 @@ lipid soup clumping together while cooling down the system and resulting in a bi
     \label{fig:ben_fourier}
 \end{figure}
 
-Further insight is granted by analyzing the density profiles in \cref{fig:bilayer_256_den_profiles}.
-The profile shows the typical structure of the lipid bilayer but with even more 
-washed or phases. Especially the first tail group still has a very high density in the 
-terminal tail phase. There are again heads penetrating the apolar barrier and 
-the bilayer is not perfectly planar. With a bilayer thickness of about $2.9\si{\nano\m}$
-and thus comparable to the smaller bilayer. In total the evolution process and the 
-quantitative metrics are very similar to the 128 lipid system. This indicates that the 
-finite size effect is small and larger systems only complicate the self-assembly process.
+While the order parameter reaches values comparable to the smaller system, the contact number exhibits a sharp dip at the onset of the production phase. The previously discussed box rescaling causes this effect, the temporary increase in available space per lipid increases intermolecular distances, thereby lowering the contact number.
+
+A significant discrepancy regarding the MARTINI system persists. Snapshots in \cref{fig:256_mol_lipidsoup}, \cref{fig:256_mol_transition}, and \cref{fig:256_mol_bilayer} confirm that the bilayer quality mirrors the smaller systems, evolving from a lipid soup into a cohesive bilayer during the cooling process.
+
+Analyzing the density profiles in \cref{fig:bilayer_256_den_profiles} provides further insight. The profile reveals the typical bilayer structure, though with more diffuse or overlapping phases. In particular, the first tail group maintains a high density within the terminal tail phase. Headgroups again penetrate the apolar barrier, and the bilayer deviates from a perfectly planar geometry.
+
+The measurement yields a bilayer thickness of approximately $2.9\si{\nano\m}$, rendering it comparable to the smaller system. Overall, the evolution process and quantitative metrics mirror those of the 128-lipid system. This suggests a minimal finite-size effect, implying that larger systems primarily complicate the self-assembly process without significantly altering the final structural properties.
 
 \section{Bending modulus by power spectrum}
 
-The method in \cref{sec:method_ben_mod_fourier} can be applied on a DPD and MARTINI bilayer and results in two power spectra. The characteristic scaling of the power spectrum can be observed in both systems in \cref{fig:dpd_slope} and \cref{fig:martini_slope}. The fit according to \cref{eq:cental_ben_formula_fourier} yields a value for each membrane. The experimental value for POPC membranes from Kuĉerka (\textbf{cite here}) is about $21 k_\text{B}T$. This is very close to the reported MARTINI value. The DPD value however deviates substantially but is very fitting after closer examination. The softer DPD force allows much more free movement of the lipids in the membrane meaning that the fluctuations are not strongly limited by neighboring lipids. This is apparent by taking a deeper look at the membranes during the simulation runs in \cref{fig:bilayer_flucutations}.   
+Applying the method from \cref{sec:method_ben_mod_fourier} to DPD and MARTINI bilayers yields two distinct power spectra. \cref{fig:dpd_slope} and \cref{fig:martini_slope} exhibit the characteristic scaling of the power spectrum for both systems. Fitting the data according to \cref{eq:cental_ben_formula_fourier} determines the bending modulus for each membrane.
+
+All-atom simulations of tension-free POPC bilayers also utilizing the height spectra \cite{all_atom_bending} revealed a value of $(23.3 \pm 1.4)k_\text{B}T$. The reported MARTINI value aligns closely with this result. The DPD value, however, deviates substantially, though closer examination justifies this difference. The softer DPD force permits significantly greater lipid mobility within the membrane, as neighboring lipids do not strongly restrict thermal fluctuations. A visual inspection of the membranes during the simulation runs in \cref{fig:bilayer_flucutations} confirms this behavior. 
 
 \begin{figure}[t]
   \centering
@@ -1837,11 +1731,23 @@ The method in \cref{sec:method_ben_mod_fourier} can be applied on a DPD and MART
     \subcaption{}
     \label{fig:sub2}
   \end{subfigure}
-  \caption{\textbf{(a)} The DPD membrane consisting of 4096 lipids during the thermal undulation measurement. \textbf{(b)} The MARTINI membrane consisting of 8192 lipids.}
+  \caption{\textbf{(a)} The DPD membrane consisting of 4096 lipids during the thermal undulation measurement. \textbf{(b)} The MARTINI membrane consisting of 8192 lipids. Display settings follow \cref{fig:system_setups}.}
   \label{fig:bilayer_flucutations}
 \end{figure}
 
-It is clearly visible that the DPD membranes has very strong undulations which corresponds to a lower bending modulus as less force is needed for deformation. Contrarily, the MARTINI bilayer is very straight, only showing slight undulations.
+The DPD membrane exhibits pronounced undulations, which corresponds to a lower bending modulus since deformation requires less force. In contrast, the MARTINI bilayer remains relatively planar, displaying only minor undulations.
+
+\chapter{Conclusion}
+
+This paper implements the DPD force field, introduced by Groot \cite{DPD_groot_warren}, by utilizing the MARTINI method as a baseline \cite{Wang2024}. Testing the resulting coarse-graining method on a POPC membrane involved simulating self-assembly for multiple system sizes and temperatures, which determined key properties including the area per lipid, the membrane thickness, and the bending modulus. The study computed the latter using a power spectrum analysis \cite{Cooke_bending_mod}.
+
+The area per lipid and thickness showed clear deviations from the MARTINI and all-atom values. The area per lipid increased because the effective size of the DPD beads exceeded that of MARTINI. The softness of the DPD interaction reduced the bilayer thickness. The difficulty of self-assembly depended strongly on the system size; while smaller membranes assembled without issues, simulations containing larger lipid quantities formed alternative structures and required further intervention to ensure a membrane. Generally, the self-assembly proved successful and computationally efficient, yielding a structure that strongly resembles the MARTINI result. The DPD bending modulus also decreased significantly, which stems from a membrane that allows much larger height fluctuations. Notably, guaranteeing a tension-free membrane in DPD remains challenging, as the pressure depends strongly on the repulsion parameters and thus proves difficult to interpret in SI units.
+
+Future work could address these deviations from MARTINI and all-atom methods by adjusting the force field. One key aspect involves the cutoff parameter of the DPD force, as it represents the main contributor to the distinct area per lipid. Reducing the cutoff parameter to match the effective size of MARTINI beads could improve comparability between both methods. Crucially, other discrepancies stem from the fundamental formalism of DPD. The softness induces significant molecular mobility, as overlaps entail only minimal energy penalties. Thus, resolving the deviations in thickness and bending modulus in this implementation might prove difficult.
+
+
+
+
 
 
 
