@@ -1,5 +1,5 @@
 # Load trajectories
-mol new cylinder_sim_8_other_bar.lammpstrj type lammpstrj waitfor all
+mol new cylinder_sim_6.lammpstrj type lammpstrj waitfor all
 
 mol delrep 0 top
 

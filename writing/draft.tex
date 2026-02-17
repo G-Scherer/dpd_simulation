@@ -295,6 +295,10 @@ First, a comprehensive theory section introduces important concepts and the foun
 
 \chapter{Theory}
 
+This chapter explores coarse-grained simulation techniques, examining their advantages and practical implementation. It provides a detailed description of the MARTINI force field, which defines the bead types adopted in this Dissipative Particle Dynamics (DPD) study. Section \cref{dpd} establishes DPD as the primary force field utilized in this research, emphasizing a comparison between its soft-repulsive potential and the Lennard-Jones potential employed by MARTINI.
+
+Furthermore, the chapter defines additional interactions, specifically electrostatic and intramolecular forces. It also covers fundamental principles of computer simulation, including periodic boundary conditions and numerical integration methods. To facilitate the characterization of membranes, the text introduces specific assembly parameters. Finally, it presents two theoretical approaches for calculating the bending modulus: analyzing membrane fluctuations and measuring the forces within an actively curved membrane.
+
 \section{Coarse-Grained Simulations}
 Coarse-grained simulations \cite{CGwater_review} aim to simulate the behavior of large systems by reducing the 
 available degrees of freedom in the system, while preserving the main thermodynamic and
@@ -557,6 +561,7 @@ contact number is defined as the average number of neighboring lipids within a s
 
 \section{Membrane Fluctuations} \label{sec:ben_mod_fourier}
 
+The bending modulus details how much force is needed to deform a membrane. Thus, it is instructive to investigate the fluctuations of a bilayer.
 The general energy of a membrane \cite{Markus_tethers} is defined as an integral over the 
 membrane area, governed by two moduli: $\kappa$, the bending modulus and $\bar{\kappa}$,
 the saddle splay modulus 
@@ -631,22 +636,23 @@ For a membrane of the area $A = L^2$ this discrete approach leads to the final e
 
 Notably, an additional factor of $1/L^2$ arises from the transition to a discrete basis. In this context, the continuous Dirac delta distribution $\delta(\mathbf{k} + \mathbf{k})$ is replaced by its discrete counterpart $L^2 \delta_{\mathbf{k}, -\mathbf{k}}$. Dimensionality analysis confirms this substitution, as $[\delta(\mathbf{k})]$ and $[L^2 \delta_{\mathbf{k}, -\mathbf{k}}]$ possess the dimensions of area. 
 
-% \section{Stretching tethers}
+\section{Stretching tethers}
 
-% The energy expression in \cref{eq:helfrich_energy} can be applied to a 
-% cylindrical membrane geometry \cite{Markus_tethers}.For cylinder with radius $R$ the mean curvature is $K = 1/R$. According to Harmandaris and Deserno \cite{Markus_tethers}, the contribution from the Gaussian curvature and saddle splay modulus $\bar{\kappa}$ results in a constant, which can be omitted for this analysis. Integrating over the surface area 
-% yields the curvature energy of a cylinder of length $L_z$ aligned along the $z$ axis
+As alternative to the measurement of membrane fluctuation, it is also possible to compute the bending modulus by actively inducing curvature in the system, in the form of cylindrical membranes. 
+The energy expression in \cref{eq:helfrich_energy} can be applied to a 
+cylindrical membrane geometry \cite{Markus_tethers}.For cylinder with radius $R$ the mean curvature is $K = 1/R$. According to Harmandaris and Deserno \cite{Markus_tethers}, the contribution from the Gaussian curvature and saddle splay modulus $\bar{\kappa}$ results in a constant, which can be omitted for this analysis. Integrating over the surface area 
+yields the curvature energy of a cylinder of length $L_z$ aligned along the $z$ axis
 
-% \begin{align}
-%     E = \frac{\kappa}{2} \left(\frac{1}{R} \right)^2 2\pi RL_z 
-%     = \frac{\pi \kappa L_z}{R}\, .
-% \end{align}
+\begin{align}
+    E = \frac{\kappa}{2} \left(\frac{1}{R} \right)^2 2\pi RL_z 
+    = \frac{\pi \kappa L_z}{R}\, .
+\end{align}
 
-% To maintain a cylindrical shape a force $F_z$ must be applied. This force can be directly to the bending modulus by taking the derivative of the energy with respect to $L_z$ under the constraint of fixed surface area
+To maintain a cylindrical shape a force $F_z$ must be applied. This force can be directly to the bending modulus by taking the derivative of the energy with respect to $L_z$ under the constraint of fixed surface area
 
-% \begin{align}
-%     F_z = \frac{\partial E}{\partial L_z} = \frac{2 \pi \kappa}{R}\, .
-% \end{align}
+\begin{align}
+    F_z = \frac{\partial E}{\partial L_z} = \frac{2 \pi \kappa}{R}\, .
+\end{align}
 
 
 
@@ -656,6 +662,14 @@ Notably, an additional factor of $1/L^2$ arises from the transition to a discret
 
 
 \chapter{Methods}
+
+This chapter explores the representation of the POPC and water system in this DPD implementation by detailing bead types, connectivity via bonds and angles, and the applied potentials for intramolecular interactions. \cref{dpd_units} computes the length and energy scales to convert units into the DPD system, subsequently applying these values to the bonded parameters in \cref{sec:dpd_bond_params}. Similarly, the study calculates the DPD charge by matching the potential in SI units. Furthermore, this section presents the derivation of the maximum repulsion parameters taken from \cite{Wang2024}.
+
+\cref{sec:sys_setup} details the generation of the LAMMPS input file required to run the simulations described in the following sections. First, iterative simulations of pre-assembled bilayers determine the optimal area per lipid and water-to-lipid ratio by comparing the nematic order. This process employs an initial value of 22 for the water-to-lipid ratio.
+
+\cref{sec:128_assembly} details the simulation script that yields a DPD membrane with 128 lipids. The procedure involves a high-temperature equilibration, a cooling phase, and a production phase. The study utilizes a similar script for the larger bilayer of 256 lipids. The analysis tracks the evolution of the nematic order, the contact number, and the average density profile, comparing these results to a MARTINI and a pre-assembled DPD membrane.
+
+\cref{sec:method_ben_mod_fourier} details the simulation of membrane fluctuations to determine the bending modulus. The setup utilizes a tension-free bilayer maintained by a Nosé-Hoover barostat. Additionally, an analysis of cylindrical membrane simulations using the identical barostat provides an alternative bending modulus via tether simulation.    
 
 \section{System Topology}\label{topology}
 
@@ -1281,8 +1295,23 @@ reveals the bending modulus of the POPC membrane. \cref{fig:spectrum_pipeline_fi
     \label{fig:spectrum_pipeline_final_aligned}
 \end{figure}
 
+\section{Simulation of Tethers}
+
+For this measurement the membrane has to setup as a cylinder. This procedure is similar to the flat bilayer but more complicated. This generation script takes the number of lipids, the number density, the area per lipid and the inner radius of the cylinder. The number of lipids is set to $N_l = 4096$, the number density is $\rho = 3$ and the area per lipid is $0.88\si{\nano\m\squared}$. The inner radius is varied for the simulation runs. 
+
+First the outer radius is set as the inner radius plus the DPD membrane thickness. 
+The lipids from the \path{POPC-em.gro} file are aligned along the z-axis, thus they are rotated 90 degrees into the xy-plane.  
+
 
 \chapter{Results}
+
+This chapter examines the results and evaluates the calculated values against their MARTINI counterparts. The analysis determines an area per lipid of $0.85\si{\nano\m\squared}$, significantly higher than the MARTINI value of $0.65\si{\nano\m\squared}$. This difference originates from the increased effective size of the DPD beads. Observations indicate that the water-to-lipid ratio primarily affects the system at low values, where it facilitates interactions between periodic images of the membrane.
+
+Bilayer assembly succeeds for systems of 128 and 256 lipids; however, the resulting nematic order parameter remains considerably lower than the MARTINI reference.
+
+Density profiles reveal that the DPD membrane is substantially thinner—approximately $2.9\si{\nano\m}$ depending on system size—and allows for greater penetration of head beads. These properties stem from the softness of the DPD potential, which permits beads to pass through one another without a diverging energy penalty.
+
+The data demonstrates characteristic $k^{-4}$ scaling, and the corresponding fit yields a bending modulus of $\kappa=(5.2\pm0.4)k_\text{B}T$. Similarly to before, this is attributed to the soft interaction of DPD.
 
 \section{Determined input parameters}
 
