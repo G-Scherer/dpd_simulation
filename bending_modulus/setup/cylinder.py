@@ -150,7 +150,6 @@ for leaflet in ['in', 'out']:
                 break
                 
             z_com = (i + 0.5) * (box_z / n_z) + random.uniform(-0.1, 0.1)
-            # Staggering (hexagonalere Packung)
             shift = (np.pi / current_n_theta) if i % 2 == 0 else 0
             theta = j * (2 * np.pi / current_n_theta) + shift + random.uniform(-0.02, 0.02)
             

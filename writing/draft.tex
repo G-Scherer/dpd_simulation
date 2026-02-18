@@ -253,7 +253,7 @@ born in Mainz (Germany)\\
 
 
 
-\Large\textbf{Self-assembly of lipid bilayers in dissipative particle dynamics}
+\Large\textbf{Self-Assembly and Bending Rigidity of Lipid Bilayers in Dissipative Particle Dynamics}
 
 \vspace{18cm}
 
@@ -270,11 +270,11 @@ Prof. Tristan Bereau
 
 \chapter*{Abstract}
 
-This work utilizes a coarse-grained DPD force field based on the MARTINI method, proposed by Wang and Hernandez (\textit{ACS Omega, 2024}), to investigate membrane self-assembly and the reproducibility of membrane properties. The evaluation assesses packing density, alignment, and phase separation. Furthermore, the study computes the area per lipid, membrane thickness, and bending modulus, comparing these results to their MARTINI counterparts. A power spectrum analysis, following the methodology of Cooke and Deserno (\textit{J. Chem. Phys. 2005}), determines the bending modulus. Successful self-assembly processes yield a structure that closely resembles a MARTINI bilayer. However, the increased effective size of DPD beads results in an elevated area per lipid of approximately $0.85\si{\nano\m\squared}$ compared to the MARTINI value of $0.65\si{\nano\m\squared}$. Additionally, the soft DPD interaction reduces the bilayer thickness to $2.9\si{\nano\m}$, contrasted with $4.1\si{\nano\m}$ for MARTINI. Similarly, the bending modulus decreases significantly to $5.2k_\text{B}T$ compared to the MARTINI value of $19.0k_\text{B}T$. The softness of the DPD force allows substantial overlap between beads, which explains these deviations.
+Computer simulations provide an important technique to investigate biophysical processes that remain difficult to access experimentally. While all-atom force fields capture every interaction individually, they require substantial computational power. Coarse-grained models address this by reducing the degrees of freedom, facilitating the investigation of significantly larger timescales. This work capitalizes on these advantages by utilizing a coarse-grained DPD force field based on the MARTINI force field, proposed by Wang and Hernandez (\textit{ACS Omega, 2024}), to investigate membrane self-assembly and the reproducibility of membrane properties. The DPD force field serves as a suitable candidate, as it offers a large timescale, due to the soft interaction, and an integrated thermostat. The study determines the area per lipid, membrane thickness and bending modulus, comparing these results to their MARTINI counterparts. A power spectrum analysis and a tensile force measurement determine the bending modulus. Successful self-assembly processes yield structures that closely resemble MARTINI bilayers. However, the increased effective size of DPD beads results in an elevated area per lipid of approximately $0.85\si{\nano\m\squared}$ compared to the MARTINI value of $0.65\si{\nano\m\squared}$. Additionally, the soft DPD interaction reduces the bilayer thickness to $2.9\si{\nano\m}$. This is also reflected in the bending modulus via power spectrum analysis, which is reduced to $5.2k_\text{B}T$. While tensile force measurement confirms the general scale of the bending modulus, this method still poses substantial convergence challenges. Ultimately, the increased mobility of DPD beads allows for high efficiency, however the soft-core potential and increased effective size significantly impact the mechanical rigidity and area per lipid of the membrane.  
 
 \chapter*{Zusammenfassung}
 
-Diese Arbeit nutzt ein grobkörniges (coarse-grained) DPD-Kraftfeld basierend auf der MARTINI-Methode, vorgeschlagen von Wang und Hernandez (\textit{ACS Omega, 2024}), um die Membran-Selbstassemblierung und die Reproduzierbarkeit von Membraneigenschaften zu untersuchen. Die Auswertung beinhaltet Analyse der Packungsdichte, der Ausrichtung (alignment) und die Phasenseparation. Darüber hinaus wird in dieser Arbeit der Platzbedarf pro Lipid (area per lipid), die Membrandicke sowie das Biegemodul (bending modulus) berechnet und vergleichen mit den entsprechenden MARTINI Ergebnissen. Eine Power-Spektrum-Analyse, welche der Methodik von Cooke und Deserno (\textit{J. Chem. Phys. 2005}) folgt, bestimmt das Biegemodul. Erfolgreiche Selbstassemblierungsprozesse liefern eine Struktur, die einem MARTINI-Bilayer stark ähnelt. Jedoch führt die erhöhte effektive Größe der DPD-Beads zu einem gesteigerten Platzbedarf pro Lipid von etwa $0.85\si{\nano\m\squared}$ im Vergleich zum MARTINI-Wert von $0.65\si{\nano\m\squared}$. Zusätzlich reduziert die weiche DPD-Wechselwirkung die Bilayer-Dicke auf $2.9\si{\nano\m}$, im Kontrast zu $4.1\si{\nano\m}$ bei MARTINI. Ebenso sinkt der Biegemodul signifikant auf $5.2k_\text{B}T$ verglichen mit dem MARTINI-Wert von $19.0k_\text{B}T$. Die Weichheit der DPD-Kraft ermöglicht eine erhebliche Überlappung zwischen den Beads, was diese Abweichungen erklärt.
+Computersimulationen sind eine wichtige Methode zur Untersuchung biophysikalischer Prozesse, die experimentell nur schwer zugänglich sind. All-Atom-Kraftfelder erfassen zwar jede Wechselwirkung einzeln, erfordern jedoch eine erhebliche Rechenleistung. Grobkörnige (coarse-grained) Modelle verbessern die Effizienz, indem sie die Freiheitsgrade reduzieren und so die Untersuchung deutlich größerer Zeitskalen ermöglichen. Diese Arbeit nutzt diese Vorteile, indem sie ein grobkörniges (coarse-grained) DPD-Kraftfeld auf Basis des von Wang und Hernandez (\textit{ACS Omega, 2024}) vorgeschlagenen MARTINI-Kraftfeldes verwendet, um die Selbstorganisation von Membranen und die Reproduzierbarkeit von Membraneigenschaften zu untersuchen. Das DPD-Kraftfeld eignet sich hierfür, da es aufgrund der weichen Wechselwirkung eine große Zeitskala und einen integrierten Thermostat bietet. Die Studie ermittelt die Fläche pro Lipid, die Membrandicke und das Biegemodul und vergleicht diese Ergebnisse mit denen des MARTINI-Kraftfeldes. Der Biegemodul wird durch eine Leistungsspektrumanalyse und eine Zugkraftmessung bestimmt. Erfolgreiche Selbstorganisationsprozesse führen zu Strukturen, die den MARTINI-Membranen sehr ähnlich sind. Die erhöhte effektive Größe der DPD-Teilchen führt jedoch zu einer erhöhten Fläche pro Lipid von etwa $0,85 \si{\nano\m\squared}$ im Vergleich zum MARTINI-Wert von $0,65 \si{\nano\m\squared}$. Darüber hinaus reduziert die weiche DPD-Wechselwirkung die Dicke der Doppelschicht auf $2,9 \si{\nano\m}$. Dies spiegelt sich auch im Biegemodul wider, der mittels Leistungsspektrumanalyse auf $5,2 k_\text{B}T$ reduziert wird. Während die Zugkraftmessung die allgemeine Größenordnung des Biegemoduls bestätigen, stellt diese Methode dennoch erhebliche Herausforderungen hinsichtlich der Konvergenz dar. Letztendlich ermöglicht die erhöhte Mobilität der DPD-Teilchen eine hohe Effizienz, jedoch haben das weiche Potenzial und die erhöhte effektive Größe einen erheblichen Einfluss auf die Elastizität und die Fläche pro Lipid der Membran. 
 
 \tableofcontents
 
@@ -652,6 +652,12 @@ To maintain a cylindrical shape a force $F_z$ must be applied. This force can be
 
 \begin{align}
     F_z = \frac{\partial E}{\partial L_z} = \frac{2 \pi \kappa}{R}\, .
+\end{align}
+
+The force $F_z$ is connected to the stress tensor through $F_z = \sigma_{zz}L_x L_y$. Therefore, the bending modulus can be expressed as 
+
+\begin{align}
+    \kappa = \frac{F_z R}{2\pi}\, .\label{eq:tether_central_from}
 \end{align}
 
 
@@ -1125,7 +1131,7 @@ To emulate a continuous cooling process, the simulation utilizes a loop that inc
 After reaching the target temperature of $\hat{T} = 1$, a longer production phase
 stabilizes the resulting structure.
 To evaluate how lower temperatures influence the quality of the final structure, a second set of simulations repeats this procedure using a production
-temperature of $\hat{T} = 0.8$. In total the self-assembly protocol simulated $6000\tau$ DPD timesteps.
+temperature of $\hat{T} = 0.8$. In total the self-assembly protocol simulated $6000\tau$ DPD timeunits with a timestep of $\Delta \hat{t} = 0.01$.
 
 The analysis utilizes the nematic order parameter and the contact number from \cref{nematic} to measure both the alignment and the packing density of the bilayer.
 The contact number requires selecting a cutoff distance to categorize which lipids count as neighbors. The area per lipid serves as the basis for this value, as it directly corresponds to a radius $r_c = \sqrt{A_l/\pi}$. Furthermore, a
@@ -1165,18 +1171,18 @@ This initial configuration yields a bilayer within a non-cubic area where
 the area per lipid remains below the optimal value.
 To achieve a square-shaped bilayer, the simulation gradually deforms the box, adjusting the dimensions while maintaining a constant volume.   
 
-The production phase follows the deformation process. Due to the increased system size, a longer total simulation time is required, yielding $9000\tau$ DPD timesteps. 
+The production phase follows the deformation process. Due to the increased system size, a longer total simulation time is required, yielding $9000\tau$ DPD timeunits with a timestep of $\Delta \hat{t} = 0.01$. 
 
 The analysis of bilayer quality follows the methodology described in \cref{sec:128_assembly}, comparing the results against the same MARTINI baseline and DPD bilayers of matching system size.
 
-\section{Simulations of membrane Fluctuations}\label{sec:method_ben_mod_fourier}
+\section{Simulations of Membrane Fluctuations}\label{sec:method_ben_mod_fourier}
 
 The determination of the POPC membrane bending modulus utilizes the theoretical foundation of \cref{sec:ben_mod_fourier}. This process involves measuring the power spectrum of each mode in \cref{eq:cental_ben_formula_fourier} and applying a corresponding fit to derive the bending modulus. However, several physical constraints complicate this procedure
 
 
 Continuum theory breaks down when the inverse wave vector 1/k becomes comparable to the bilayer thickness w. Consequently, the investigation must focus on small wave vectors. However, for values smaller than the critical wavelength $k_c = \sqrt{\Sigma/\kappa}$ the lateral tension dominates. The simulations must therefore run at zero lateral tension to ensure the target scaling of $k^{-4}$. Maintaining this condition by manually adjusting the box dimensions is difficult \cite{Cooke_bending_mod}. To circumvent this, a Nose/Hoover barostat \cite{LammpsNPH} adjusts the box volume to maintain a specific target pressure, which is simply the average pressure given by LAMMPS for simulations without a barostat. Choosing a low damping parameter, which governs the reaction speed of the barostat, ensures the achievement of zero tension, while using a reduced timestep of $\Delta \hat{t} = 0.001\tau$. The timestep adjustment is central as for low damping parameters a large change in pressure leads to a large change in the box volume. If the time step is too large pressure spikes are more common, leading to oscillation or heavy reshaping of the box dimensions. The system must be substantially larger than the self-assembly setup to accommodate small wave vectors.
 
-The simulation begins with a pre-assembled membrane containing 4096 lipids, following the methodology of \cref{sec:input_opt} and the work of Cook and Deserno \cite{Cooke_bending_mod}. After an equilibration phase of 100$\tau$ to eliminate grid-initialization effects, 100 samples of the system are taken. To generate a height function the mean tail position of each lipid is interpolated on a $16 \times 16$ grid. This interpolation requires careful handling, as it introduces discretization artifacts, discussed by Cook and Deserno \cite{Cooke_bending_mod}.
+The simulation begins with a pre-assembled membrane containing 4096 lipids, following the methodology of \cref{sec:input_opt} and the work of Cook and Deserno \cite{Cooke_bending_mod}. \cref{fig:fluc_meas_setup} illustrates the setup of the large bilayer. After an equilibration phase of 100$\tau$ to eliminate grid-initialization effects, 100 samples of the system are taken across the $1000\tau$ measurement run. To generate a height function the mean tail position of each lipid is interpolated on a $16 \times 16$ grid. This interpolation requires careful handling, as it introduces discretization artifacts, discussed by Cook and Deserno \cite{Cooke_bending_mod}.
 The calculation must account for a damping factor for the two-dimensional wave numbers $(n_x, n_y)$ and an $N \times N$ grid
 
 \begin{align}
@@ -1295,12 +1301,64 @@ reveals the bending modulus of the POPC membrane. \cref{fig:spectrum_pipeline_fi
     \label{fig:spectrum_pipeline_final_aligned}
 \end{figure}
 
-\section{Simulation of Tethers}
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/methods/large_bilayer.png} 
+    \subcaption{}
+    \label{fig:fluc_meas_setup}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/methods/cylinder_setup.png} 
+    \subcaption{}
+    \label{fig:tether_setup}
+  \end{subfigure}
+  \caption{\textbf{(a)} System setup for a pre-assembled bilayer with 4096 lipids for membrane fluctuations.
+  \textbf{(b)} System setup for a cylindrical membrane for the force measurement, with an initial inner radius of $R_\text{in} = 8\si{\nano\m}$.
+  Display settings follow \cref{fig:system_setups}}
+  \label{fig:bending_setups}
+\end{figure}
 
-For this measurement the membrane has to setup as a cylinder. This procedure is similar to the flat bilayer but more complicated. This generation script takes the number of lipids, the number density, the area per lipid and the inner radius of the cylinder. The number of lipids is set to $N_l = 4096$, the number density is $\rho = 3$ and the area per lipid is $0.88\si{\nano\m\squared}$. The inner radius is varied for the simulation runs. 
+\section{Simulation of Tethers} \label{sec:methods_sim_tethers}
 
-First the outer radius is set as the inner radius plus the DPD membrane thickness. 
-The lipids from the \path{POPC-em.gro} file are aligned along the z-axis, thus they are rotated 90 degrees into the xy-plane.  
+Configuring the membrane as a cylinder requires a specific setup, a procedure that mirrors the flat bilayer configuration but introduces additional complexity. The generation script incorporates the number of lipids, the number density, the area per lipid, and the inner radius of the cylinder. The setup fixes the number of lipids at $N_l = 4096$, the number density at $\rho = 3$, and the area per lipid at $0.88\si{{\nano}{\m}{\squared}}$. Different simulation runs utilize varied inner radii. A cylindrical setup necessitates adjustments to the box dimensions and the calculation of starting positions.
+
+
+
+Configuring cylinder positions requires determining the box dimensions and the number of lipids in the outer and inner leaflets. The inner leaflet contains fewer lipids to account for the reduced available area. Adjusting the area per lipid from \cref{eq:def_apl} for a cylindrical geometry aligned along the $z$-axis yields:
+
+\begin{align}
+    A_l = \frac{2\pi R L_z}{N_l/2}\, .\label{eq:apl_cylinder}
+\end{align}
+
+
+
+The calculation utilizes the radius $R = R_\text{in}/2\cdot(1 + d)$, where $d$ represents the bilayer thickness. Solving this expression for $L_z$ yields:
+
+\begin{align}
+    &L_z = \frac{A_l N_l}{4\pi R} \\
+    &L_x = 2R + \delta\\
+    &L_y = 2R + \delta\, ,
+\end{align}
+
+where $\delta = 10 \text{r.u.}$ serves as a buffer in the $x$ and $y$ directions to prevent interactions between periodic images. Applying \cref{eq:apl_cylinder} and inserting the outer and inner radii provides the lipid count for both leaflets. \cref{fig:tether_setup} illustrates the resulting cylinder setup.
+
+
+
+The subsequent step involves placing the determined number of lipids on a $(\theta,z)$ grid. This process adjusts the orientation of lipids from the \path{POPC-em.gro} file by rotating them $90^\circ$ from the $z$-axis into the $xy$-plane. A subsequent rotation around the grid angle $\theta$ occurs, with an additional $180^\circ$ rotation for lipids depending on their leaflet. The placement of each lipid's center of mass follows:
+
+\begin{align}
+    \vec{X} = (R_\text{in/out}\cos(\theta), R_\text{in/out}\sin(\theta),z)
+\end{align}
+
+for every determined grid pairing in both leaflets. Water molecules fill the space inside and outside the cylinder until the system reaches the target number density. 
+
+The simulations apply the same barostat used in membrane fluctuation measurements to ensure a tension-free bilayer. Following Harmandaris and Deserno \cite{Markus_tethers}, the simulations employ a timestep of $\Delta \hat{t} = 0.005$. Notably, this value exceeds the timestep of the fluctuation measurement, yet the simulation maintains stability. An equilibration phase of $2500 \tau$ relaxes the radius to its equilibrium value \cite{Markus_tethers}, while a subsequent measurement phase of $2500 \tau$ monitors the stress tensor and the radii. Each measurement of the stress tensor is converted into the force by multiplication with the available box area $L_xL_y$ The investigation evaluates cylinders with radii of $6\si{{\nano}{\m}}, 8\si{{\nano}{\m}},$ and $10\si{{\nano}{\m}}$. This ensures a curvature below $90\%$, aligning with the recommendations of Harmandaris and Deserno \cite{Markus_tethers}. 
+
+
+
 
 
 \chapter{Results}
@@ -1761,7 +1819,41 @@ Applying the method from \cref{sec:method_ben_mod_fourier} to DPD and MARTINI bi
 
 All-atom simulations of tension-free POPC bilayers also utilizing the height spectra \cite{all_atom_bending} revealed a value of $(23.3 \pm 1.4)k_\text{B}T$. The reported MARTINI value aligns closely with this result. The DPD value, however, deviates substantially, though closer examination justifies this difference. The softer DPD force permits significantly greater lipid mobility within the membrane, as neighboring lipids do not strongly restrict thermal fluctuations. This is enhanced by the higher area per lipid, as even less friction occurs between the neighboring lipids. Additionally, the DPD membrane is substantially thinner than all-atom or MARTINI membranes. Rawicz et al. \cite{bending_thickness} propose that the bending modulus is dependent on the membrane thickness and thicker membranes lead to higher bending moduli.  
 
-A visual inspection of the membranes during the simulation runs in \cref{fig:ben_dpd_mem} and \cref{fig:ben_martini_mem} confirms this behavior. The DPD membrane exhibits pronounced undulations, which corresponds to a lower bending modulus since deformation requires less force. In contrast, the MARTINI bilayer remains relatively planar, displaying only minor undulations.  
+A visual inspection of the membranes during the simulation runs in \cref{fig:ben_dpd_mem} and \cref{fig:ben_martini_mem} confirms this behavior. The DPD membrane exhibits pronounced undulations, which corresponds to a lower bending modulus since deformation requires less force. In contrast, the MARTINI bilayer remains relatively planar, displaying only minor undulations. 
+
+To improve this measurement longer simulations are required as the heavily reduced timesteps leads to much smaller total simulation time. Additionally, each measurement of the height function is only separated by $10\tau$ which does not guarantee decorrelation.
+
+\section{Bending modulus by tether simulation}
+
+\cref{sec:methods_sim_tethers} details the methodology for the tether simulations. \cref{tab:tether_results} illustrates that the measurements deviate from theoretical predictions, as the force increases alongside an expanding radius, contradicting the suggested $F_z \propto 1/R$ scaling in \cref{eq:tether_central_from}. Furthermore, substantial relative errors, exceeding 100\% in one instance, indicate that the force fails to converge correctly. Nevertheless, the bending modulus approximations align closely with the DPD results obtained from membrane fluctuation measurements. The cylinder also maintains stability throughout the simulation, as shown in \cref{fig:equ_cylinder}. 
+
+Due to time constraints, this research does not include further refinements of these measurements. Achieving a converging force measurement requires extended simulation durations for both the equilibration and measurement phases. Harmandaris and Deserno \cite{Markus_tethers} utilized runs ranging from $10000\tau$ to $20000\tau$, which significantly exceed the $2500\tau$ duration applied in this study. This discrepancy arises because the stress tensor fluctuates intensely during simulations, necessitating a larger data set to establish a stable mean.
+
+In general, the simulation of large systems with reduced timesteps pose a significant challenge due to increased time needed to run sufficiently long simulations.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{ccc}
+    \toprule
+    Force $F_z$ [$k_\text{B}T/r_\text{ref}$] & Radius $R$ [$r_\text{ref}$] & $\kappa$ [$k_\text{B}T$]\\
+    \midrule
+    $1.0 \pm 0.7$ & $12.0 \pm 0.7$ & $2.0 \pm 1.2$ \\
+    $1.7 \pm 1.0$ & $14.5 \pm 0.4$ & $3.9 \pm 2.3$ \\
+    $0.85 \pm 1.3$ & $18.5 \pm 0.5$ & $2.5 \pm 3.8$ \\
+    \bottomrule 
+\end{tabular}
+\caption{Results of the force measurements to maintain tether for different initial radii.}
+\label{tab:tether_results}
+\end{table}
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{figures/results/equ_cylinder.png}
+\caption{Equilibrated cylinder with initial radius of $8\si{\nano\m}$ after $2500\tau$ DPD timesteps.}
+\label{fig:equ_cylinder}
+\end{figure}
+
+
 
 
 \chapter{Conclusion}

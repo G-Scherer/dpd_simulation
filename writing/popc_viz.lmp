@@ -7,7 +7,7 @@ bond_style harmonic
 angle_style cosine/squared
 kspace_style pppm 1.0e-4
 
-read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/writing/popc_viz.data
+read_data /home/gabriel/Dokumente/bachelor_thesis/dpd_simulation/bending_modulus/setup/bilayer_4096.data
 
 variable seed equal 125
 variable T equal 1.0
@@ -23,6 +23,6 @@ timestep 0.01
 
 fix 1 all nve
 
-dump traj_gz all custom 1 popc_viz.lammpstrj id mol type x y z
+dump traj_gz all custom 1 large_bilayer.lammpstrj id mol type x y z
 
 run 1
