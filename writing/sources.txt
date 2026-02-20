@@ -2,3 +2,11 @@ lammps pbc bild: https://lammpstube.com/2019/10/30/periodic-boundary-conditions/
 timesteps in cgmd: https://wires.onlinelibrary.wiley.com/doi/full/10.1002/wcms.1169
 
 - andere quelle anstatt cgwater review
+- luis fragen, was an dpd units falsch ist
+- potenz bei delta funktion
+- dateinamen nennen ok, oder ganz raus?
+- potentiale für bond/angle in methods ok?
+- bond/angle types in caption ok? oder zu doppelt?
+- besides application scales?
+- woher daten bei boxplot...
+- motivationstexte bei abstr intro und concl
