@@ -16,7 +16,7 @@
 % --- 2. SPRACHE & ENCODING ---
 \usepackage[utf8]{inputenc} % Nur nötig bei älteren LaTeX Versionen, schadet aber nicht
 \usepackage[T1]{fontenc}    % Wichtig für korrekte Umlaute/Sonderzeichen im Output
-\usepackage[english]{babel} % WICHTIG: Korrekte Silbentrennung für Englisch
+\usepackage[ngerman, english]{babel} % WICHTIG: Korrekte Silbentrennung für Englisch
 
 % --- 3. SCHRIFTARTEN & MATHE ---
 \usepackage{mathpazo}       % Palatino (Serifen) für Text und Mathe
@@ -120,6 +120,8 @@
 \usepackage{multirow}
 \usepackage{booktabs}
 \usepackage{array}
+
+\usepackage{microtype}
 
 % --- EINSTELLUNGEN KOMA-SCRIPT ---
 % Captions verschönern (Fett und etwas kleiner)
@@ -272,11 +274,14 @@ Prof. Tristan Bereau
 
 \chapter*{Abstract}
 
-Computer simulations provide an important technique to investigate biophysical processes that remain difficult to access experimentally. While all-atom force fields capture every interaction individually, they require substantial computational power. Coarse-grained models address this by reducing the degrees of freedom, facilitating the investigation of significantly larger timescales. This work capitalizes on these advantages by utilizing a coarse-grained DPD force field based on the MARTINI force field, proposed by Wang and Hernandez (\textit{ACS Omega, 2024}), to investigate membrane self-assembly and the reproducibility of membrane properties. The DPD force field serves as a suitable candidate, as it offers a large timescale, due to the soft interaction, and an integrated thermostat. The evaluation of self-assembly assesses packing density, lipid alignment, and phase separation of the membrane. A power spectrum analysis and a tensile force measurement determine the bending modulus. Successful self-assembly processes yield structures that closely resemble MARTINI bilayers. However, the increased effective size of DPD beads results in an elevated area per lipid of approximately $0.85\si{\nano\m\squared}$ compared to the MARTINI value of $0.65\si{\nano\m\squared}$. Additionally, the soft DPD interaction reduces the bilayer thickness to $2.9\si{\nano\m}$. This is also reflected in the bending modulus via power spectrum analysis, which is reduced to $5.2k_\text{B}T$. While tensile force measurement confirms the general scale of the bending modulus, this method still poses substantial convergence challenges. The increased mobility of DPD beads allows for high efficiency, however the soft-core potential and increased effective size significantly impact the mechanical rigidity and area per lipid of the membrane.  
+Computer simulations provide an important technique to investigate biophysical processes that remain difficult to investigate experimentally. All-atom force fields capture every detail, whereas coarse-grained models reduce the degrees of freedom, facilitating the investigation of significantly larger timescales and systems. This work capitalizes on these advantages by utilizing a coarse-grained dissipative particle dynamics (DPD) method based on the MARTINI force field, proposed by Wang and Hernandez (\textit{ACS Omega, 2024}), to investigate membrane self-assembly and the reproducibility of membrane properties. Both serve as a benchmark for this method. DPD serves as a suitable candidate, as it offers faster dynamics, due to soft interactions. The evaluation of self-assembly assesses packing density, lipid alignment, and phase separation of the membrane. A power spectrum analysis and a tensile force measurement determine the bending modulus. Successful self-assembly processes yield structures that closely resemble MARTINI bilayers. However, the increased effective size of DPD beads results in an elevated area per lipid of approximately $0.85\si{\nano\m\squared}$ compared to the MARTINI value of $0.65\si{\nano\m\squared}$. Additionally, the soft DPD interaction reduces the bilayer thickness to $2.9\si{\nano\m}$. This is also reflected in the bending modulus via power spectrum analysis, which is reduced to $5.2k_\text{B}T$. While tensile force measurement confirms the general scale of the bending modulus, this method still poses substantial convergence challenges. The elevated mobility of DPD beads allows for high efficiency; however, the soft-core potential and increased effective size significantly impact the mechanical rigidity and area per lipid of the membrane.  
 
 \chapter*{Zusammenfassung}
 
-Computersimulationen sind eine wichtige Methode zur Untersuchung biophysikalischer Prozesse, die experimentell nur schwer zugänglich sind. All-Atom-Kraftfelder erfassen zwar jede Wechselwirkung einzeln, erfordern jedoch eine erhebliche Rechenleistung. Grobkörnige (coarse-grained) Modelle verbessern die Effizienz, indem sie die Freiheitsgrade reduzieren und so die Untersuchung deutlich größerer Zeitskalen ermöglichen. Diese Arbeit nutzt diese Vorteile, indem sie ein grobkörniges (coarse-grained) DPD-Kraftfeld auf Basis des MARTINI-Kraftfeldes, welches von Wang und Hernandez (\textit{ACS Omega, 2024}) vorgeschlagenen wurde verwendet, um die Selbstorganisation von Membranen und die Reproduzierbarkeit von Membraneigenschaften zu untersuchen. Das DPD-Kraftfeld eignet sich hierfür, da es aufgrund der weichen Wechselwirkung eine große Zeitskala und einen integrierten Thermostat bietet. Die Bewertung der Selbstorganisation beinhaltet die Packungsdichte, Lipidorientierung und Phasentrennung der Membran. Das Biegemodul wird durch eine Leistungsspektrumanalyse und eine Zugkraftmessung bestimmt. Erfolgreiche Selbstorganisationsprozesse führen zu Strukturen, die den MARTINI-Membranen sehr ähnlich sind. Die erhöhte effektive Größe der DPD-Teilchen führt jedoch zu einer erhöhten Fläche pro Lipid von etwa $0,85 \si{\nano\m\squared}$ im Vergleich zum MARTINI-Wert von $0,65 \si{\nano\m\squared}$. Darüber hinaus reduziert die weiche DPD-Wechselwirkung die Dicke der Doppelschicht auf $2,9 \si{\nano\m}$. Dies spiegelt sich auch im Biegemodul wider, der mittels Leistungsspektrumanalyse auf $5,2 k_\text{B}T$ reduziert wird. Während die Zugkraftmessung die allgemeine Größenordnung des Biegemoduls bestätigen, stellt diese Methode dennoch erhebliche Herausforderungen hinsichtlich der Konvergenz dar. Letztendlich ermöglicht die erhöhte Mobilität der DPD-Teilchen eine hohe Effizienz, jedoch haben das weiche Potenzial und die erhöhte effektive Größe einen erheblichen Einfluss auf die Elastizität und die Fläche pro Lipid der Membran. 
+\foreignlanguage{ngerman}{
+Computersimulationen sind eine wichtige Methode zur Untersuchung biophysikalischer Prozesse, die experimentell nur schwer zugänglich sind. All-Atom-Kraftfelder erfassen jedes Detail, grobkörnige (coarse-grained) Modelle hingegen verbessern die Effizienz, indem sie die Freiheitsgrade reduzieren und so deutlich größerer Zeitskalen und Systeme ermöglichen. Diese Arbeit nutzt diese Vorteile, indem sie eine coarse-grained dissipative particle dynamics (DPD) Methode auf Basis des MARTINI-Kraftfeldes, welches von Wang und Hernandez (\textit{ACS Omega, 2024}) vorgeschlagenen wurde verwendet, um die Selbstorganisation von Membranen und die Reproduzierbarkeit von Membraneigenschaften zu untersuchen. Das DPD-Kraftfeld eignet sich hierfür, da es aufgrund der weichen Wechselwirkung schnellere Dynamik bietet. Die Auswertung der Selbstorganisation beinhaltet die Packungsdichte, Lipidorientierung und Phasentrennung der Membran. Das Biegemodul wird durch eine Leistungsspektrumanalyse und eine Zugkraftmessung bestimmt. Erfolgreiche Selbstorganisationsprozesse führen zu Strukturen, die den MARTINI-Membranen sehr ähnlich sind. Die erhöhte effektive Größe der DPD-Teilchen führt jedoch zu einer erhöhten Fläche pro Lipid von etwa $0,85 \si{\nano\m\squared}$ im Vergleich zum MARTINI-Wert von $0,65 \si{\nano\m\squared}$. Darüber hinaus reduziert die weiche DPD-Wechselwirkung die Dicke der Doppelschicht auf $2,9 \si{\nano\m}$. Dies spiegelt sich auch im Biegemodul wider, der mittels Leistungsspektrumanalyse auf $5,2 k_\text{B}T$ reduziert wird. Während die Zugkraftmessung die allgemeine Größenordnung des Biegemoduls bestätigen, stellt diese Methode dennoch erhebliche Herausforderungen hinsichtlich der Konvergenz dar. Letztendlich ermöglicht die erhöhte Mobilität der DPD-Teilchen eine hohe Effizienz; jedoch haben das weiche Potenzial und die erhöhte effektive Größe einen erheblichen Einfluss auf die Elastizität und die Fläche pro Lipid der Membran. 
+}
+
 
 \tableofcontents
 
@@ -289,53 +294,44 @@ Computersimulationen sind eine wichtige Methode zur Untersuchung biophysikalisch
 
 \chapter{Introduction}
 
-Biological membranes serve as fundamental building blocks of cells, however, their dynamics occur on timescales that remain inaccessible to all-atom simulations. Coarse-grained models, such as the MARTINI force field, replace groups of atoms with beads, which reduces the degrees of freedom and extends the accessible timescales.
-This approach facilitates membrane simulations and provides a basis for performance benchmarks. The MARTINI model utilizes the Lennard-Jones potential for all non-bonded interactions. While the Lennard-Jones potential is effective, its steep repulsive wall limits the speed of the dynamics.
-Dissipative Particle Dynamics (DPD), proposed by Groot and Warren, utilizes a soft-sphere simulation framework governed by three forces: the conservative force $\mathbf F^C$, the dissipative force $\mathbf F^D$, and the random force $\mathbf F^R$. Furthermore, the fluctuation-dissipation theorem connects the dissipative and random forces, enabling simulations within the canonical ensemble. These soft-core interactions and the integrated thermostat offer substantial advantages over alternative force fields.
+Investigating biophysical processes for numerous purposes, such as drug discovery and gaining a deeper understanding of illnesses, remains a vital task in physics. While experimental techniques are instrumental, some phenomena are challenging to observe. For instance, the finite resolution of microscopes and uncontrollable environmental factors can limit the scope of experiments. In these cases, computer simulation can provide an alternative. The all-atom approach models every single atom in a molecule, including hydrogen, and simulates interactions with great detail. This high accuracy comes at the cost of a rough energy surface and a massive number of degrees of freedom, restricting timescale and system size. To circumvent this problem, coarse-grained simulations map multiple heavy atoms to a single interaction site, reducing the degrees of freedom and introducing a simpler interaction potential, smoothing the energy surface. One popular coarse-graining scheme is the MARTINI model. This transferable method, utilizes the Lennard-Jones potential for non-bonded interactions. While this potential is effective, the steep repulsive walls limit the integration timestep and overall speed of the dynamics. A possible alternative is Dissipative Particle Dynamics (DPD), as proposed by Groot and Warren. It employs a soft-sphere simulation framework governed by three forces: the conservative force $\mathbf F^C$, the dissipative force $\mathbf F^D$, and the random force $\mathbf F^R$. Furthermore, the fluctuation-dissipation theorem connects the dissipative and random forces, enabling simulations within the canonical ensemble. These soft-core interactions and the integrated thermostat offer substantial advantages over alternative force fields.
 
-This work employs a coarse-grained model of Dissipative Particle Dynamics (DPD), using the MARTINI force field as the basis for parametrization \cite{Wang2024}. This approach aims to combine the benefits of coarse-graining with the efficiency of the DPD force field. The study evaluates the DPD model via lipid membrane self-assembly across various system sizes and temperatures. The investigation focuses on homogeneous membranes composed of 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine (POPC), a lipid of significant importance in biophysics.
-The self-assembly process serves as a robust benchmark for evaluating the model's capabilities. An assessment of the assembled membrane focuses on packing density, lipid alignment, and phase separation. Furthermore, the analysis examines several membrane properties, specifically the area per lipid, membrane thickness, and the bending modulus. The calculation of the latter involves power spectrum analysis \cite{Cooke_bending_mod} and tensile force measurements.
+This work employs a coarse-grained DPD model, using the MARTINI force field as the basis for parametrization \cite{Wang2024}. This approach aims to combine the benefits of coarse-graining with the efficiency of the DPD force field. The study evaluates the DPD model via lipid membrane self-assembly across various system sizes and temperatures, and the membrane properties: area per lipid, membrane thickness, and bending modulus. The investigation focuses on homogeneous membranes composed of 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine (POPC).
 
-\cref{ch:theory} introduces coarse-grained simulations as a technique to overcome the challenges of all-atom simulations and defines the MARTINI coarse-graining mechanism. \cref{dpd} examines the DPD force field, including a comparison with the Lennard-Jones potential and a description of the integrated thermostat. Subsequent sections define the remaining interactions, molecular simulation fundamentals, and theoretical background for both computations of the bending modulus. \cref{ch:methods} details the transition from MARTINI to coarse-grained DPD, providing a comprehensive description of the lipid system topology and the conversion of key force field parameters into DPD units. Furthermore, this chapter provides the simulation protocols for self-assembly and bending moduli measurements. \cref{ch:results} discusses the obtained results, emphasizing the comparison between DPD and MARTINI.
+\cref{ch:theory} introduces coarse-grained simulations as a technique to overcome the challenges of all-atom simulations and defines the MARTINI coarse-graining mechanism. \cref{dpd} examines the DPD force field, including a comparison with the Lennard-Jones potential and a description of the integrated thermostat. Subsequent sections define the remaining interactions, molecular simulation fundamentals, and theoretical background for computations of the bending modulus. \cref{ch:methods} details the transition from MARTINI to coarse-grained DPD, providing a comprehensive description of the lipid system topology and the conversion of key force field parameters into DPD units. Furthermore, this chapter provides the simulation protocols for self-assembly and bending moduli measurements. \cref{ch:results} discusses the obtained results, emphasizing the comparison between DPD and MARTINI, before concluding this thesis in \cref{ch.conclusion}.
 
 \chapter{Theory}\label{ch:theory}
 
-This chapter explores coarse-grained simulation techniques, examining their advantages and practical implementation. It provides a detailed description of the MARTINI force field, which defines the bead types adopted in this Dissipative Particle Dynamics (DPD) study. Section \cref{dpd} establishes DPD as the primary force field utilized in this research, emphasizing a comparison between its soft-repulsive potential and the Lennard-Jones potential employed by MARTINI.
+% This chapter explores coarse-grained simulation techniques, examining their advantages and practical implementation. It provides a detailed description of the MARTINI force field, which defines the bead types adopted in this Dissipative Particle Dynamics (DPD) study. Section \cref{dpd} establishes DPD as the primary force field utilized in this research, emphasizing a comparison between its soft-repulsive potential and the Lennard-Jones potential employed by MARTINI.
 
-Furthermore, the chapter defines additional interactions, specifically electrostatic and intramolecular forces. It also covers fundamental principles of computer simulation, including periodic boundary conditions and numerical integration methods. To facilitate the characterization of membranes, the text introduces specific assembly metrics. Finally, it presents two theoretical approaches for calculating the bending modulus: analyzing membrane fluctuations and measuring the forces within an actively curved membrane.
+% Furthermore, the chapter defines additional interactions, specifically electrostatic and intramolecular forces. It also covers fundamental principles of computer simulation, including periodic boundary conditions and numerical integration methods. To facilitate the characterization of membranes, the text introduces specific assembly metrics. Finally, it presents two theoretical approaches for calculating the bending modulus: analyzing membrane fluctuations and measuring the forces within an actively curved membrane.
 
 \section{Coarse-Grained Simulations}\label{sec:coarse-grained-simulations}
 
-Coarse-grained molecular simulations \cite{CGwater_review} aim to simulate the behavior of large systems by reducing the 
-available degrees of freedom in the system, while preserving the main thermodynamic and
-structural properties. The primary technique is a mapping mechanism, that
-represents groups of atoms as a single interaction site or “bead”. The number of atoms 
-that are coarse-grained differ between different methods and the length scale of interest.
-
+Coarse-grained molecular simulations \cite{CGwater_review} aim to simulate the behavior of large systems and timescales, while preserving the main thermodynamic and
+structural properties. The primary technique is a mapping mechanism that
+represents groups of atoms as a single interaction site or “bead”. The coarse-graining degree, defining the number of heavy atoms in one bead, vary between different methods and the length scales of interest.
 Coarse-graining models provide four major advantages that improve performance \cite{cg_review_speedups}. A reduction in the degrees of freedom by the mapping mechanism, decreases the number of interactions to compute. Furthermore, omitting atomistic detail smooths the potential energy surface and lowers friction and leads to faster dynamics. Some coarse-grained models employ a truncated interaction force, additionally reducing the amount of computation. While all-atom simulations utilize a timestep on the order of femtoseconds\cite{Atomic_timescales}, coarse-graining allows these to be extended into tens or hundreds of femtoseconds, depending on the model.  
-
 A central challenge in CG simulations is parametrization of the interaction between beads. Two main 
 strategies exist: utilizing experimental data (top-down)
 or the results from more accurate all-atom simulations (bottom-up) to define the CG interactions.
 Since not every thermodynamic property can be captured simultaneously every coarse-graining strategy involves some tradeoffs \cite{CGwater_review}.
-
 This work employs the mapping mechanism of the MARTINI force field \cite{Martini}, the details of which are explained in 
 \cref{martini}. 
 
 
 \section{The MARTINI Model}\label{martini}
 
-The MARTINI force field \cite{Martini} is one of the most widely used models for coarse-grained simulations.
-Central to this approach is the representation of different groups of atoms as interaction sites or beads. 
-MARTINI distinguishes between five basic bead 
-types: water (W), polar (P), non-polar (N), apolar (C) and charged (Q).
-The P and C beads are also assigned a number from 1 to 5 depending on the 
-polarity, reaching from P1 being the least polar and P5 being the most
-polar whereas C1 is the most apolar and C5 the least apolar.
-The W bead is identical to the P4 bead. The Q and N beads can also have 
+The MARTINI force field \cite{Martini} is one of the most widely used models for coarse-grained simulations. 
+The employed mapping mechanism distinguishes between four basic bead 
+types: polar (P), non-polar (N), apolar (C), and charged (Q).
+The P and C beads are assigned an additional number from 1 to 5 depending on the 
+polarity, specifically P5 is the most
+polar bead whereas C1 is the most apolar bead.
+The water bead is identical to the P4 bead. The Q and N beads also have 
 subtypes which quantify the hydrogen bond forming capabilities.
-There is \textit{0} meaning no capabilities, \textit{d} meaning some donor capabilities and 
-\textit{a} meaning some acceptor capabilities. This finite set of beads is utilized to construct molecules. Crucially, the physical properties and interaction parameters remain consistent for every bead, regardless of the molecular structure to which it belongs.
+There is \textit{0} meaning no capabilities, \textit{d} meaning donor capabilities, 
+\textit{a} meaning acceptor capabilities, and \textit{da} meaning both donor and acceptor capabilities. This finite set of beads is utilized to construct molecules. Crucially, the physical properties and interaction parameters remain consistent for every bead, regardless of the molecular structure to which it belongs.
 For instance, an apolar C1 bead within a lipid chain interacts with its environment identically to a C1 bead found in an amino acid. The coarse-graining degree \cite{Martini} is 4:1 for most structures, while smaller structures like rings utilize 3:1 or 2:1 mappings.    
 
 The MARTINI model employs the Lennard-Jones potential to describe the interaction for a non-bonded bead pair ($i,j$)
@@ -345,7 +341,7 @@ U^{LJ}(\epsilon_{ij}, \sigma_{ij}) = 4 \epsilon_{ij} \left [\left(\frac{\sigma_{
 - \left(\frac{\sigma_{ij}}{r} \right)^6 \right ]\, . \label{LJ_pot}
 \end{equation}
 
-In this expression, $\epsilon_{ij}$ represents the well depth, which dictates the strength of the attraction between the beads according to an underlying interaction matrix. The parameter $\sigma_{ij}$ denotes the distance at which the potential equals zero, effectively defining the effective size of the beads.
+In this expression, $\epsilon_{ij}$ represents the well depth, which dictates the strength of the attraction between the beads according to an underlying interaction matrix. The parameter $\sigma_{ij}$ denotes the distance at which the potential equals zero, effectively defining the size of the beads.
 
 \section{Dissipative Particle Dynamics} \label{dpd}
 The DPD force field was introduced by Groot and Warren for the simulation of systems at 
@@ -360,7 +356,6 @@ in a DPD force field are governed by
 
 consisting of three different components: the conservative
 force $\mathbf{F}^C$, the dissipative force $\mathbf{F}^D$ and the random force $\mathbf{F}^R$. 
-
 The conservative force is defined as
 
 \begin{equation}
@@ -374,7 +369,6 @@ The conservative force is defined as
 where $r_c$ represents the cutoff distance and $A_{ij}$ is the maximum repulsion between 
 a specific particle pair. Furthermore, the relative position by
 $\mathbf{r}_{ij} = \mathbf{r}_i - \mathbf{r}_j$, with $r_{ij} = |\mathbf{r}_{ij}|$ as its magnitude and $\hat{\mathbf{r}}_{ij} = \mathbf{r}_{ij}/r_{ij}$ the corresponding unit vector.
-
 Typically, the cutoff distance is set to $r_c = 1$ when working with reduced units, which will be 
 discussed in \cref{dpd_units}, 
 simplifying the expression above. \cref{comp_forces} illustrates the difference between the conservative DPD force in \cref{eq:dpd_conservative} and the Lennard-Jones potential in \cref{LJ_pot}.
@@ -437,7 +431,6 @@ Notably, a factor of $\Delta t^{-1/2}$ appears in the random force expression. T
 follows the work of Groot and Warren \cite{DPD_groot_warren} and
 ensures that the mean square displacement follows the correct time dependency
 $\left < x^2\right >\propto t$.
-
 As previously mentioned, both forces are linked by the fluctuation dissipation theorem 
 \cref{connection_fluc_dis}. This assures that the energy added by the random force
 $\mathbf{F}^R$ 
@@ -464,10 +457,10 @@ smearing effect. The charge distribution then reads
     \rho(r) = \frac{q\beta^2}{\pi r} \exp(-2\beta r)\, . \label{charge_density}
 \end{equation}
 
-Utilizing the constant $\Gamma = e^2/(k_\text{B}T\epsilon_0\epsilon_rr_c)$ with $\epsilon_r = 78.3$, the resulting electrostatic force between two beads $i$ and $j$ with valence $Z_i$ and $Z_j$ follows
+Utilizing the constant $\Gamma = e^2/(k_\text{B}T\epsilon_0\epsilon_rr_c)$ with $\epsilon_r = 78.3$, the resulting electrostatic force between two beads $i$ and $j$ with valences $Z_i$ and $Z_j$ follows
 
 \begin{align}
-    \mathbf{F}^E_{ij} = \frac{\Gamma Z_i Z_j}{4 \pi r_{ij}}[1 - \exp(-2\beta r_{ij})
+    \mathbf{F}^E_{ij} = \frac{\Gamma Z_i Z_j}{4 \pi r_{ij}^2}[1 - \exp(-2\beta r_{ij})
     (1+2\beta r_{ij}(1+\beta r_{ij}))]\hat{\mathbf{r}}_{ij}\, . \label{coulomb_force}
 \end{align}
 
@@ -657,7 +650,6 @@ Notably, an additional factor of $1/L^2$ arises from the transition to a discret
 \section{Stretching Tethers}\label{sec:methods_tethers}
 
 Active induction of curvature through cylindrical membranes provides an alternative to membrane fluctuation measurements for computing the bending modulus. Applying the energy expression from \cref{eq:helfrich_energy} to a cylindrical membrane geometry follows the approach of Harmandaris and Deserno \cite{Markus_tethers}. A cylinder with radius $R$ possesses a mean curvature of $K=1/R$.
-
 Harmandaris and Deserno \cite{Markus_tethers} suggest that the contribution from the Gaussian curvature and saddle splay modulus $\bar{\kappa}$ remains constant, allowing its omission from this analysis. Integration over the surface area yields the curvature energy for a cylinder of length $L_z$ aligned along the z-axis
 
 \begin{align}
@@ -1179,7 +1171,7 @@ After the deformation of the box a production phase follows at $\hat{T} = 1$ to 
 The determination of the POPC membrane bending modulus utilizes the theoretical foundation of \cref{sec:ben_mod_fourier}. This process involves measuring the power spectrum of each mode in \cref{eq:cental_ben_formula_fourier} and applying a corresponding fit to derive the bending modulus. However, several physical constraints complicate this procedure
 
 
-Continuum theory breaks down when the inverse wave vector 1/k becomes comparable to the bilayer thickness w. Consequently, the investigation must focus on small wave vectors. However, for values smaller than the critical wavelength $k_c = \sqrt{\Sigma/\kappa}$ the lateral tension dominates. The simulations must therefore run at zero lateral tension to ensure the target scaling of $k^{-4}$. Maintaining this condition by manually adjusting the box dimensions is difficult \cite{Cooke_bending_mod}. To circumvent this, a Nose/Hoover barostat \cite{LammpsNPH} adjusts the box volume to maintain a specific target pressure, which is simply the average pressure given by LAMMPS for simulations without a barostat. Choosing a low damping parameter, which governs the reaction speed of the barostat, ensures the achievement of zero tension, which requires using a reduced timestep of $\Delta \hat{t} = 0.001\tau$. The timestep adjustment is central as for low damping parameters a large change in pressure leads to a large change in the box volume. If the time step is too large pressure spikes are more common, leading to oscillation or heavy reshaping of the box dimensions. The system must be substantially larger than the self-assembly setup to accommodate small wave vectors.
+Continuum theory breaks down when the inverse wave vector 1/k becomes comparable to the bilayer thickness w. Consequently, the investigation must focus on small wave vectors. However, for values smaller than the critical wavelength $k_c = \sqrt{\Sigma/\kappa}$ the lateral tension dominates. The simulations must therefore run at zero lateral tension to ensure the target scaling of $k^{-4}$. Maintaining this condition by manually adjusting the box dimensions is difficult \cite{Cooke_bending_mod}. To circumvent this, a Nose/Hoover barostat \cite{LammpsNPH} adjusts the box volume to maintain a specific target pressure, which is simply the average pressure given by LAMMPS for simulations without a barostat. Choosing a low damping parameter, which governs the reaction speed of the barostat, ensures the achievement of zero tension, which requires using a reduced timestep of $\Delta \hat{t} = 0.001$. The timestep adjustment is central as for low damping parameters a large change in pressure leads to a large change in the box volume. If the time step is too large pressure spikes are more common, leading to oscillation or heavy reshaping of the box dimensions. The system must be substantially larger than the self-assembly setup to accommodate small wave vectors.
 
 The simulation is initialized with a pre-assembled membrane containing 4096 lipids, following the methodology of \cref{sec:input_opt} and the work of Cook and Deserno \cite{Cooke_bending_mod}. \cref{fig:fluc_meas_setup} illustrates the setup of the large bilayer. After an equilibration phase of 100$\tau$ to eliminate grid-initialization effects, 100 samples of the system, separated by $10 \tau$, are taken across the $1000\tau$ measurement run. To generate a height function the mean tail position of each lipid is interpolated on a $16 \times 16$ grid. This interpolation requires careful handling, as it introduces discretization artifacts, discussed by Cook and Deserno \cite{Cooke_bending_mod}.
 The calculation must account for a damping factor for the two-dimensional wave numbers $(n_x, n_y)$ and an $N \times N$ grid
@@ -1504,7 +1496,7 @@ To emphasize phase seperation, the evaluation splits the bead types into three d
 \begin{figure}[t]
 \centering
 \includegraphics[width=9cm]{figures/methods/popc_groups.png}
-\caption[Visualization of bead groups in the POPC moelcule]{A Visualization of the different bead groups. The head group is red, the first tail group is violet and the terminal tail group is blue. This partition is used for the density profiles.}
+\caption[Visualization of bead groups in the POPC molecule.]{A Visualization of the different bead groups. The head group is red, the first tail group is violet and the terminal tail group is blue. This partition is used for the density profiles.}
 \label{fig:popc_groups}
 \end{figure}
 
@@ -1852,7 +1844,7 @@ In general, the simulation of large systems with reduced timesteps pose a signif
 
 
 
-\chapter{Conclusion}
+\chapter{Conclusion} \label{ch.conclusion}
 
 This thesis presents the membrane self-assembly and bending modlus computation using dissipative particle dynamcis (DPD). Instead of all-atom simulation this coarse-grained DPD model omits atomic detail and utilizes the mapping mechanism of the MARTINI model but employs the soft DPD interaction in favor of the Lennard-Jones potential. This conserves the advantages of coarse-graining while capitalizing on the faster dynamics and integrated thermostat of DPD. Testing the resulting coarse-graining method on a POPC membrane involved simulating self-assembly for multiple system sizes and temperatures, which determined key properties including the area per lipid, the membrane thickness, and the bending modulus. The study computed the latter using a power spectrum analysis and a tensile force measurement \cite{Cooke_bending_mod}. 
 
