@@ -294,7 +294,7 @@ Computersimulationen sind eine wichtige Methode zur Untersuchung biophysikalisch
 
 \chapter{Introduction}
 
-Investigating biophysical processes for numerous purposes, such as drug discovery and gaining a deeper understanding of illnesses, remains a vital task in physics. While experimental techniques are instrumental, some phenomena are challenging to observe. For instance, the finite resolution of microscopes and uncontrollable environmental factors can limit the scope of experiments. In these cases, computer simulation can provide an alternative. The all-atom approach models every single atom in a molecule, including hydrogen, and simulates interactions with great detail. This high accuracy comes at the cost of a rough energy surface and a massive number of degrees of freedom, restricting timescale and system size. To circumvent this problem, coarse-grained simulations map multiple heavy atoms to a single interaction site, reducing the degrees of freedom and introducing a simpler interaction potential, smoothing the energy surface. One popular coarse-graining scheme is the MARTINI model. This transferable method, utilizes the Lennard-Jones potential for non-bonded interactions. While this potential is effective, the steep repulsive walls limit the integration timestep and overall speed of the dynamics. A possible alternative is Dissipative Particle Dynamics (DPD), as proposed by Groot and Warren. It employs a soft-sphere simulation framework governed by three forces: the conservative force $\mathbf F^C$, the dissipative force $\mathbf F^D$, and the random force $\mathbf F^R$. Furthermore, the fluctuation-dissipation theorem connects the dissipative and random forces, enabling simulations within the canonical ensemble. These soft-core interactions and the integrated thermostat offer substantial advantages over alternative force fields.
+Investigating biophysical processes for numerous purposes, such as drug discovery \cite{biophysics_drug_disc} and gaining a deeper understanding of illnesses \cite{biophysics_cancer}, remains a vital task in physics. While experimental techniques are instrumental, some phenomena are challenging to observe. For instance, the finite resolution of microscopes and uncontrollable environmental factors can limit the scope of experiments. In these cases, computer simulation can provide an alternative \cite{all_atom_drug_disc}. The all-atom approach models every single atom in a molecule, including hydrogen, and simulates interactions with great detail. This high accuracy comes at the cost of a rough energy surface and a massive number of degrees of freedom, restricting timescale and system size. To circumvent this problem, coarse-grained simulations map multiple heavy atoms to a single interaction site, reducing the degrees of freedom and introducing a simpler interaction potential, smoothing the energy surface. One popular coarse-graining scheme is the MARTINI model. This transferable method, utilizes the Lennard-Jones potential for non-bonded interactions. While this potential is effective, the steep repulsive walls limit the integration timestep and overall speed of the dynamics. A possible alternative is Dissipative Particle Dynamics (DPD), as proposed by Groot and Warren. It employs a soft-sphere simulation framework governed by three forces: the conservative force $\mathbf F^C$, the dissipative force $\mathbf F^D$, and the random force $\mathbf F^R$. Furthermore, the fluctuation-dissipation theorem connects the dissipative and random forces, enabling simulations within the canonical ensemble. These soft-core interactions and the integrated thermostat offer substantial advantages over alternative force fields.
 
 This work employs a coarse-grained DPD model, using the MARTINI force field as the basis for parametrization \cite{Wang2024}. This approach aims to combine the benefits of coarse-graining with the efficiency of the DPD force field. The study evaluates the DPD model via lipid membrane self-assembly across various system sizes and temperatures, and the membrane properties: area per lipid, membrane thickness, and bending modulus. The investigation focuses on homogeneous membranes composed of 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine (POPC).
 
@@ -311,11 +311,11 @@ This work employs a coarse-grained DPD model, using the MARTINI force field as t
 Coarse-grained molecular simulations \cite{CGwater_review} aim to simulate the behavior of large systems and timescales, while preserving the main thermodynamic and
 structural properties. The primary technique is a mapping mechanism that
 represents groups of atoms as a single interaction site or “bead”. The coarse-graining degree, defining the number of heavy atoms in one bead, vary between different methods and the length scales of interest.
-Coarse-graining models provide four major advantages that improve performance \cite{cg_review_speedups}. A reduction in the degrees of freedom by the mapping mechanism, decreases the number of interactions to compute. Furthermore, omitting atomistic detail smooths the potential energy surface and lowers friction and leads to faster dynamics. Some coarse-grained models employ a truncated interaction force, additionally reducing the amount of computation. While all-atom simulations utilize a timestep on the order of femtoseconds\cite{Atomic_timescales}, coarse-graining allows these to be extended into tens or hundreds of femtoseconds, depending on the model.  
+Coarse-graining models provide four major advantages that improve performance \cite{cg_review_speedups}. The mapping mechanism reduces the degrees of freedom, thereby decreasing the number of interactions to compute. Furthermore, omitting atomistic detail smooths the potential energy surface and lowers friction, leading to faster dynamics. Some coarse-grained models employ a truncated interaction force, additionally reducing the amount of computation. While all-atom simulations utilize a timestep on the order of femtoseconds\cite{Atomic_timescales}, coarse-graining allows it to be extended into tens or hundreds of femtoseconds, depending on the model.  
 A central challenge in CG simulations is parametrization of the interaction between beads. Two main 
 strategies exist: utilizing experimental data (top-down)
 or the results from more accurate all-atom simulations (bottom-up) to define the CG interactions.
-Since not every thermodynamic property can be captured simultaneously every coarse-graining strategy involves some tradeoffs \cite{CGwater_review}.
+Since not every thermodynamic property can be captured simultaneously, every coarse-graining strategy involves some tradeoffs \cite{CGwater_review}.
 This work employs the mapping mechanism of the MARTINI force field \cite{Martini}, the details of which are explained in 
 \cref{martini}. 
 
@@ -329,10 +329,11 @@ The P and C beads are assigned an additional number from 1 to 5 depending on the
 polarity, specifically P5 is the most
 polar bead whereas C1 is the most apolar bead.
 The water bead is identical to the P4 bead. The Q and N beads also have 
-subtypes which quantify the hydrogen bond forming capabilities.
-There is \textit{0} meaning no capabilities, \textit{d} meaning donor capabilities, 
-\textit{a} meaning acceptor capabilities, and \textit{da} meaning both donor and acceptor capabilities. This finite set of beads is utilized to construct molecules. Crucially, the physical properties and interaction parameters remain consistent for every bead, regardless of the molecular structure to which it belongs.
-For instance, an apolar C1 bead within a lipid chain interacts with its environment identically to a C1 bead found in an amino acid. The coarse-graining degree \cite{Martini} is 4:1 for most structures, while smaller structures like rings utilize 3:1 or 2:1 mappings.    
+subtypes, quantifying the hydrogen bond forming capabilities. It differentiates between, \textit{d} donors, \textit{a} acceptors, \textit{da} beads acting as both, and \textit{0} beads with no bonding capabilities.
+% There is \textit{0} meaning no capabilities, \textit{d} meaning donor capabilities, 
+% \textit{a} meaning acceptor capabilities, and \textit{da} meaning both donor and acceptor capabilities.
+This finite set of beads is utilized to construct molecules. Crucially, the physical properties and interaction parameters remain consistent for every bead, regardless of the molecular structure to which it belongs.
+For instance, an apolar C1 bead within a lipid chain interacts with its environment identically to a C1 bead found in an amino acid. The coarse-graining degree \cite{Martini} is 4:1 for most structures, while smaller structures, like rings, utilize 3:1 or 2:1 mappings.    
 
 The MARTINI model employs the Lennard-Jones potential to describe the interaction for a non-bonded bead pair ($i,j$)
 
@@ -341,7 +342,7 @@ U^{LJ}(\epsilon_{ij}, \sigma_{ij}) = 4 \epsilon_{ij} \left [\left(\frac{\sigma_{
 - \left(\frac{\sigma_{ij}}{r} \right)^6 \right ]\, . \label{LJ_pot}
 \end{equation}
 
-In this expression, $\epsilon_{ij}$ represents the well depth, which dictates the strength of the attraction between the beads according to an underlying interaction matrix. The parameter $\sigma_{ij}$ denotes the distance at which the potential equals zero, effectively defining the size of the beads.
+In this expression, $\epsilon_{ij}$ represents the well depth,  dictating the strength of the attraction between the beads according to an underlying interaction matrix. The parameter $\sigma_{ij}$ denotes the distance at which the potential equals zero, effectively defining the size of the beads.
 
 \section{Dissipative Particle Dynamics} \label{dpd}
 The DPD force field was introduced by Groot and Warren for the simulation of systems at 
@@ -369,12 +370,11 @@ The conservative force is defined as
 where $r_c$ represents the cutoff distance and $A_{ij}$ is the maximum repulsion between 
 a specific particle pair. Furthermore, the relative position by
 $\mathbf{r}_{ij} = \mathbf{r}_i - \mathbf{r}_j$, with $r_{ij} = |\mathbf{r}_{ij}|$ as its magnitude and $\hat{\mathbf{r}}_{ij} = \mathbf{r}_{ij}/r_{ij}$ the corresponding unit vector.
-Typically, the cutoff distance is set to $r_c = 1$ when working with reduced units, which will be 
-discussed in \cref{dpd_units}, 
+Typically, the cutoff distance is set to $r_c = 1$ when working with reduced units, 
 simplifying the expression above. \cref{comp_forces} illustrates the difference between the conservative DPD force in \cref{eq:dpd_conservative} and the Lennard-Jones potential in \cref{LJ_pot}.
 The key distinction between the two
 approaches is that the DPD force and the corresponding potential
-do not diverge at $r=0$, which allows for particle overlap and characterizes it as a soft potential. Additionally, DPD is a purely repulsive 
+do not diverge at $r=0$, allowing for particle overlap and characterizing it as a soft potential. Additionally, DPD is a purely repulsive 
 force, whereas Lennard-Jones includes an attractive component and a potential minimum.
 Furthermore, the DPD force is a short-range interaction, while the Lennard-Jones force  theoretically has an infinite range but is typically truncated to improve computational efficiency. 
 
@@ -397,7 +397,7 @@ Furthermore, the DPD force is a short-range interaction, while the Lennard-Jones
 \end{figure}
 
 The dissipative and random force can best be described by using two weight 
-functions $w^D$ and $w^R$. Espanol and Warren examined the statistic of DPD and found that the fluctuation dissipation theorem dictates that weight functions need to satisfy $w^D(r_{ij}) = \left [w^R(r_{ij}) \right ]^2$. Consequently, defining one weight function in turn fixes the other.
+functions $w^D$ and $w^R$. Espanol and Warren examined the statistic of DPD and found the fluctuation dissipation theorem, dictating that the weight functions need to satisfy $w^D(r_{ij}) = \left [w^R(r_{ij}) \right ]^2$. Consequently, defining one weight function fixes the other.
 The common choice for the weighting function is
 
 \begin{equation}
@@ -418,46 +418,46 @@ two parameters with the thermal Energy $k_B T$ \cite{DPD_groot_warren} and yield
 By defining $\mathbf{v}_{ij} = \mathbf{v}_i - \mathbf{v}_j$ as the
 relative velocity between two particles
 and $\alpha_{ij}$ as 
-a Gaussian noise term with zero mean, unit variance and $\alpha_{ij} = \alpha_{ji}$, 
+a Gaussian noise term with zero mean, unit variance, and $\alpha_{ij} = \alpha_{ji}$, 
 the final expression for both forces \cite{DPD_groot_warren} is obtained
 
 \begin{align}
     \mathbf{F}^D_{ij} &= -\gamma w^D(r_{ij})(\hat{\mathbf{r}}_{ij}\cdot \mathbf{v}_{ij})
-    \hat{\mathbf{r}}_{ij} \\
+    \hat{\mathbf{r}}_{ij}\, , \\
     \mathbf{F}^R_{ij} &= \sigma w^R(r_{ij}) \alpha_{ij} \Delta t^{-1/2} \hat{\mathbf{r}}_{ij}\, .
 \end{align}
 
 Notably, a factor of $\Delta t^{-1/2}$ appears in the random force expression. This correction
 follows the work of Groot and Warren \cite{DPD_groot_warren} and
-ensures that the mean square displacement follows the correct time dependency
+ensures that the mean square displacement satisfies the correct time dependency
 $\left < x^2\right >\propto t$.
 As previously mentioned, both forces are linked by the fluctuation dissipation theorem 
 \cref{connection_fluc_dis}. This assures that the energy added by the random force
 $\mathbf{F}^R$ 
 is exactly balanced by the energy dissipated through force $\mathbf{F}^D$. Consequently, both forces act as an internal 
 thermostat, allowing sampling of the canonical ensemble and eliminating the need for any
-external thermostats during simulation.
+external thermostats during simulations.
 
-To fully describe DPD interactions, the only parameters to determine are the 
-repulsion parameters $A_{ij}$ and the drag coefficient $\gamma$ which in turn fixes the 
-random force parameter $\sigma$. This step will be further discussed in \cref{sec:dpd_parameters}.
+To entirely parametrize DPD interactions, only the 
+repulsion parameters $A_{ij}$ and the drag coefficient $\gamma$ need to be determined, fixing the 
+random force parameter $\sigma$. This step will be discussed further in \cref{sec:dpd_parameters}.
 
 \section{Electrostatic Interactions}\label{coulomb}
 
 The DPD force field in \cref{dpd} does not differentiate between a charged or an uncharged bead. Therefore, 
 an electrostatic interaction must be integrated into the force field, 
 or the repulsions have to be adjusted accordingly. Crucially, a simple 
-coulomb potential is unsuitable, as its divergence at $r=0$ would negate the softness of the DPD potential. To address this, 
+Coulomb potential is unsuitable, as its divergence at $r=0$ would negate the softness of the DPD potential. To address this, 
 an exponentially smeared charge distribution, resulting in a Slater potential, is employed 
 . This follows the work of Wang and Hernandez \cite{Wang2024}
 who introduce a factor $\beta$ which controls the extend of the
-smearing effect. The charge distribution then reads
+smearing effect. The charge distribution 
 
 \begin{equation}
-    \rho(r) = \frac{q\beta^2}{\pi r} \exp(-2\beta r)\, . \label{charge_density}
+    \rho(r) = \frac{q\beta^2}{\pi r} \exp(-2\beta r) \label{charge_density}
 \end{equation}
 
-Utilizing the constant $\Gamma = e^2/(k_\text{B}T\epsilon_0\epsilon_rr_c)$ with $\epsilon_r = 78.3$, the resulting electrostatic force between two beads $i$ and $j$ with valences $Z_i$ and $Z_j$ follows
+utilizies the constant $\Gamma = e^2/(k_\text{B}T\epsilon_0\epsilon_rr_c)$ with $\epsilon_r = 78.3$. The resulting electrostatic force between two beads $i$ and $j$ with valences $Z_i$ and $Z_j$ follows
 
 \begin{align}
     \mathbf{F}^E_{ij} = \frac{\Gamma Z_i Z_j}{4 \pi r_{ij}^2}[1 - \exp(-2\beta r_{ij})
@@ -472,19 +472,19 @@ involving various numbers of participating beads ensure the structural integrity
 Two-body interactions are defined as bonds and determine the equilibrium distance
 between two beads,
 while angle potentials control the local geometry between three consecutive beads. 
-For four-body interactions
-a dihedral potential is utilized to characterize the torsion around a central bond, preserving 
+Four-body interactions utilize
+a proper dihedral potential to characterize the torsion around a central bond, preserving 
 properties such as the orientation of specific atomic groups. Lastly, improper dihedrals 
-maintain the chirality or planarity of molecular groups.
+maintain the chirality of molecular groups.
 
 The specific potentials depend on the molecule being represented, and not every molecule utilizes every
-type of interaction. A more detailed application of these bonded will be discussed in \cref{topology}.
+type of interaction. A more detailed application of these potentials will be discussed in \cref{topology}.
 
 \section{Numerical Integration}
 
-As no analytical solutions exist for the Newtonian equations of motion in molecular systems, numerical integration is required. These algorithms employ stepwise computation to resolve the trajectories of each particle by propagating positions and velocities over discrete timesteps $\Delta t$. This process enables the time evolution of the system, where the time average equals the corresponding ensemble average, provided the applied integrator maintains high accuracy and robust conservation properties.
+As no analytical solutions exist for the Newtonian equations of motion in molecular systems, numerical integration is required. These algorithms employ stepwise computation to resolve the trajectories of each particle by propagating positions and velocities over discrete timesteps $\Delta t$. This process enables the time evolution of the system, where time averaging equals the corresponding ensemble average, provided the applied integrator conserves the matching properties.
 
-The forces defined in \cref{dpd}, \cref{coulomb}, and \cref{intermol} result in a system of ordinary differential equations that molecular dynamics simulations must solve. The Velocity Verlet integrator \cite{Allen2017_verlet} serves as a primary algorithm for this task, computing the position and velocity of a bead at $t+\Delta t$ based on the state at the previous timestep $t$. The iterative procedure follows:
+The forces defined in \cref{dpd}, \cref{coulomb}, and \cref{intermol} result in a system of ordinary differential equations that molecular dynamics simulations must solve. The Velocity Verlet Integrator \cite{Allen2017_verlet} serves as a primary algorithm for this task, computing the position and velocity of a bead at $t+\Delta t$ based on the state at the previous timestep $t$. The iterative procedure follows:
 
 \begin{alignat}{2}
 &1.\ \text{Predict half-step velocity} \quad &&\mathbf{v}(t + \Delta t/2) = \mathbf{v}(t) +
@@ -497,16 +497,16 @@ The forces defined in \cref{dpd}, \cref{coulomb}, and \cref{intermol} result in 
 \mathbf{v}(t + \Delta t/2) + \mathbf{a}(t + \Delta t)\Delta t/2.
 \end{alignat}
 
-This scheme is particularly suitable for DPD, as the dissipative force depends on velocity. Utilizing the intermediate velocity at $t+\Delta t/2$ allows for a more accurate treatment of these forces. Velocity Verlet functions as a symplectic integrator, which ensures energy conservation over large timespans and facilitates sampling of the microcanonical ($NVE$) ensemble. The addition of the DPD force field further conserves the temperature, making the canonical ($NVT$) ensemble accessible.
+This scheme is particularly suitable for DPD, as the dissipative force depends on velocity. Utilizing the intermediate velocity at $t+\Delta t/2$ allows for a more accurate treatment of these forces. Velocity Verlet functions as a symplectic integrator, which ensures energy conservation over large timespans and facilitates sampling of the microcanonical ($NVE$) ensemble. The addition of the DPD force field conserves the temperature, enabling simulation of the canonical ($NVT$) ensemble.
 
 
 \section{Periodic Boundary Conditions}
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=14cm]{figures/theory/pbc.png}
+    \includegraphics[width=14cm]{figures/theory/pbc_new.png}
     \caption[Visualization of periodic boundary conditions.]{Visualization of the periodic boundary conditions. The left shows a single 
-    simulation cell in which the interactions are calculated. On the right is the resulting 
+    simulation cell in which the interactions are calculated. The right shows the resulting 
     system after employing the periodic boundary condition with interactions beyond the single cell boundaries.}
     \label{fig:pbc}
 \end{figure}
@@ -533,9 +533,9 @@ tensor $\mathbf{Q}$, defined as
     \mathbf{Q} = \mathbf{M} - \frac{1}{3}\mathbf{I}\, ,
 \end{align}
 
-where $\mathbf{M}$ is the orientation tensor and $\mathbf{I}$ is the identity matrix.
+where $\mathbf{M}$ is the orientation tensor and $\mathbf{I}$ the identity matrix.
 The components of $\mathbf{M}$ are calculated using the normalized orientation vector $\mathbf{m}^{(i)}$ 
-of the molecule $i \in \{1,\dots,N \}$. For a supposed molecule with a head bead $\mathbf{r}_h$ and tail $\mathbf{r}_t$ bead this reads 
+of the molecule $i \in \{1,\dots,N \}$. For a supposed molecule with a head bead $\mathbf{r}_h$ and tail $\mathbf{r}_t$ bead this yields
 
 \begin{align}
     \mathbf{m} = \frac{\mathbf{r}_h - \mathbf{r}_t}{|\mathbf{r}_h - \mathbf{r}_t|}\, .
@@ -568,13 +568,13 @@ the contact number $\langle n \rangle$ can be expressed as
 \end{align}
 
 
-This metric is highly dependent on this cutoff parameters, which is determined in \cref{sec:128_assembly}.
+This metric is highly dependent on this cutoff parameter, which is determined in \cref{sec:128_assembly}.
 
 \section{Membrane Fluctuations} \label{sec:ben_mod_fourier}
 
 The bending modulus details how much force is needed to deform a membrane. Thus, it is instructive to investigate the fluctuations of a bilayer.
 The deformation energy of a membrane \cite{Markus_tethers} is defined as an integral over the 
-membrane area, governed by two moduli: the bending modulus $\kappa$ and,
+membrane area, governed by two moduli: the bending modulus $\kappa$ and
 the saddle splay modulus $\bar{\kappa}$. It reads
 
 \begin{align}
@@ -615,7 +615,7 @@ the dirac delta distribution represented in Fourier space
     (2\pi)^2 \delta(\mathbf k) = \int \mathrm d \mathbf x \exp(i\mathbf k \cdot \mathbf x)\, .
 \end{align}
 
-The height function is purely real. Consequently, $h(\mathbf x) = h(\mathbf x)^*$, leading to 
+The height function is purely real. Consequently, $h(\mathbf x) = h(\mathbf x)^*$ leads to 
 the relation in Fourier space $h(\mathbf k)^* = h(-\mathbf k)$. Inserting the results into 
 \cref{eq:mem_energy} yields 
 
@@ -632,14 +632,15 @@ expression
     \langle |\tilde{h}(\mathbf k)|^2\rangle = \frac{k_{\mathrm B}T}{\kappa k^4 + \Sigma k^2}\, .
 \end{align}
 
-For practical application, a discrete Fourier transform is employed 
+For practical application, a discrete Fourier transform 
 
 \begin{align}
     h(\mathbf{x}) = \frac{1}{(2\pi)}\sum_\mathbf{k} \tilde{h}_\mathbf{k} \exp(i \mathbf k \cdot \mathbf x) 
 \end{align}
 
+is employed
 with discrete wave vectors $\mathbf k = 2\pi/L\cdot (n_x,n_y)$.
-For a membrane of the area $A = L^2$ this discrete approach leads to the final expression for the fluctuation power spectrum
+For a membrane of the area $A = L^2$, this discrete approach leads to the final expression for the fluctuation power spectrum
 
 \begin{align}
     \langle |\tilde{h}_\mathbf{k}|^2\rangle = \frac{k_{\mathrm B}T}{L^2(\kappa k^4 + \Sigma k^2)}\, . \label{eq:cental_ben_formula_fourier}
@@ -663,7 +664,7 @@ Maintaining a cylindrical shape requires the application of a force $F_z$. Takin
 F_z = \frac{\partial E}{\partial L_z} = \frac{2 \pi \kappa}{R}\, .
 \end{align}
 
-The relationship $F_z = \sigma_{zz}L_x L_y$ connects the force $F_z$ to the stress tensor, which is measurable. The final expression for the bending modulus reads
+The relationship $F_z = \sigma_{zz}L_x L_y$ connects the force $F_z$ to the stress tensor. The final expression for the bending modulus reads
 
 \begin{align}
 \kappa = \frac{F_z R}{2\pi}\, .\label{eq:tether_central_from}
