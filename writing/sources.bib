@@ -30,7 +30,19 @@ author = {Ana Catarina Alves and Daniela Ribeiro and Cláudia Nunes and Salette 
   number  = {1},
   pages   = {71},
   doi     = {10.1186/1741-7007-9-71}
-  }
+}
+
+@article{all_atom_md,
+  author  = {Hollingsworth, Scott A. and Dror, Ron O.},
+  title   = {Molecular Dynamics Simulation for All},
+  journal = {Neuron},
+  year    = {2018},
+  volume  = {99},
+  number  = {6},
+  pages   = {1129--1143},
+  doi     = {10.1016/j.neuron.2018.08.011},
+  publisher = {Elsevier}
+}
 
 @article{Wang2024,
 author = {Wang, Yinhan and Hernandez, Rigoberto},
@@ -43,17 +55,18 @@ year = {2024},
 doi = {10.1021/acsomega.4c01868},
 }
 
-@article{CGwater_review,
-author = {Kevin R. Hadley and Clare McCabe},
-title = {Coarse-grained molecular models of water: a review},
-journal = {Molecular Simulation},
-volume = {38},
-number = {8-9},
-pages = {671--681},
-year = {2012},
-publisher = {Taylor \& Francis},
-doi = {10.1080/08927022.2012.671942},
-}
+@article{Noid_cg,
+    author = {Noid, W. G.},
+    title = {Perspective: Coarse-grained models for biomolecular systems},
+    journal = {The Journal of Chemical Physics},
+    volume = {139},
+    number = {9},
+    pages = {090901},
+    year = {2013},
+    month = {09},
+    issn = {0021-9606},
+    doi = {10.1063/1.4818908}
+    }
 
 @article{Atomic_timescales,
 title = {Reaching biological timescales with all-atom molecular dynamics simulations},
@@ -101,6 +114,32 @@ pages = {191},
 author = {P. Español and P. Warren},
 title = {Statistical Mechanics of Dissipative Particle Dynamics},
 journal = {Europhysics Letters},
+}
+
+@incollection{bending_mod_puzzling_pic,
+title = {Chapter Five - The Membrane Bending Modulus in Experiments and Simulations: A Puzzling Picture},
+editor = {Aleš Iglič and Chandrashekhar V. Kulkarni and Michael Rappolt},
+series = {Advances in Biomembranes and Lipid Self-Assembly},
+publisher = {Academic Press},
+volume = {23},
+pages = {117-143},
+year = {2016},
+issn = {2451-9634},
+doi = {https://doi.org/10.1016/bs.abl.2016.01.003},
+author = {D. Bochicchio and L. Monticelli}
+}
+
+@article{gonzales_electro,
+author = {González-Melchor, Minerva and Mayoral, Estela and Velázquez, María Eugenia and Alejandre, José},
+title = {Electrostatic interactions in dissipative particle dynamics using the Ewald sums},
+journal = {The Journal of Chemical Physics},
+volume = {125},
+number = {22},
+pages = {224107},
+year = {2006},
+month = {12},
+issn = {0021-9606},
+doi = {10.1063/1.2400223}
 }
 
 @book{Allen2017_verlet,
@@ -159,14 +198,6 @@ journal = {Europhysics Letters},
   url          = {https://www.thphys.uni-heidelberg.de/~biophys/index.php?lang=&n1=scripts}
 }
 
-@online{MartiniLipidome,
-  author = {{Martini Coarse Grained Force Field}},
-  title  = {Martini 2 Lipidome Force Field Parameters},
-  year   = {2024},
-  url    = {https://cgmartini.nl/docs/downloads/force-field-parameters/martini2/lipidome.html},
-  note   = {Parameters for itp and gro files}
-}
-
 @online{LammpsBond,
   author = {{Sandia National Laboratories}},
   title  = {LAMMPS Documentation: bond\_style harmonic command},
@@ -181,18 +212,6 @@ journal = {Europhysics Letters},
   url    = {https://docs.lammps.org/angle\_cosine\_squared.html},
 }
 
-@article{Gonzales-Melchor_beta,
-    author = {González-Melchor, Minerva and Mayoral, Estela and Velázquez, María Eugenia and Alejandre, José},
-    title = {Electrostatic interactions in dissipative particle dynamics using the Ewald sums},
-    journal = {The Journal of Chemical Physics},
-    volume = {125},
-    number = {22},
-    pages = {224107},
-    year = {2006},
-    month = {12},
-    doi = {10.1063/1.2400223}
-}
-
 @online{LammpsSlater,
   author = {{Sandia National Laboratories}},
   title  = {LAMMPS Documentation: pair\_style coul/slater/long command},
@@ -205,6 +224,17 @@ journal = {Europhysics Letters},
   title  = {LAMMPS Documentation: pair\_style dpd command},
   year   = {2024},
   url    = {https://docs.lammps.org/pair_dpd.html},
+}
+
+@article{lipidome_paper,
+author = {Wassenaar, Tsjerk A. and Ingólfsson, Helgi I. and B{\"o}ckmann, Rainer A. and Tieleman, D. Peter and Marrink, Siewert J.},
+title = {Computational Lipidomics with insane: A Versatile Tool for Generating Custom Membranes for Molecular Simulations},
+journal = {Journal of Chemical Theory and Computation},
+volume = {11},
+number = {5},
+pages = {2144-2155},
+year = {2015},
+doi = {10.1021/acs.jctc.5b00209}
 }
 
 @article{Markus_tethers,
@@ -284,3 +314,29 @@ issn = {0006-3495},
 doi = {https://doi.org/10.1016/S0006-3495(00)76295-3},
 author = {W. Rawicz and K.C. Olbrich and T. McIntosh and D. Needham and E. Evans}
 }
+
+@article{martyna_barostat,
+    author = {Martyna, Glenn J. and Tobias, Douglas J. and Klein, Michael L.},
+    title = {Constant pressure molecular dynamics algorithms},
+    journal = {The Journal of Chemical Physics},
+    volume = {101},
+    number = {5},
+    pages = {4177-4189},
+    year = {1994},
+    month = {09},
+    issn = {0021-9606},
+    doi = {10.1063/1.467468}
+    }
+
+@article{nose_base_paper,
+    author = {Nosé, Shuichi},
+    title = {A unified formulation of the constant temperature molecular dynamics methods},
+    journal = {The Journal of Chemical Physics},
+    volume = {81},
+    number = {1},
+    pages = {511-519},
+    year = {1984},
+    month = {07},
+    issn = {0021-9606},
+    doi = {10.1063/1.447334}
+    }

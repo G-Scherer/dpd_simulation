@@ -1,0 +1,15 @@
+[0] Config.pm:308> INFO - This is Biber 2.20
+[0] Config.pm:311> INFO - Logfile is '%OUTDIR%/draft.blg'
+[51] biber:340> INFO - === Do Feb 26, 2026, 14:25:08
+[62] Biber.pm:420> INFO - Reading '%OUTDIR%/draft.bcf'
+[111] Biber.pm:994> INFO - Found 29 citekeys in bib section 0
+[119] Biber.pm:4463> INFO - Processing section 0
+[126] Biber.pm:4654> INFO - Looking for bibtex file 'sources.bib' for section 0
+[127] bibtex.pm:1713> INFO - LaTeX decoding ...
+[143] bibtex.pm:1519> INFO - Found BibTeX data source 'sources.bib'
+[323] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[323] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[323] Biber.pm:4283> INFO - Sorting list 'none/global//global/global/global' of type 'entry' with template 'none' and locale 'en-US'
+[323] Biber.pm:4289> INFO - No sort tailoring available for locale 'en-US'
+[336] bbl.pm:676> INFO - Writing '%OUTDIR%/draft.bbl' with encoding 'UTF-8'
+[345] bbl.pm:779> INFO - Output to %OUTDIR%/draft.bbl
